@@ -22,6 +22,5 @@ func CheckProjectUniqueNameHandler(ctx context.Context, request mcp.CallToolRequ
 		return nil, err
 	}
 
-	return makePostRequest("/v1/projects/check-unique-name", params.Body, apiKey)
+	return makePostRequest("/v1/projects/available-unique-name", params.Body, apiKey)
 }
-
