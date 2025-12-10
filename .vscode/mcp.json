@@ -1,0 +1,12 @@
+{
+  "servers": {
+    "autogen-v2-mcp": {
+      "url": "http://localhost:8080/mcp",
+      "type": "http",
+      "headers": {
+        "X-Api-Key": "abcd"
+      }
+    }
+  },
+  "inputs": []
+}
