@@ -19,7 +19,7 @@ jobs:
       - name: checkout repository
         uses: actions/checkout@v6
 
-      - name: Install asdf & tools
+      - name: install asdf & tools
         uses: asdf-vm/actions/install@v4
 
       - uses: actions/cache@v4
@@ -30,35 +30,35 @@ jobs:
             ~/.asdf/installs/golang/*/packages/pkg/mod
             ~/.cache/go-build
             ~/.cache/golangci-lint
-          key: ${{ runner.os }}-golangci-${{ hashFiles('**/go.sum') }}
+          key: ${{ runner.os }}-golangci-${{ hashfiles('**/go.sum') }}
 
-      # - name: Run golangci-lint
+      # - name: run golangci-lint
       #   run: |
       #     set -x
       #     golangci-lint cache status
       #     golangci-lint run
 
-      - name: Test
+      - name: test
         run: |
           set -x
           go test -tags dev ./...
 
-      - name: Build
+      - name: build
         run: |
           set -x
-          CGO_ENABLED=0	go build -trimpath -ldflags="-s -w -extldflags '-static'" -o nodeops main.go
+          cgo_enabled=0	go build -trimpath -ldflags="-s -w -extldflags '-static'" -o nodeops *.go
           ldd nodeops || true
 
-      - name: Expose GitHub Runtime
+      - name: expose github runtime
         uses: crazy-max/ghaction-github-runtime@v3
 
-      - name: Get tags
+      - name: get tags
         id: timestamp
         run: |
-          echo "timestamp=$(date +%s)" >>$GITHUB_OUTPUT
-          echo "git_short_sha=$(git rev-parse --short ${{ github.sha }})" >>$GITHUB_OUTPUT
+          echo "timestamp=$(date +%s)" >>$github_output
+          echo "git_short_sha=$(git rev-parse --short ${{ github.sha }})" >>$github_output
 
-      - name: Extract metadata (tags, labels) for Docker
+      - name: extract metadata (tags, labels) for docker
         id: meta
         uses: docker/metadata-action@v5
         with:
