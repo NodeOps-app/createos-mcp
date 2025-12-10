@@ -10,6 +10,7 @@ import (
 
 type TriggerLatestDeploymentParams struct {
 	ProjectID string `json:"project_id"`
+	Branch    string `json:"branch"`
 }
 
 func TriggerLatestDeploymentHandler(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
@@ -23,6 +24,9 @@ func TriggerLatestDeploymentHandler(ctx context.Context, request mcp.CallToolReq
 		return nil, fmt.Errorf("failed to parse parameters: %w", err)
 	}
 
-	return makePostRequest(fmt.Sprintf("/v1/projects/%s/deployments/trigger-latest", params.ProjectID), nil, apiKey)
-}
+	queryParams := map[string]string{
+		"branch": params.Branch,
+	}
 
+	return makePostRequest(fmt.Sprintf("/v1/projects/%s/trigger-latest", params.ProjectID), queryParams, apiKey)
+}

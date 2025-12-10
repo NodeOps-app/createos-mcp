@@ -12,6 +12,5 @@ func ListConnectedGithubAccountsHandler(ctx context.Context, request mcp.CallToo
 		return nil, err
 	}
 
-	return makeGetRequest("/v1/github/accounts", nil, apiKey)
+	return makeGetRequest("/v1/app-installations/github/accounts", nil, apiKey)
 }
-
