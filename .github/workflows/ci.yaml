@@ -32,12 +32,6 @@ jobs:
             ~/.cache/golangci-lint
           key: ${{ runner.os }}-golangci-${{ hashfiles('**/go.sum') }}
 
-      # - name: run golangci-lint
-      #   run: |
-      #     set -x
-      #     golangci-lint cache status
-      #     golangci-lint run
-
       - name: test
         run: |
           set -x
@@ -55,8 +49,8 @@ jobs:
       - name: get tags
         id: timestamp
         run: |
-          echo "timestamp=$(date +%s)" >>$github_output
-          echo "git_short_sha=$(git rev-parse --short ${{ github.sha }})" >>$github_output
+          echo "timestamp=$(date +%s)" >>$GITHUB_OUTPUT
+          echo "git_short_sha=$(git rev-parse --short ${{ github.sha }})" >>$GITHUB_OUTPUT
 
       - name: extract metadata (tags, labels) for docker
         id: meta
