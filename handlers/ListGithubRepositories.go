@@ -2,6 +2,7 @@ package handler
 
 import (
 	"context"
+	"fmt"
 
 	mcputils "github.com/NodeOps-app/autogen-backend-v2-mcp/helpers"
 	"github.com/mark3labs/mcp-go/mcp"
@@ -23,6 +24,5 @@ func ListGithubRepositoriesHandler(ctx context.Context, request mcp.CallToolRequ
 	}
 
 	queryParams := map[string]string{"installation_id": params.InstallationID}
-	return makeGetRequest("/v1/github/repositories", queryParams, apiKey)
+	return makeGetRequest(fmt.Sprintf("/v1/app-installations/github/accounts/%s/repositories", params.InstallationID), queryParams, apiKey)
 }
-
