@@ -3,6 +3,7 @@ package mcptools
 import (
 	"context"
 	"fmt"
+
 	"github.com/mark3labs/mcp-go/mcp"
 )
 
@@ -60,7 +61,7 @@ const createProjectEnvironmentInputSchema = `{
             },
             "replicas": {
               "description": "Number of replicas",
-              "example": 2,
+              "example": 1,
               "maximum": 3,
               "minimum": 1,
               "type": "integer"
