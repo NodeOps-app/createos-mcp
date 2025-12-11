@@ -22,6 +22,5 @@ func InstallGithubAppHandler(ctx context.Context, request mcp.CallToolRequest) (
 		return nil, err
 	}
 
-	return makePostRequest("/v1/github/install", params.Body, apiKey)
+	return makePostRequest("/v1/app-installations/github", params.Body, apiKey)
 }
-
