@@ -24,22 +24,5 @@ func GetGithubRepositoryContentHandler(ctx context.Context, request mcp.CallTool
 		return nil, err
 	}
 
-	// POST request with body and query params
-	resp, err := mcputils.Client().R().
-		SetHeader("X-Api-Key", apiKey).
-		SetQueryParam("installation_id", params.InstallationID).
-		SetBody(params.Body).
-		Post("/v1/github/repositories/content")
-	if err != nil {
-		return nil, err
-	}
-	if resp.IsError() {
-		return nil, fmt.Errorf("API error (status %d): %s", resp.StatusCode(), string(resp.Body()))
-	}
-	return &mcp.CallToolResult{
-		Content: []mcp.Content{
-			mcp.NewTextContent(string(resp.Body())),
-		},
-	}, nil
+	return makePostRequest(fmt.Sprintf("/v1/app-installations/github/accounts/%s/repositories/content", params.InstallationID), params.Body, apiKey)
 }
-

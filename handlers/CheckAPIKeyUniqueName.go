@@ -22,6 +22,5 @@ func CheckAPIKeyUniqueNameHandler(ctx context.Context, request mcp.CallToolReque
 		return nil, err
 	}
 
-	return makePostRequest("/v1/api-keys/check-unique-name", params.Body, apiKey)
+	return makePostRequest("/v1/api-keys/available-unique-name", params.Body, apiKey)
 }
-

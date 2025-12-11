@@ -24,6 +24,5 @@ func UpdateProjectSettingsHandler(ctx context.Context, request mcp.CallToolReque
 		return nil, fmt.Errorf("failed to parse parameters: %w", err)
 	}
 
-	return makePatchRequest(fmt.Sprintf("/v1/projects/%s/settings", params.ProjectID), params.Body, apiKey)
+	return makePutRequest(fmt.Sprintf("/v1/projects/%s/settings", params.ProjectID), params.Body, apiKey)
 }
-

@@ -12,6 +12,5 @@ func GetSupportedProjectTypesHandler(ctx context.Context, request mcp.CallToolRe
 		return nil, err
 	}
 
-	return makeGetRequest("/v1/projects/types", nil, apiKey)
+	return makeGetRequest("/v1/projects/supported", nil, apiKey)
 }
-
