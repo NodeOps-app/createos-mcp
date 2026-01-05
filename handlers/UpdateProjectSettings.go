@@ -14,7 +14,7 @@ type UpdateProjectSettingsParams struct {
 }
 
 func UpdateProjectSettingsHandler(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
-	apiKey, args, err := handleRequest(ctx, request)
+	authInfo, args, err := handleRequest(ctx, request)
 	if err != nil {
 		return nil, err
 	}
@@ -24,5 +24,5 @@ func UpdateProjectSettingsHandler(ctx context.Context, request mcp.CallToolReque
 		return nil, fmt.Errorf("failed to parse parameters: %w", err)
 	}
 
-	return makePutRequest(fmt.Sprintf("/v1/projects/%s/settings", params.ProjectID), params.Body, apiKey)
+	return makePutRequest(fmt.Sprintf("/v1/projects/%s/settings", params.ProjectID), params.Body, authInfo)
 }

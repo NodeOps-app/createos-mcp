@@ -12,7 +12,7 @@ type InstallGithubAppParams struct {
 }
 
 func InstallGithubAppHandler(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
-	apiKey, args, err := handleRequest(ctx, request)
+	authInfo, args, err := handleRequest(ctx, request)
 	if err != nil {
 		return nil, err
 	}
@@ -22,5 +22,5 @@ func InstallGithubAppHandler(ctx context.Context, request mcp.CallToolRequest) (
 		return nil, err
 	}
 
-	return makePostRequest("/v1/app-installations/github", params.Body, apiKey)
+	return makePostRequest("/v1/app-installations/github", params.Body, authInfo)
 }

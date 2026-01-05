@@ -14,7 +14,7 @@ type TriggerLatestDeploymentParams struct {
 }
 
 func TriggerLatestDeploymentHandler(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
-	apiKey, args, err := handleRequest(ctx, request)
+	authInfo, args, err := handleRequest(ctx, request)
 	if err != nil {
 		return nil, err
 	}
@@ -28,5 +28,5 @@ func TriggerLatestDeploymentHandler(ctx context.Context, request mcp.CallToolReq
 		"branch": params.Branch,
 	}
 
-	return makePostRequest(fmt.Sprintf("/v1/projects/%s/trigger-latest", params.ProjectID), queryParams, apiKey)
+	return makePostRequest(fmt.Sprintf("/v1/projects/%s/trigger-latest", params.ProjectID), queryParams, authInfo)
 }

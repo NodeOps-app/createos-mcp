@@ -14,7 +14,7 @@ type UpdateAPIKeyParams struct {
 }
 
 func UpdateAPIKeyHandler(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
-	apiKey, args, err := handleRequest(ctx, request)
+	authInfo, args, err := handleRequest(ctx, request)
 	if err != nil {
 		return nil, err
 	}
@@ -24,6 +24,6 @@ func UpdateAPIKeyHandler(ctx context.Context, request mcp.CallToolRequest) (*mcp
 		return nil, fmt.Errorf("failed to parse parameters: %w", err)
 	}
 
-	return makePutRequest(fmt.Sprintf("/v1/api-keys/%s", params.APIKeyID), params.Body, apiKey)
+	return makePutRequest(fmt.Sprintf("/v1/api-keys/%s", params.APIKeyID), params.Body, authInfo)
 }
 

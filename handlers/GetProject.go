@@ -14,7 +14,7 @@ type GetProjectParams struct {
 
 // GetProjectHandler is the handler function for the GetProject tool.
 func GetProjectHandler(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
-	apiKey, err := GetAPIKey(ctx, request)
+	authInfo, err := GetAuthInfo(ctx, request)
 	if err != nil {
 		return nil, err
 	}
@@ -31,7 +31,7 @@ func GetProjectHandler(ctx context.Context, request mcp.CallToolRequest) (*mcp.C
 	}
 
 	// Make GET request
-	resp, err := mcputils.Get(fmt.Sprintf("/v1/projects/%s", params.ProjectID), nil, apiKey)
+	resp, err := mcputils.Get(fmt.Sprintf("/v1/projects/%s", params.ProjectID), nil, authInfo.Method, authInfo.Value)
 	if err != nil {
 		return nil, err
 	}

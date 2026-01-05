@@ -7,10 +7,10 @@ import (
 )
 
 func GetCurrentUserHandler(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
-	apiKey, _, err := handleRequest(ctx, request)
+	authInfo, _, err := handleRequest(ctx, request)
 	if err != nil {
 		return nil, err
 	}
 
-	return makeGetRequest("/v1/user/me", nil, apiKey)
+	return makeGetRequest("/v1/user/me", nil, authInfo)
 }

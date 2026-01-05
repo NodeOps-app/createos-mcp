@@ -14,7 +14,7 @@ type GetGithubRepositoryContentParams struct {
 }
 
 func GetGithubRepositoryContentHandler(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
-	apiKey, args, err := handleRequest(ctx, request)
+	authInfo, args, err := handleRequest(ctx, request)
 	if err != nil {
 		return nil, err
 	}
@@ -24,5 +24,5 @@ func GetGithubRepositoryContentHandler(ctx context.Context, request mcp.CallTool
 		return nil, err
 	}
 
-	return makePostRequest(fmt.Sprintf("/v1/app-installations/github/accounts/%s/repositories/content", params.InstallationID), params.Body, apiKey)
+	return makePostRequest(fmt.Sprintf("/v1/app-installations/github/accounts/%s/repositories/content", params.InstallationID), params.Body, authInfo)
 }

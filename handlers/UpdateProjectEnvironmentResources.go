@@ -15,7 +15,7 @@ type UpdateProjectEnvironmentResourcesParams struct {
 }
 
 func UpdateProjectEnvironmentResourcesHandler(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
-	apiKey, args, err := handleRequest(ctx, request)
+	authInfo, args, err := handleRequest(ctx, request)
 	if err != nil {
 		return nil, err
 	}
@@ -25,5 +25,5 @@ func UpdateProjectEnvironmentResourcesHandler(ctx context.Context, request mcp.C
 		return nil, fmt.Errorf("failed to parse parameters: %w", err)
 	}
 
-	return makePutRequest(fmt.Sprintf("/v1/projects/%s/environments/%s/resources", params.ProjectID, params.ProjectEnvID), params.Body, apiKey)
+	return makePutRequest(fmt.Sprintf("/v1/projects/%s/environments/%s/resources", params.ProjectID, params.ProjectEnvID), params.Body, authInfo)
 }

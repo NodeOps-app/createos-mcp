@@ -17,7 +17,7 @@ type ListProjectsParams struct {
 
 // ListProjectsHandler is the handler function for the ListProjects tool.
 func ListProjectsHandler(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
-	apiKey, err := GetAPIKey(ctx, request)
+	authInfo, err := GetAuthInfo(ctx, request)
 	if err != nil {
 		return nil, err
 	}
@@ -46,7 +46,7 @@ func ListProjectsHandler(ctx context.Context, request mcp.CallToolRequest) (*mcp
 	}
 
 	// Make GET request using Resty
-	resp, err := mcputils.Get("/v1/projects", queryParams, apiKey)
+	resp, err := mcputils.Get("/v1/projects", queryParams, authInfo.Method, authInfo.Value)
 	if err != nil {
 		return nil, err
 	}

@@ -14,7 +14,7 @@ type GetProjectEnvironmentLogsParams struct {
 }
 
 func GetProjectEnvironmentLogsHandler(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
-	apiKey, args, err := handleRequest(ctx, request)
+	authInfo, args, err := handleRequest(ctx, request)
 	if err != nil {
 		return nil, err
 	}
@@ -24,5 +24,5 @@ func GetProjectEnvironmentLogsHandler(ctx context.Context, request mcp.CallToolR
 		return nil, err
 	}
 
-	return makeGetRequest(fmt.Sprintf("/v1/projects/%s/environments/%s/logs", params.ProjectID, params.EnvironmentID), nil, apiKey)
+	return makeGetRequest(fmt.Sprintf("/v1/projects/%s/environments/%s/logs", params.ProjectID, params.EnvironmentID), nil, authInfo)
 }
