@@ -9,7 +9,7 @@ import (
 func NewMCPServer() *server.MCPServer {
 	// Create a new MCP server
 	s := server.NewMCPServer(
-		"Autogen MCP Server",
+		"CreateOS MCP Server",
 		"0.0.1",
 		server.WithToolCapabilities(true),
 		server.WithLogging(),
