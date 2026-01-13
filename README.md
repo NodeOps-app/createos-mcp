@@ -1,4 +1,4 @@
-## Autogen MCP Server
+## CreateOS MCP Server
 
 ### Configuration
 
