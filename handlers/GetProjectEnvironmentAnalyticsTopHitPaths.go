@@ -17,7 +17,7 @@ type GetProjectEnvironmentAnalyticsTopHitPathsParams struct {
 }
 
 func GetProjectEnvironmentAnalyticsTopHitPathsHandler(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
-	apiKey, args, err := handleRequest(ctx, request)
+	authInfo, args, err := handleRequest(ctx, request)
 	if err != nil {
 		return nil, err
 	}
@@ -35,6 +35,6 @@ func GetProjectEnvironmentAnalyticsTopHitPathsHandler(ctx context.Context, reque
 		queryParams["end"] = strconv.FormatInt(*params.End, 10)
 	}
 
-	return makeGetRequest(fmt.Sprintf("/v1/projects/%s/environments/%s/analytics/top-hit-paths", params.ProjectID, params.EnvironmentID), queryParams, apiKey)
+	return makeGetRequest(fmt.Sprintf("/v1/projects/%s/environments/%s/analytics/top-hit-paths", params.ProjectID, params.EnvironmentID), queryParams, authInfo)
 }
 

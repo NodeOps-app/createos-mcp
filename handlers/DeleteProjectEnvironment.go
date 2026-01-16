@@ -14,7 +14,7 @@ type DeleteProjectEnvironmentParams struct {
 }
 
 func DeleteProjectEnvironmentHandler(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
-	apiKey, args, err := handleRequest(ctx, request)
+	authInfo, args, err := handleRequest(ctx, request)
 	if err != nil {
 		return nil, err
 	}
@@ -24,5 +24,5 @@ func DeleteProjectEnvironmentHandler(ctx context.Context, request mcp.CallToolRe
 		return nil, fmt.Errorf("failed to parse parameters: %w", err)
 	}
 
-	return makeDeleteRequest(fmt.Sprintf("/v1/projects/%s/environments/%s", params.ProjectID, params.ProjectEnvID), apiKey)
+	return makeDeleteRequest(fmt.Sprintf("/v1/projects/%s/environments/%s", params.ProjectID, params.ProjectEnvID), authInfo)
 }

@@ -8,22 +8,22 @@ import (
 	"github.com/mark3labs/mcp-go/mcp"
 )
 
-func handleRequest(ctx context.Context, request mcp.CallToolRequest) (string, map[string]interface{}, error) {
-	apiKey, err := GetAPIKey(ctx, request)
+func handleRequest(ctx context.Context, request mcp.CallToolRequest) (*AuthInfo, map[string]interface{}, error) {
+	authInfo, err := GetAuthInfo(ctx, request)
 	if err != nil {
-		return "", nil, err
+		return nil, nil, err
 	}
 
 	args, ok := request.Params.Arguments.(map[string]interface{})
 	if !ok {
-		return "", nil, fmt.Errorf("invalid arguments type")
+		return nil, nil, fmt.Errorf("invalid arguments type")
 	}
 
-	return apiKey, args, nil
+	return authInfo, args, nil
 }
 
-func makeGetRequest(path string, queryParams map[string]string, apiKey string) (*mcp.CallToolResult, error) {
-	resp, err := mcputils.Get(path, queryParams, apiKey)
+func makeGetRequest(path string, queryParams map[string]string, authInfo *AuthInfo) (*mcp.CallToolResult, error) {
+	resp, err := mcputils.Get(path, queryParams, authInfo.Method, authInfo.Value)
 	if err != nil {
 		return nil, err
 	}
@@ -35,8 +35,8 @@ func makeGetRequest(path string, queryParams map[string]string, apiKey string) (
 	}, nil
 }
 
-func makePostRequest(path string, body interface{}, apiKey string) (*mcp.CallToolResult, error) {
-	resp, err := mcputils.Post(path, body, apiKey)
+func makePostRequest(path string, body interface{}, authInfo *AuthInfo) (*mcp.CallToolResult, error) {
+	resp, err := mcputils.Post(path, body, authInfo.Method, authInfo.Value)
 	if err != nil {
 		return nil, err
 	}
@@ -48,8 +48,8 @@ func makePostRequest(path string, body interface{}, apiKey string) (*mcp.CallToo
 	}, nil
 }
 
-func makePutRequest(path string, body interface{}, apiKey string) (*mcp.CallToolResult, error) {
-	resp, err := mcputils.Put(path, body, apiKey)
+func makePutRequest(path string, body interface{}, authInfo *AuthInfo) (*mcp.CallToolResult, error) {
+	resp, err := mcputils.Put(path, body, authInfo.Method, authInfo.Value)
 	if err != nil {
 		return nil, err
 	}
@@ -61,8 +61,8 @@ func makePutRequest(path string, body interface{}, apiKey string) (*mcp.CallTool
 	}, nil
 }
 
-func makePatchRequest(path string, body interface{}, apiKey string) (*mcp.CallToolResult, error) {
-	resp, err := mcputils.Patch(path, body, apiKey)
+func makePatchRequest(path string, body interface{}, authInfo *AuthInfo) (*mcp.CallToolResult, error) {
+	resp, err := mcputils.Patch(path, body, authInfo.Method, authInfo.Value)
 	if err != nil {
 		return nil, err
 	}
@@ -74,8 +74,8 @@ func makePatchRequest(path string, body interface{}, apiKey string) (*mcp.CallTo
 	}, nil
 }
 
-func makeDeleteRequest(path string, apiKey string) (*mcp.CallToolResult, error) {
-	resp, err := mcputils.Delete(path, apiKey)
+func makeDeleteRequest(path string, authInfo *AuthInfo) (*mcp.CallToolResult, error) {
+	resp, err := mcputils.Delete(path, authInfo.Method, authInfo.Value)
 	if err != nil {
 		return nil, err
 	}

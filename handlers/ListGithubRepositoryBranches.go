@@ -14,7 +14,7 @@ type ListGithubRepositoryBranchesParams struct {
 }
 
 func ListGithubRepositoryBranchesHandler(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
-	apiKey, args, err := handleRequest(ctx, request)
+	authInfo, args, err := handleRequest(ctx, request)
 	if err != nil {
 		return nil, err
 	}
@@ -27,5 +27,5 @@ func ListGithubRepositoryBranchesHandler(ctx context.Context, request mcp.CallTo
 	queryParams := map[string]string{
 		"repository": params.Repository,
 	}
-	return makeGetRequest(fmt.Sprintf("/v1/app-installations/github/accounts/%s/repositories/branches", params.InstallationID), queryParams, apiKey)
+	return makeGetRequest(fmt.Sprintf("/v1/app-installations/github/accounts/%s/repositories/branches", params.InstallationID), queryParams, authInfo)
 }

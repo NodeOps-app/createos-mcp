@@ -14,7 +14,7 @@ type CheckProjectEnvironmentUniqueNameParams struct {
 }
 
 func CheckProjectEnvironmentUniqueNameHandler(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
-	apiKey, args, err := handleRequest(ctx, request)
+	authInfo, args, err := handleRequest(ctx, request)
 	if err != nil {
 		return nil, err
 	}
@@ -24,5 +24,5 @@ func CheckProjectEnvironmentUniqueNameHandler(ctx context.Context, request mcp.C
 		return nil, err
 	}
 
-	return makePostRequest(fmt.Sprintf("/v1/projects/%s/environments/available-unique-name", params.ProjectID), params.Body, apiKey)
+	return makePostRequest(fmt.Sprintf("/v1/projects/%s/environments/available-unique-name", params.ProjectID), params.Body, authInfo)
 }

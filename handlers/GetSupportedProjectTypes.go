@@ -7,10 +7,10 @@ import (
 )
 
 func GetSupportedProjectTypesHandler(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
-	apiKey, _, err := handleRequest(ctx, request)
+	authInfo, _, err := handleRequest(ctx, request)
 	if err != nil {
 		return nil, err
 	}
 
-	return makeGetRequest("/v1/projects/supported", nil, apiKey)
+	return makeGetRequest("/v1/projects/supported", nil, authInfo)
 }

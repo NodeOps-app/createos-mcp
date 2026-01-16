@@ -13,7 +13,7 @@ type ListProjectEnvironmentsParams struct {
 }
 
 func ListProjectEnvironmentsHandler(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
-	apiKey, args, err := handleRequest(ctx, request)
+	authInfo, args, err := handleRequest(ctx, request)
 	if err != nil {
 		return nil, err
 	}
@@ -23,6 +23,6 @@ func ListProjectEnvironmentsHandler(ctx context.Context, request mcp.CallToolReq
 		return nil, err
 	}
 
-	return makeGetRequest(fmt.Sprintf("/v1/projects/%s/environments", params.ProjectID), nil, apiKey)
+	return makeGetRequest(fmt.Sprintf("/v1/projects/%s/environments", params.ProjectID), nil, authInfo)
 }
 
