@@ -12,7 +12,7 @@ type CreateAPIKeyParams struct {
 }
 
 func CreateAPIKeyHandler(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
-	apiKey, args, err := handleRequest(ctx, request)
+	authInfo, args, err := handleRequest(ctx, request)
 	if err != nil {
 		return nil, err
 	}
@@ -22,6 +22,6 @@ func CreateAPIKeyHandler(ctx context.Context, request mcp.CallToolRequest) (*mcp
 		return nil, err
 	}
 
-	return makePostRequest("/v1/api-keys", params.Body, apiKey)
+	return makePostRequest("/v1/api-keys", params.Body, authInfo)
 }
 

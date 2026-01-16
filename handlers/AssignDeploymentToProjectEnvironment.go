@@ -16,7 +16,7 @@ type AssignDeploymentToProjectEnvironmentParams struct {
 }
 
 func AssignDeploymentToProjectEnvironmentHandler(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
-	apiKey, args, err := handleRequest(ctx, request)
+	authInfo, args, err := handleRequest(ctx, request)
 	if err != nil {
 		return nil, err
 	}
@@ -26,5 +26,5 @@ func AssignDeploymentToProjectEnvironmentHandler(ctx context.Context, request mc
 		return nil, fmt.Errorf("failed to parse parameters: %w", err)
 	}
 
-	return makePostRequest(fmt.Sprintf("/v1/projects/%s/environments/%s/assign-deployment", params.ProjectID, params.ProjectEnvID), params.Body, apiKey)
+	return makePostRequest(fmt.Sprintf("/v1/projects/%s/environments/%s/assign-deployment", params.ProjectID, params.ProjectEnvID), params.Body, authInfo)
 }

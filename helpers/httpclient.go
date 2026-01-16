@@ -2,39 +2,38 @@ package mcputils
 
 import (
 	"fmt"
-	"os"
 
+	"github.com/NodeOps-app/autogen-backend-v2-mcp/config"
 	"github.com/go-resty/resty/v2"
 )
 
-var (
-	// BaseURL is the base URL for the backend API
-	BaseURL = getEnvOrDefault("API_BASE_URL", "https://autogen-v2-api.nodeops.network")
-	// AuthToken is the authentication token for API requests
-	AuthToken = os.Getenv("AUTH_TOKEN")
-)
-
-// getEnvOrDefault returns the environment variable value or a default
-func getEnvOrDefault(key, defaultValue string) string {
-	if value := os.Getenv(key); value != "" {
-		return value
-	}
-	return defaultValue
-}
+// BaseURL is the base URL for the backend API
 
 // Client returns a configured Resty client with base URL and auth token
 func Client() *resty.Client {
+	baseURL := config.Cfg.APIBaseUrl
+
 	client := resty.New().
-		SetBaseURL(BaseURL).
+		SetBaseURL(baseURL).
 		SetHeader("Content-Type", "application/json").
 		SetHeader("Accept", "application/json")
 
 	return client
 }
 
-// Get makes a GET request
-func Get(path string, queryParams map[string]string, apiKey string) (*resty.Response, error) {
-	req := Client().R().SetHeader("X-Api-Key", apiKey)
+// Get makes a GET request with authentication
+func Get(path string, queryParams map[string]string, authMethod string, authValue string) (*resty.Response, error) {
+	req := Client().R()
+
+	// Set the appropriate header based on auth method
+	switch authMethod {
+	case "api-key":
+		req.SetHeader("X-Api-Key", authValue)
+	case "bearer-token":
+		req.SetHeader("X-Access-Token", authValue)
+	default:
+		return nil, fmt.Errorf("unsupported auth method: %s", authMethod)
+	}
 
 	for key, value := range queryParams {
 		req.SetQueryParam(key, value)
@@ -52,12 +51,21 @@ func Get(path string, queryParams map[string]string, apiKey string) (*resty.Resp
 	return resp, nil
 }
 
-// Post makes a POST request
-func Post(path string, body interface{}, apiKey string) (*resty.Response, error) {
-	resp, err := Client().R().
-		SetBody(body).
-		SetHeader("X-Api-Key", apiKey).
-		Post(path)
+// Post makes a POST request with authentication
+func Post(path string, body interface{}, authMethod string, authValue string) (*resty.Response, error) {
+	req := Client().R().SetBody(body)
+
+	// Set the appropriate header based on auth method
+	switch authMethod {
+	case "api-key":
+		req.SetHeader("X-Api-Key", authValue)
+	case "bearer-token":
+		req.SetHeader("X-Access-Token", authValue)
+	default:
+		return nil, fmt.Errorf("unsupported auth method: %s", authMethod)
+	}
+
+	resp, err := req.Post(path)
 	if err != nil {
 		return nil, fmt.Errorf("POST request failed: %w", err)
 	}
@@ -69,12 +77,21 @@ func Post(path string, body interface{}, apiKey string) (*resty.Response, error)
 	return resp, nil
 }
 
-// Put makes a PUT request
-func Put(path string, body interface{}, apiKey string) (*resty.Response, error) {
-	resp, err := Client().R().
-		SetHeader("X-Api-Key", apiKey).
-		SetBody(body).
-		Put(path)
+// Put makes a PUT request with authentication
+func Put(path string, body interface{}, authMethod string, authValue string) (*resty.Response, error) {
+	req := Client().R().SetBody(body)
+
+	// Set the appropriate header based on auth method
+	switch authMethod {
+	case "api-key":
+		req.SetHeader("X-Api-Key", authValue)
+	case "bearer-token":
+		req.SetHeader("X-Access-Token", authValue)
+	default:
+		return nil, fmt.Errorf("unsupported auth method: %s", authMethod)
+	}
+
+	resp, err := req.Put(path)
 	if err != nil {
 		return nil, fmt.Errorf("PUT request failed: %w", err)
 	}
@@ -86,12 +103,21 @@ func Put(path string, body interface{}, apiKey string) (*resty.Response, error) 
 	return resp, nil
 }
 
-// Patch makes a PATCH request
-func Patch(path string, body interface{}, apiKey string) (*resty.Response, error) {
-	resp, err := Client().R().
-		SetBody(body).
-		SetHeader("X-Api-Key", apiKey).
-		Patch(path)
+// Patch makes a PATCH request with authentication
+func Patch(path string, body interface{}, authMethod string, authValue string) (*resty.Response, error) {
+	req := Client().R().SetBody(body)
+
+	// Set the appropriate header based on auth method
+	switch authMethod {
+	case "api-key":
+		req.SetHeader("X-Api-Key", authValue)
+	case "bearer-token":
+		req.SetHeader("X-Access-Token", authValue)
+	default:
+		return nil, fmt.Errorf("unsupported auth method: %s", authMethod)
+	}
+
+	resp, err := req.Patch(path)
 	if err != nil {
 		return nil, fmt.Errorf("PATCH request failed: %w", err)
 	}
@@ -103,11 +129,21 @@ func Patch(path string, body interface{}, apiKey string) (*resty.Response, error
 	return resp, nil
 }
 
-// Delete makes a DELETE request
-func Delete(path string, apiKey string) (*resty.Response, error) {
-	resp, err := Client().R().
-		SetHeader("X-Api-Key", apiKey).
-		Delete(path)
+// Delete makes a DELETE request with authentication
+func Delete(path string, authMethod string, authValue string) (*resty.Response, error) {
+	req := Client().R()
+
+	// Set the appropriate header based on auth method
+	switch authMethod {
+	case "api-key":
+		req.SetHeader("X-Api-Key", authValue)
+	case "bearer-token":
+		req.SetHeader("X-Access-Token", authValue)
+	default:
+		return nil, fmt.Errorf("unsupported auth method: %s", authMethod)
+	}
+
+	resp, err := req.Delete(path)
 	if err != nil {
 		return nil, fmt.Errorf("DELETE request failed: %w", err)
 	}

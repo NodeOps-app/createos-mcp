@@ -15,7 +15,7 @@ type CreateProjectParams struct {
 
 // CreateProjectHandler is the handler function for the CreateProject tool.
 func CreateProjectHandler(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
-	apiKey, err := GetAPIKey(ctx, request)
+	authInfo, err := GetAuthInfo(ctx, request)
 	if err != nil {
 		return nil, err
 	}
@@ -32,7 +32,7 @@ func CreateProjectHandler(ctx context.Context, request mcp.CallToolRequest) (*mc
 	}
 
 	// Make POST request with body
-	resp, err := mcputils.Post("/v1/projects", params.Body, apiKey)
+	resp, err := mcputils.Post("/v1/projects", params.Body, authInfo.Method, authInfo.Value)
 	if err != nil {
 		return nil, err
 	}

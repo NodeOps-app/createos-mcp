@@ -13,7 +13,7 @@ type DeleteProjectParams struct {
 }
 
 func DeleteProjectHandler(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
-	apiKey, args, err := handleRequest(ctx, request)
+	authInfo, args, err := handleRequest(ctx, request)
 	if err != nil {
 		return nil, err
 	}
@@ -23,6 +23,6 @@ func DeleteProjectHandler(ctx context.Context, request mcp.CallToolRequest) (*mc
 		return nil, fmt.Errorf("failed to parse parameters: %w", err)
 	}
 
-	return makeDeleteRequest(fmt.Sprintf("/v1/projects/%s", params.ProjectID), apiKey)
+	return makeDeleteRequest(fmt.Sprintf("/v1/projects/%s", params.ProjectID), authInfo)
 }
 
