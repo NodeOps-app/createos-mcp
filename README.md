@@ -1,6 +1,8 @@
 ## CreateOS MCP Server
 
-### Configuration
+## Configuration
+
+### Via API Key
 
 ```json
 {

@@ -1,6 +1,9 @@
 package mcptools
 
 import (
+	"context"
+	"fmt"
+
 	"github.com/mark3labs/mcp-go/mcp"
 )
 
@@ -9,13 +12,24 @@ const createProjectInputSchema = `{
   "properties": {
     "body": {
       "properties": {
+        "appId": {
+          "description": "Optional app ID to associate the project with",
+          "example": "550e8400-e29b-41d4-a716-446655440000",
+          "format": "uuid",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
         "description": {
           "description": "Detailed description of the project",
           "example": "A full-stack application built with Next js and TypeScript",
           "maxLength": 2048,
           "minLength": 4,
-          "pattern": "^[a-zA-Z0-9 _-]+$",
-          "type": "string"
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "displayName": {
           "description": "Human-readable display name for the project",
@@ -24,6 +38,12 @@ const createProjectInputSchema = `{
           "minLength": 4,
           "pattern": "^[a-zA-Z0-9 _-]+$",
           "type": "string"
+        },
+        "enabledSecurityScan": {
+          "default": false,
+          "description": "Enable security scanning for the project",
+          "example": false,
+          "type": "boolean"
         },
         "settings": {
           "description": "Build and runtime settings for the project. For VCS projects: use VCSSettings schema. For image projects: use ImageSettings schema.",
@@ -284,7 +304,8 @@ const createProjectInputSchema = `{
           "description": "Type of project source",
           "enum": [
             "vcs",
-            "image"
+            "image",
+            "upload"
           ],
           "example": "vcs",
           "type": "string"
@@ -292,7 +313,7 @@ const createProjectInputSchema = `{
         "uniqueName": {
           "description": "Unique identifier for the project (per user). Must be unique across all projects for the user.",
           "example": "my-awesome-app",
-          "maxLength": 22,
+          "maxLength": 32,
           "minLength": 4,
           "pattern": "^[a-zA-Z0-9-]+$",
           "type": "string"
@@ -301,9 +322,7 @@ const createProjectInputSchema = `{
       "required": [
         "uniqueName",
         "displayName",
-        "description",
         "type",
-        "source",
         "settings"
       ],
       "type": "object"
@@ -354,10 +373,10 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
-  - **success** (Type: boolean):
-      - Example: 'false'
   - **message**: Error message describing what went wrong (Type: string):
       - Example: 'invalid uniqueName'
+  - **success** (Type: boolean):
+      - Example: 'false'
 `
 
 // Response Template for the CreateProject tool (Status: 401, Content-Type: application/json)
@@ -420,10 +439,10 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
-  - **success** (Type: boolean):
-      - Example: 'false'
   - **message**: Error message describing what went wrong (Type: string):
       - Example: 'invalid uniqueName'
+  - **success** (Type: boolean):
+      - Example: 'false'
 `
 
 // Response Template for the CreateProject tool (Status: 429, Content-Type: application/json)
@@ -442,10 +461,10 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
-  - **success** (Type: boolean):
-      - Example: 'false'
   - **message**: Error message describing what went wrong (Type: string):
       - Example: 'invalid uniqueName'
+  - **success** (Type: boolean):
+      - Example: 'false'
 `
 
 // Response Template for the CreateProject tool (Status: 500, Content-Type: application/json)
@@ -479,4 +498,20 @@ func NewCreateProjectMCPTool() mcp.Tool {
 	)
 }
 
-// CreateProjectHandler is implemented in handlers/CreateProject.go
+// CreateProjectHandler is the handler function for the CreateProject tool.
+// This function is automatically generated. Users should implement the actual
+// logic within this function body to integrate with backend APIs.
+// You can generate types, http client and helpers for parsing request params to facilitate the implementation.
+func CreateProjectHandler(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+
+	// IMPORTANT: Replace the following placeholder implementation with your actual logic.
+	// Use the 'request' parameter to access tool call arguments.
+	// Make HTTP calls or interact with services as needed.
+	// Return an *mcp.CallToolResult with the response payload, or an error.
+
+	// Example placeholder implementation:
+	// Extract the parameters from the request and parse them.
+	// Call your backend API or perform the necessary operations using 'params'.
+	// Handle the response and errors accordingly.
+	return nil, fmt.Errorf("%s not implemented", "CreateProject")
+}

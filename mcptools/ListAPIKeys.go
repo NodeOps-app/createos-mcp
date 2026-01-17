@@ -29,6 +29,10 @@ The template shows a possible response, including its status code and content ty
 - Structure (Type: object):
   - **data** (Type: array):
     - **Items** (Type: object):
+      - **name** (Type: string, nullable):
+          - Nullable: true
+      - **revokedAt** (Type: string, date-time, nullable):
+          - Nullable: true
       - **updatedAt** (Type: string, date-time):
       - **userId** (Type: string):
       - **createdAt** (Type: string, date-time):
@@ -37,10 +41,6 @@ The template shows a possible response, including its status code and content ty
       - **expiredAt** (Type: string, date-time, nullable):
           - Nullable: true
       - **id** (Type: string, uuid):
-      - **name** (Type: string, nullable):
-          - Nullable: true
-      - **revokedAt** (Type: string, date-time, nullable):
-          - Nullable: true
   - **success** (Type: boolean):
       - Example: 'true'
 `
@@ -83,10 +83,10 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
-  - **success** (Type: boolean):
-      - Example: 'false'
   - **message**: Error message describing what went wrong (Type: string):
       - Example: 'invalid uniqueName'
+  - **success** (Type: boolean):
+      - Example: 'false'
 `
 
 // Response Template for the ListAPIKeys tool (Status: 500, Content-Type: application/json)
@@ -105,10 +105,10 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
-  - **success** (Type: boolean):
-      - Example: 'false'
   - **message**: Error message describing what went wrong (Type: string):
       - Example: 'invalid uniqueName'
+  - **success** (Type: boolean):
+      - Example: 'false'
 `
 
 // NewListAPIKeysMCPTool creates the MCP Tool instance for ListAPIKeys

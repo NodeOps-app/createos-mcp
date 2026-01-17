@@ -4,7 +4,7 @@ We are using swagger to generate mcp server.
 
 ```bash
 /Users/bhautik/.asdf/installs/golang/1.23.5/packages/bin/mcpgen \
-  --input swaggerdocs/openapi.yaml \
+  --input /Users/bhautik/workspace/src/autogen-backend-v2/pkg/swaggerdocs/openapi.yaml \
   -package mcptools \
   -validation \
   -output /Users/bhautik/workspace/src/autogen-v2-mcp

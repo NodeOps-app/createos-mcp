@@ -3,7 +3,6 @@ package mcptools
 import (
 	"context"
 	"fmt"
-
 	"github.com/mark3labs/mcp-go/mcp"
 )
 
@@ -26,8 +25,10 @@ const createProjectEnvironmentInputSchema = `{
           "example": "Production environment",
           "maxLength": 2048,
           "minLength": 4,
-          "pattern": "^[a-zA-Z0-9 _-]+$",
-          "type": "string"
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "displayName": {
           "description": "Display name for the environment",
@@ -61,7 +62,7 @@ const createProjectEnvironmentInputSchema = `{
             },
             "replicas": {
               "description": "Number of replicas",
-              "example": 1,
+              "example": 2,
               "maximum": 3,
               "minimum": 1,
               "type": "integer"
@@ -92,7 +93,7 @@ const createProjectEnvironmentInputSchema = `{
         },
         "uniqueName": {
           "example": "production",
-          "maxLength": 22,
+          "maxLength": 32,
           "minLength": 4,
           "pattern": "^[a-zA-Z0-9-]+$",
           "type": "string"
@@ -159,10 +160,10 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
-  - **success** (Type: boolean):
-      - Example: 'false'
   - **message**: Error message describing what went wrong (Type: string):
       - Example: 'invalid uniqueName'
+  - **success** (Type: boolean):
+      - Example: 'false'
 `
 
 // Response Template for the CreateProjectEnvironment tool (Status: 401, Content-Type: application/json)
@@ -181,10 +182,10 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
-  - **success** (Type: boolean):
-      - Example: 'false'
   - **message**: Error message describing what went wrong (Type: string):
       - Example: 'invalid uniqueName'
+  - **success** (Type: boolean):
+      - Example: 'false'
 `
 
 // Response Template for the CreateProjectEnvironment tool (Status: 403, Content-Type: application/json)
@@ -203,10 +204,10 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
-  - **success** (Type: boolean):
-      - Example: 'false'
   - **message**: Error message describing what went wrong (Type: string):
       - Example: 'invalid uniqueName'
+  - **success** (Type: boolean):
+      - Example: 'false'
 `
 
 // Response Template for the CreateProjectEnvironment tool (Status: 404, Content-Type: application/json)
@@ -225,10 +226,10 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
-  - **success** (Type: boolean):
-      - Example: 'false'
   - **message**: Error message describing what went wrong (Type: string):
       - Example: 'invalid uniqueName'
+  - **success** (Type: boolean):
+      - Example: 'false'
 `
 
 // Response Template for the CreateProjectEnvironment tool (Status: 409, Content-Type: application/json)
@@ -247,10 +248,10 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
-  - **success** (Type: boolean):
-      - Example: 'false'
   - **message**: Error message describing what went wrong (Type: string):
       - Example: 'invalid uniqueName'
+  - **success** (Type: boolean):
+      - Example: 'false'
 `
 
 // Response Template for the CreateProjectEnvironment tool (Status: 422, Content-Type: application/json)
@@ -269,10 +270,10 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
-  - **success** (Type: boolean):
-      - Example: 'false'
   - **message**: Error message describing what went wrong (Type: string):
       - Example: 'invalid uniqueName'
+  - **success** (Type: boolean):
+      - Example: 'false'
 `
 
 // Response Template for the CreateProjectEnvironment tool (Status: 429, Content-Type: application/json)
@@ -291,10 +292,10 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
-  - **success** (Type: boolean):
-      - Example: 'false'
   - **message**: Error message describing what went wrong (Type: string):
       - Example: 'invalid uniqueName'
+  - **success** (Type: boolean):
+      - Example: 'false'
 `
 
 // Response Template for the CreateProjectEnvironment tool (Status: 500, Content-Type: application/json)
@@ -313,10 +314,10 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
-  - **success** (Type: boolean):
-      - Example: 'false'
   - **message**: Error message describing what went wrong (Type: string):
       - Example: 'invalid uniqueName'
+  - **success** (Type: boolean):
+      - Example: 'false'
 `
 
 // NewCreateProjectEnvironmentMCPTool creates the MCP Tool instance for CreateProjectEnvironment

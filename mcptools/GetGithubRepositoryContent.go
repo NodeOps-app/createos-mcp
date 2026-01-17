@@ -3,7 +3,6 @@ package mcptools
 import (
 	"context"
 	"fmt"
-
 	"github.com/mark3labs/mcp-go/mcp"
 )
 
@@ -83,10 +82,10 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
-  - **success** (Type: boolean):
-      - Example: 'false'
   - **message**: Error message describing what went wrong (Type: string):
       - Example: 'invalid uniqueName'
+  - **success** (Type: boolean):
+      - Example: 'false'
 `
 
 // Response Template for the GetGithubRepositoryContent tool (Status: 401, Content-Type: application/json)
@@ -105,10 +104,10 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
-  - **message**: Error message describing what went wrong (Type: string):
-      - Example: 'invalid uniqueName'
   - **success** (Type: boolean):
       - Example: 'false'
+  - **message**: Error message describing what went wrong (Type: string):
+      - Example: 'invalid uniqueName'
 `
 
 // Response Template for the GetGithubRepositoryContent tool (Status: 404, Content-Type: application/json)
@@ -127,10 +126,10 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
-  - **success** (Type: boolean):
-      - Example: 'false'
   - **message**: Error message describing what went wrong (Type: string):
       - Example: 'invalid uniqueName'
+  - **success** (Type: boolean):
+      - Example: 'false'
 `
 
 // Response Template for the GetGithubRepositoryContent tool (Status: 500, Content-Type: application/json)
@@ -149,10 +148,10 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
-  - **success** (Type: boolean):
-      - Example: 'false'
   - **message**: Error message describing what went wrong (Type: string):
       - Example: 'invalid uniqueName'
+  - **success** (Type: boolean):
+      - Example: 'false'
 `
 
 // NewGetGithubRepositoryContentMCPTool creates the MCP Tool instance for GetGithubRepositoryContent

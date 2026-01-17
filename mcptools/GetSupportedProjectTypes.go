@@ -28,12 +28,12 @@ The template shows a possible response, including its status code and content ty
 
 - Structure (Type: array):
   - **Items** (Type: object):
-    - **name**: Name of the framework or runtime (Type: string):
-    - **runtimes**: List of compatible runtimes (for frameworks) (Type: array):
-      - **Items** (Type: string):
     - **type** (Type: string):
         - Enum: ['framework', 'runtime']
     - **editables**: Editable configuration options (Type: object):
+    - **name**: Name of the framework or runtime (Type: string):
+    - **runtimes**: List of compatible runtimes (for frameworks) (Type: array):
+      - **Items** (Type: string):
 `
 
 // Response Template for the GetSupportedProjectTypes tool (Status: 401, Content-Type: application/json)
@@ -52,10 +52,10 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
-  - **success** (Type: boolean):
-      - Example: 'false'
   - **message**: Error message describing what went wrong (Type: string):
       - Example: 'invalid uniqueName'
+  - **success** (Type: boolean):
+      - Example: 'false'
 `
 
 // Response Template for the GetSupportedProjectTypes tool (Status: 500, Content-Type: application/json)
@@ -74,10 +74,10 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
-  - **success** (Type: boolean):
-      - Example: 'false'
   - **message**: Error message describing what went wrong (Type: string):
       - Example: 'invalid uniqueName'
+  - **success** (Type: boolean):
+      - Example: 'false'
 `
 
 // NewGetSupportedProjectTypesMCPTool creates the MCP Tool instance for GetSupportedProjectTypes

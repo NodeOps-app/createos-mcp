@@ -9,6 +9,10 @@ import (
 // Input Schema for the TriggerLatestDeployment tool
 const triggerLatestDeploymentInputSchema = `{
   "properties": {
+    "branch": {
+      "description": "Branch name to deploy from. Defaults to the repository's default branch if not specified.",
+      "type": "string"
+    },
     "project_id": {
       "description": "Project unique identifier",
       "format": "uuid",
@@ -39,10 +43,11 @@ The template shows a possible response, including its status code and content ty
 - Structure (Type: object):
   - **data** (Type: Combinator):
     - **One Of the following structures**:
-      - **Option 1** (Type: string):
+      - **Option 1**: Message when deployment was already triggered for this commit (Type: string):
           - Example: 'deployment already triggered'
-      - **Option 2** (Type: string):
-          - Example: 'deployment triggered'
+      - **Option 2**: New deployment created (Type: object):
+        - **id**: ID of the created deployment (Type: string, uuid):
+            - Example: '550e8400-e29b-41d4-a716-446655440000'
   - **success** (Type: boolean):
       - Example: 'true'
 `
@@ -58,7 +63,7 @@ The template shows a possible response, including its status code and content ty
 
 **Content-Type:** application/json
 
-> Bad request - validation error
+> Bad request - project not active, not a VCS project, or branch doesn't exist
 
 ## Response Structure
 
@@ -85,10 +90,10 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
-  - **success** (Type: boolean):
-      - Example: 'false'
   - **message**: Error message describing what went wrong (Type: string):
       - Example: 'invalid uniqueName'
+  - **success** (Type: boolean):
+      - Example: 'false'
 `
 
 // Response Template for the TriggerLatestDeployment tool (Status: 403, Content-Type: application/json)
@@ -107,10 +112,10 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
-  - **success** (Type: boolean):
-      - Example: 'false'
   - **message**: Error message describing what went wrong (Type: string):
       - Example: 'invalid uniqueName'
+  - **success** (Type: boolean):
+      - Example: 'false'
 `
 
 // Response Template for the TriggerLatestDeployment tool (Status: 404, Content-Type: application/json)
@@ -129,10 +134,10 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
-  - **success** (Type: boolean):
-      - Example: 'false'
   - **message**: Error message describing what went wrong (Type: string):
       - Example: 'invalid uniqueName'
+  - **success** (Type: boolean):
+      - Example: 'false'
 `
 
 // Response Template for the TriggerLatestDeployment tool (Status: 500, Content-Type: application/json)
@@ -151,17 +156,17 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
-  - **success** (Type: boolean):
-      - Example: 'false'
   - **message**: Error message describing what went wrong (Type: string):
       - Example: 'invalid uniqueName'
+  - **success** (Type: boolean):
+      - Example: 'false'
 `
 
 // NewTriggerLatestDeploymentMCPTool creates the MCP Tool instance for TriggerLatestDeployment
 func NewTriggerLatestDeploymentMCPTool() mcp.Tool {
 	return mcp.NewToolWithRawSchema(
 		"TriggerLatestDeployment",
-		"Trigger latest deployment - Triggers a new deployment for the latest commit on the default branch",
+		"Trigger latest deployment - Triggers a new deployment for the latest commit on the specified branch (or default branch if not specified). Only available for VCS projects.",
 		[]byte(triggerLatestDeploymentInputSchema),
 	)
 }
