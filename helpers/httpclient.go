@@ -154,3 +154,29 @@ func Delete(path string, authMethod string, authValue string) (*resty.Response, 
 
 	return resp, nil
 }
+
+// DeleteWithBody makes a DELETE request with a body and authentication
+func DeleteWithBody(path string, body interface{}, authMethod string, authValue string) (*resty.Response, error) {
+	req := Client().R().SetBody(body)
+
+	// Set the appropriate header based on auth method
+	switch authMethod {
+	case "api-key":
+		req.SetHeader("X-Api-Key", authValue)
+	case "bearer-token":
+		req.SetHeader("X-Access-Token", authValue)
+	default:
+		return nil, fmt.Errorf("unsupported auth method: %s", authMethod)
+	}
+
+	resp, err := req.Delete(path)
+	if err != nil {
+		return nil, fmt.Errorf("DELETE request failed: %w", err)
+	}
+
+	if resp.IsError() {
+		return resp, fmt.Errorf("API error (status %d): %s", resp.StatusCode(), string(resp.Body()))
+	}
+
+	return resp, nil
+}

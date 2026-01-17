@@ -63,10 +63,10 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
-  - **success** (Type: boolean):
-      - Example: 'true'
   - **data** (Type: string):
       - Example: 'api key updated successfully'
+  - **success** (Type: boolean):
+      - Example: 'true'
 `
 
 // Response Template for the UpdateAPIKey tool (Status: 400, Content-Type: application/json)
@@ -85,10 +85,10 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
-  - **success** (Type: boolean):
-      - Example: 'false'
   - **message**: Error message describing what went wrong (Type: string):
       - Example: 'invalid uniqueName'
+  - **success** (Type: boolean):
+      - Example: 'false'
 `
 
 // Response Template for the UpdateAPIKey tool (Status: 401, Content-Type: application/json)
@@ -107,10 +107,10 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
-  - **success** (Type: boolean):
-      - Example: 'false'
   - **message**: Error message describing what went wrong (Type: string):
       - Example: 'invalid uniqueName'
+  - **success** (Type: boolean):
+      - Example: 'false'
 `
 
 // Response Template for the UpdateAPIKey tool (Status: 404, Content-Type: application/json)

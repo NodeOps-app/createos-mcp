@@ -37,28 +37,28 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
-  - **success** (Type: boolean):
-      - Example: 'true'
   - **data** (Type: array):
     - **Items** (Type: object):
+      - **description** (Type: string):
+      - **resources** (Type: object):
       - **status** (Type: string):
-          - Enum: ['active', 'updating', 'prompting', 'resizing', 'deleting']
-      - **updatedAt** (Type: string, date-time):
+          - Enum: ['active', 'updating', 'promoting', 'resizing', 'deleting']
       - **displayName**: Display name for the environment (Type: string):
+      - **updatedAt** (Type: string, date-time):
+      - **createdAt** (Type: string, date-time):
       - **projectDeploymentId** (Type: string, uuid, nullable):
           - Nullable: true
-      - **projectId** (Type: string, uuid):
       - **settings** (Type: object):
-      - **branch** (Type: string):
       - **id** (Type: string, uuid):
-      - **isAutoPromoteEnabled** (Type: boolean):
-      - **description** (Type: string):
       - **extra**: Additional deployment information (URLs, etc.) (Type: object):
         - **Additional Properties**:
           - **property value** (Type: string):
       - **uniqueName** (Type: string):
-      - **createdAt** (Type: string, date-time):
-      - **resources** (Type: object):
+      - **projectId** (Type: string, uuid):
+      - **isAutoPromoteEnabled** (Type: boolean):
+      - **branch** (Type: string):
+  - **success** (Type: boolean):
+      - Example: 'true'
 `
 
 // Response Template for the ListProjectEnvironments tool (Status: 400, Content-Type: application/json)
@@ -99,10 +99,10 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
-  - **success** (Type: boolean):
-      - Example: 'false'
   - **message**: Error message describing what went wrong (Type: string):
       - Example: 'invalid uniqueName'
+  - **success** (Type: boolean):
+      - Example: 'false'
 `
 
 // Response Template for the ListProjectEnvironments tool (Status: 403, Content-Type: application/json)
@@ -121,10 +121,10 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
-  - **success** (Type: boolean):
-      - Example: 'false'
   - **message**: Error message describing what went wrong (Type: string):
       - Example: 'invalid uniqueName'
+  - **success** (Type: boolean):
+      - Example: 'false'
 `
 
 // Response Template for the ListProjectEnvironments tool (Status: 404, Content-Type: application/json)
@@ -143,10 +143,10 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
-  - **success** (Type: boolean):
-      - Example: 'false'
   - **message**: Error message describing what went wrong (Type: string):
       - Example: 'invalid uniqueName'
+  - **success** (Type: boolean):
+      - Example: 'false'
 `
 
 // Response Template for the ListProjectEnvironments tool (Status: 422, Content-Type: application/json)
@@ -165,10 +165,10 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
-  - **success** (Type: boolean):
-      - Example: 'false'
   - **message**: Error message describing what went wrong (Type: string):
       - Example: 'invalid uniqueName'
+  - **success** (Type: boolean):
+      - Example: 'false'
 `
 
 // Response Template for the ListProjectEnvironments tool (Status: 500, Content-Type: application/json)
@@ -187,10 +187,10 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
-  - **success** (Type: boolean):
-      - Example: 'false'
   - **message**: Error message describing what went wrong (Type: string):
       - Example: 'invalid uniqueName'
+  - **success** (Type: boolean):
+      - Example: 'false'
 `
 
 // NewListProjectEnvironmentsMCPTool creates the MCP Tool instance for ListProjectEnvironments
