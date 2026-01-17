@@ -3,6 +3,7 @@ package mcptools
 import (
 	"context"
 	"fmt"
+
 	"github.com/mark3labs/mcp-go/mcp"
 )
 
@@ -178,7 +179,7 @@ The template shows a possible response, including its status code and content ty
 // NewGetProjectEnvironmentAnalyticsRequestDistributionMCPTool creates the MCP Tool instance for GetProjectEnvironmentAnalyticsRequestDistribution
 func NewGetProjectEnvironmentAnalyticsRequestDistributionMCPTool() mcp.Tool {
 	return mcp.NewToolWithRawSchema(
-		"GetProjectEnvironmentAnalyticsRequestDistribution",
+		"GetEnvAnalyticsReqDistribution",
 		"Get request distribution by status - Retrieves request distribution grouped by HTTP status code for a project environment.",
 		[]byte(getProjectEnvironmentAnalyticsRequestDistributionInputSchema),
 	)
