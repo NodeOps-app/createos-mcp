@@ -55,14 +55,14 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
-  - **success** (Type: boolean):
-      - Example: 'true'
   - **data** (Type: array):
     - **Items** (Type: object):
-      - **count**: Number of requests to this path (Type: number, float):
-          - Example: '500'
       - **path**: Request path (Type: string):
           - Example: '/api/users'
+      - **count**: Number of requests to this path (Type: number, float):
+          - Example: '500'
+  - **success** (Type: boolean):
+      - Example: 'true'
 `
 
 // Response Template for the GetProjectEnvironmentAnalyticsTopHitPaths tool (Status: 400, Content-Type: application/json)

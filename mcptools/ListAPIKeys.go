@@ -29,6 +29,11 @@ The template shows a possible response, including its status code and content ty
 - Structure (Type: object):
   - **data** (Type: array):
     - **Items** (Type: object):
+      - **description** (Type: string, nullable):
+          - Nullable: true
+      - **expiredAt** (Type: string, date-time, nullable):
+          - Nullable: true
+      - **id** (Type: string, uuid):
       - **name** (Type: string, nullable):
           - Nullable: true
       - **revokedAt** (Type: string, date-time, nullable):
@@ -36,11 +41,6 @@ The template shows a possible response, including its status code and content ty
       - **updatedAt** (Type: string, date-time):
       - **userId** (Type: string):
       - **createdAt** (Type: string, date-time):
-      - **description** (Type: string, nullable):
-          - Nullable: true
-      - **expiredAt** (Type: string, date-time, nullable):
-          - Nullable: true
-      - **id** (Type: string, uuid):
   - **success** (Type: boolean):
       - Example: 'true'
 `
@@ -61,10 +61,10 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
-  - **success** (Type: boolean):
-      - Example: 'false'
   - **message**: Error message describing what went wrong (Type: string):
       - Example: 'invalid uniqueName'
+  - **success** (Type: boolean):
+      - Example: 'false'
 `
 
 // Response Template for the ListAPIKeys tool (Status: 404, Content-Type: application/json)

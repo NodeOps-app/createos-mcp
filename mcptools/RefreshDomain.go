@@ -43,10 +43,10 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
-  - **data** (Type: string):
-      - Example: 'domain is being refreshed'
   - **success** (Type: boolean):
       - Example: 'true'
+  - **data** (Type: string):
+      - Example: 'domain is being refreshed'
 `
 
 // Response Template for the RefreshDomain tool (Status: 400, Content-Type: application/json)

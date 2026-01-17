@@ -61,9 +61,9 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
-  - **data**: GitHub repository tree structure (Type: object):
   - **success** (Type: boolean):
       - Example: 'true'
+  - **data**: GitHub repository tree structure (Type: object):
 `
 
 // Response Template for the GetGithubRepositoryContent tool (Status: 400, Content-Type: application/json)
@@ -104,10 +104,10 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
-  - **success** (Type: boolean):
-      - Example: 'false'
   - **message**: Error message describing what went wrong (Type: string):
       - Example: 'invalid uniqueName'
+  - **success** (Type: boolean):
+      - Example: 'false'
 `
 
 // Response Template for the GetGithubRepositoryContent tool (Status: 404, Content-Type: application/json)

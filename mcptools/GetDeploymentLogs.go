@@ -48,14 +48,14 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
-  - **success** (Type: boolean):
-      - Example: 'true'
   - **data** (Type: Combinator):
     - **One Of the following structures**:
       - **Option 1** (Type: string):
           - Example: 'Listening for logs...'
       - **Option 2** (Type: string):
           - Example: 'log output...'
+  - **success** (Type: boolean):
+      - Example: 'true'
 `
 
 // Response Template for the GetDeploymentLogs tool (Status: 400, Content-Type: application/json)

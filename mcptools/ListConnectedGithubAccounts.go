@@ -29,10 +29,10 @@ The template shows a possible response, including its status code and content ty
 - Structure (Type: object):
   - **data** (Type: array):
     - **Items** (Type: object):
-      - **avatarUrl** (Type: string):
       - **installationId** (Type: integer, int64):
       - **ownerId** (Type: integer, int64):
       - **username** (Type: string):
+      - **avatarUrl** (Type: string):
   - **success** (Type: boolean):
       - Example: 'true'
 `

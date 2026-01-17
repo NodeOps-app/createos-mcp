@@ -46,31 +46,31 @@ The template shows a possible response, including its status code and content ty
   - **data** (Type: object):
     - **id**: Security scan report ID (Type: string, uuid):
         - Example: '550e8400-e29b-41d4-a716-446655440000'
-    - **deploymentId**: Deployment ID this report belongs to (Type: string, uuid):
-        - Example: '550e8400-e29b-41d4-a716-446655440001'
+    - **expiresAt**: When the scan job times out (Type: string, date-time):
+        - Example: '2025-01-18T12:00:00Z'
+    - **status**: Current status of the security scan (Type: string):
+        - Example: 'success'
+        - Enum: ['pending', 'in_progress', 'success', 'failed']
+    - **createdAt**: When the report was created (Type: string, date-time):
+        - Example: '2025-01-17T12:00:00Z'
+    - **type**: Type of security scan (Type: string):
+        - Example: 'vulnerability'
     - **deletedAt**: When the report was deleted (Type: string, date-time, nullable):
+        - Nullable: true
+    - **failedReason**: Reason for failure if status is failed (Type: string, nullable):
         - Nullable: true
     - **parsedReport**: Parsed security scan results (Type: object, nullable):
         - Nullable: true
       - **Allows Additional Properties**
-    - **status**: Current status of the security scan (Type: string):
-        - Example: 'success'
-        - Enum: ['pending', 'in_progress', 'success', 'failed']
-    - **updatedAt**: When the report was last updated (Type: string, date-time):
-        - Example: '2025-01-17T12:30:00Z'
-    - **createdAt**: When the report was created (Type: string, date-time):
-        - Example: '2025-01-17T12:00:00Z'
+    - **tool**: Security scanning tool used (Type: string):
+        - Example: 'trivy'
+    - **deploymentId**: Deployment ID this report belongs to (Type: string, uuid):
+        - Example: '550e8400-e29b-41d4-a716-446655440001'
     - **executor**: Worker that executed the scan (Type: string, nullable):
         - Nullable: true
         - Example: 'worker-1'
-    - **expiresAt**: When the scan job times out (Type: string, date-time):
-        - Example: '2025-01-18T12:00:00Z'
-    - **failedReason**: Reason for failure if status is failed (Type: string, nullable):
-        - Nullable: true
-    - **tool**: Security scanning tool used (Type: string):
-        - Example: 'trivy'
-    - **type**: Type of security scan (Type: string):
-        - Example: 'vulnerability'
+    - **updatedAt**: When the report was last updated (Type: string, date-time):
+        - Example: '2025-01-17T12:30:00Z'
   - **success** (Type: boolean):
       - Example: 'true'
 `
@@ -135,10 +135,10 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
-  - **success** (Type: boolean):
-      - Example: 'false'
   - **message**: Error message describing what went wrong (Type: string):
       - Example: 'invalid uniqueName'
+  - **success** (Type: boolean):
+      - Example: 'false'
 `
 
 // Response Template for the GetSecurityScan tool (Status: 404, Content-Type: application/json)

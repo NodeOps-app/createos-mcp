@@ -27,23 +27,23 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
-  - **success** (Type: boolean):
-      - Example: 'true'
   - **data** (Type: object):
     - **apiKeys** (Type: object):
+      - **current**: Currently used (Type: integer):
+          - Example: '3'
       - **max**: Maximum allowed (Type: integer):
           - Example: '10'
       - **remaining**: Remaining available (Type: integer):
           - Example: '7'
-      - **current**: Currently used (Type: integer):
-          - Example: '3'
     - **projects** (Type: object):
-      - **current**: Currently used (Type: integer):
-          - Example: '3'
       - **max**: Maximum allowed (Type: integer):
           - Example: '10'
       - **remaining**: Remaining available (Type: integer):
           - Example: '7'
+      - **current**: Currently used (Type: integer):
+          - Example: '3'
+  - **success** (Type: boolean):
+      - Example: 'true'
 `
 
 // Response Template for the GetQuotas tool (Status: 401, Content-Type: application/json)

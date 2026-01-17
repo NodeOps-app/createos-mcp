@@ -38,27 +38,27 @@ The template shows a possible response, including its status code and content ty
 
 - Structure (Type: object):
   - **data** (Type: object):
-    - **id** (Type: string, uuid):
-    - **deletedAt** (Type: string, date-time, nullable):
-        - Nullable: true
-    - **appId**: App ID the project is associated with (Type: string, uuid, nullable):
-        - Nullable: true
-    - **enabledSecurityScan**: Whether security scanning is enabled for the project (Type: boolean):
+    - **createdAt** (Type: string, date-time):
     - **description** (Type: string, nullable):
         - Nullable: true
+    - **enabledSecurityScan**: Whether security scanning is enabled for the project (Type: boolean):
+    - **userId** (Type: string):
     - **displayName** (Type: string):
+    - **source** (Type: object):
+    - **deletedAt** (Type: string, date-time, nullable):
+        - Nullable: true
+    - **updatedAt** (Type: string, date-time):
     - **expireAt**: Expiration time for temporary projects (e.g., GPT-created projects) (Type: string, date-time, nullable):
         - Nullable: true
     - **settings**: Project settings (schema depends on project type) (Type: object):
-    - **uniqueName** (Type: string):
-    - **source** (Type: object):
-    - **updatedAt** (Type: string, date-time):
-    - **userId** (Type: string):
     - **status** (Type: string):
         - Enum: ['active', 'deleting', 'deleted']
+    - **uniqueName** (Type: string):
     - **type** (Type: string):
         - Enum: ['vcs', 'image', 'upload']
-    - **createdAt** (Type: string, date-time):
+    - **appId**: App ID the project is associated with (Type: string, uuid, nullable):
+        - Nullable: true
+    - **id** (Type: string, uuid):
   - **success** (Type: boolean):
       - Example: 'true'
 `
@@ -79,10 +79,10 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
-  - **message**: Error message describing what went wrong (Type: string):
-      - Example: 'invalid uniqueName'
   - **success** (Type: boolean):
       - Example: 'false'
+  - **message**: Error message describing what went wrong (Type: string):
+      - Example: 'invalid uniqueName'
 `
 
 // Response Template for the GetProject tool (Status: 401, Content-Type: application/json)

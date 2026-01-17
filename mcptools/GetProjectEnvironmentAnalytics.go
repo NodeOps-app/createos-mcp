@@ -55,21 +55,6 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
-  - **overallRequests** (Type: object):
-    - **total**: Total number of requests (Type: number, float):
-        - Example: '1250'
-    - **client**: Number of client error requests (4xx status codes) (Type: number, float):
-        - Example: '100'
-    - **server**: Number of server error requests (5xx status codes) (Type: number, float):
-        - Example: '50'
-    - **success**: Number of successful requests (2xx status codes) (Type: number, float):
-        - Example: '1100'
-  - **requestDistribution** (Type: array):
-    - **Items** (Type: object):
-      - **count**: Number of requests with this status code (Type: number, float):
-          - Example: '1000'
-      - **status**: HTTP status code (Type: string):
-          - Example: '200'
   - **rpm** (Type: object):
     - **average**: Average requests per minute (Type: number, float):
         - Example: '20.8'
@@ -91,6 +76,21 @@ The template shows a possible response, including its status code and content ty
           - Example: '500'
       - **path**: Request path (Type: string):
           - Example: '/api/users'
+  - **overallRequests** (Type: object):
+    - **server**: Number of server error requests (5xx status codes) (Type: number, float):
+        - Example: '50'
+    - **success**: Number of successful requests (2xx status codes) (Type: number, float):
+        - Example: '1100'
+    - **total**: Total number of requests (Type: number, float):
+        - Example: '1250'
+    - **client**: Number of client error requests (4xx status codes) (Type: number, float):
+        - Example: '100'
+  - **requestDistribution** (Type: array):
+    - **Items** (Type: object):
+      - **status**: HTTP status code (Type: string):
+          - Example: '200'
+      - **count**: Number of requests with this status code (Type: number, float):
+          - Example: '1000'
 `
 
 // Response Template for the GetProjectEnvironmentAnalytics tool (Status: 400, Content-Type: application/json)
@@ -153,10 +153,10 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
-  - **success** (Type: boolean):
-      - Example: 'false'
   - **message**: Error message describing what went wrong (Type: string):
       - Example: 'invalid uniqueName'
+  - **success** (Type: boolean):
+      - Example: 'false'
 `
 
 // Response Template for the GetProjectEnvironmentAnalytics tool (Status: 404, Content-Type: application/json)

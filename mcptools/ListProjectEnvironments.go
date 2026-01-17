@@ -39,23 +39,23 @@ The template shows a possible response, including its status code and content ty
 - Structure (Type: object):
   - **data** (Type: array):
     - **Items** (Type: object):
-      - **projectId** (Type: string, uuid):
-      - **displayName**: Display name for the environment (Type: string):
+      - **description** (Type: string):
       - **resources** (Type: object):
+      - **status** (Type: string):
+          - Enum: ['active', 'updating', 'promoting', 'resizing', 'deleting']
+      - **displayName**: Display name for the environment (Type: string):
       - **updatedAt** (Type: string, date-time):
+      - **createdAt** (Type: string, date-time):
+      - **projectDeploymentId** (Type: string, uuid, nullable):
+          - Nullable: true
+      - **settings** (Type: object):
+      - **id** (Type: string, uuid):
       - **extra**: Additional deployment information (URLs, etc.) (Type: object):
         - **Additional Properties**:
           - **property value** (Type: string):
-      - **settings** (Type: object):
-      - **isAutoPromoteEnabled** (Type: boolean):
-      - **status** (Type: string):
-          - Enum: ['active', 'updating', 'promoting', 'resizing', 'deleting']
-      - **id** (Type: string, uuid):
       - **uniqueName** (Type: string):
-      - **createdAt** (Type: string, date-time):
-      - **description** (Type: string):
-      - **projectDeploymentId** (Type: string, uuid, nullable):
-          - Nullable: true
+      - **projectId** (Type: string, uuid):
+      - **isAutoPromoteEnabled** (Type: boolean):
       - **branch** (Type: string):
   - **success** (Type: boolean):
       - Example: 'true'
@@ -187,10 +187,10 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
-  - **success** (Type: boolean):
-      - Example: 'false'
   - **message**: Error message describing what went wrong (Type: string):
       - Example: 'invalid uniqueName'
+  - **success** (Type: boolean):
+      - Example: 'false'
 `
 
 // NewListProjectEnvironmentsMCPTool creates the MCP Tool instance for ListProjectEnvironments

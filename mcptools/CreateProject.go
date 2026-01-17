@@ -3,7 +3,6 @@ package mcptools
 import (
 	"context"
 	"fmt"
-
 	"github.com/mark3labs/mcp-go/mcp"
 )
 
@@ -46,7 +45,7 @@ const createProjectInputSchema = `{
           "type": "boolean"
         },
         "settings": {
-          "description": "Build and runtime settings for the project. For VCS projects: use VCSSettings schema. For image projects: use ImageSettings schema.",
+          "description": "Build and runtime settings for the project. For VCS projects: use VCSSettings schema. For image projects: use ImageSettings schema. For upload projects: use UploadSettings schema.",
           "oneOf": [
             {
               "description": "Build and runtime settings for VCS projects",
@@ -257,13 +256,197 @@ const createProjectInputSchema = `{
                 "port"
               ],
               "type": "object"
+            },
+            {
+              "additionalProperties": false,
+              "allOf": [
+                {
+                  "not": {
+                    "additionalProperties": false,
+                    "properties": {
+                      "port": {
+                        "maximum": 65535,
+                        "minimum": 1,
+                        "type": "integer"
+                      },
+                      "runEnvs": {
+                        "additionalProperties": {
+                          "type": "string"
+                        },
+                        "type": "object"
+                      }
+                    },
+                    "required": [
+                      "port"
+                    ],
+                    "type": "object"
+                  }
+                },
+                {
+                  "not": {
+                    "anyOf": [
+                      {
+                        "properties": {
+                          "ignoreBranches": {
+                            "items": {
+                              "type": "string"
+                            },
+                            "type": "array"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      {
+                        "properties": {
+                          "buildFlags": {
+                            "additionalProperties": {
+                              "type": "string"
+                            },
+                            "type": "object"
+                          }
+                        },
+                        "type": "object"
+                      }
+                    ]
+                  }
+                }
+              ],
+              "description": "Build and runtime settings for upload type projects",
+              "properties": {
+                "buildCommand": {
+                  "description": "Command to build the project",
+                  "example": "npm run build",
+                  "maxLength": 255,
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "buildDir": {
+                  "description": "Directory where build output is located",
+                  "example": "dist",
+                  "maxLength": 255,
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "buildFlag": {
+                  "description": "Additional flags to pass to the build command",
+                  "example": "-trimpath",
+                  "maxLength": 255,
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "buildVars": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "description": "Build-time environment variables",
+                  "example": {
+                    "NEXT_PUBLIC_API_URL": "https://api.example.com",
+                    "NODE_ENV": "production"
+                  },
+                  "type": "object"
+                },
+                "directoryPath": {
+                  "description": "Project directory path within the uploaded files (defaults to root)",
+                  "example": ".",
+                  "maxLength": 255,
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "framework": {
+                  "description": "Framework name (e.g., nextjs, reactjs-spa, reactjs-ssr). Required if useBuildAI is false and hasDockerfile is false.",
+                  "example": "nextjs",
+                  "maxLength": 255,
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "hasDockerfile": {
+                  "default": false,
+                  "description": "Whether the project has a Dockerfile (if true, build settings may be ignored)",
+                  "example": false,
+                  "type": "boolean"
+                },
+                "installCommand": {
+                  "description": "Command to install dependencies",
+                  "example": "npm install",
+                  "maxLength": 255,
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "port": {
+                  "description": "Port number the application listens on",
+                  "example": 80,
+                  "maximum": 65535,
+                  "minimum": 1,
+                  "type": [
+                    "integer",
+                    "null"
+                  ]
+                },
+                "runCommand": {
+                  "description": "Command to run the application",
+                  "example": "npm run start",
+                  "maxLength": 255,
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "runEnvs": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "description": "Runtime environment variables",
+                  "example": {
+                    "API_KEY": "secret-key",
+                    "DATABASE_URL": "postgresql://localhost:5432/mydb"
+                  },
+                  "type": "object"
+                },
+                "runFlag": {
+                  "description": "Additional flags to pass to the run command",
+                  "maxLength": 255,
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "runtime": {
+                  "description": "Runtime environment (e.g., node:20, golang:1.25, bun:1.3, build-ai). Use \"build-ai\" to enable Build AI.",
+                  "example": "build-ai",
+                  "maxLength": 255,
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "useBuildAI": {
+                  "default": false,
+                  "description": "Whether to use Build AI for automated build configuration (should be true when runtime is \"build-ai\")",
+                  "example": true,
+                  "type": "boolean"
+                }
+              },
+              "type": "object"
             }
           ]
         },
         "source": {
-          "description": "Source configuration for the project. For VCS projects: must include vcsName, vcsInstallationId, and vcsRepoId. For image projects: should be an empty object {}.",
+          "description": "Source configuration for the project. For VCS projects: must include vcsName, vcsInstallationId, and vcsRepoId. For image and upload projects: should be an empty object {}.",
           "oneOf": [
             {
+              "additionalProperties": false,
               "description": "Source configuration for VCS projects",
               "properties": {
                 "vcsInstallationId": {
@@ -294,7 +477,7 @@ const createProjectInputSchema = `{
             },
             {
               "additionalProperties": false,
-              "description": "Source configuration for image projects (empty object)",
+              "description": "Source configuration for image and upload projects (empty object)",
               "example": {},
               "type": "object"
             }
@@ -350,11 +533,11 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
+  - **status** (Type: string):
+      - Example: 'success'
   - **data** (Type: object):
     - **id**: Unique identifier of the created project (Type: string, uuid):
         - Example: '550e8400-e29b-41d4-a716-446655440000'
-  - **status** (Type: string):
-      - Example: 'success'
 `
 
 // Response Template for the CreateProject tool (Status: 400, Content-Type: application/json)
@@ -395,10 +578,10 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
-  - **success** (Type: boolean):
-      - Example: 'false'
   - **message**: Error message describing what went wrong (Type: string):
       - Example: 'invalid uniqueName'
+  - **success** (Type: boolean):
+      - Example: 'false'
 `
 
 // Response Template for the CreateProject tool (Status: 404, Content-Type: application/json)
@@ -417,10 +600,10 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
-  - **message**: Error message describing what went wrong (Type: string):
-      - Example: 'invalid uniqueName'
   - **success** (Type: boolean):
       - Example: 'false'
+  - **message**: Error message describing what went wrong (Type: string):
+      - Example: 'invalid uniqueName'
 `
 
 // Response Template for the CreateProject tool (Status: 409, Content-Type: application/json)

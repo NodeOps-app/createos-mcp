@@ -57,12 +57,12 @@ The template shows a possible response, including its status code and content ty
 - Structure (Type: object):
   - **data** (Type: array):
     - **Items** (Type: object):
-      - **status**: HTTP status code (Type: string):
-          - Example: '404'
       - **count**: Number of error requests to this path (Type: number, float):
           - Example: '20'
       - **path**: Request path (Type: string):
           - Example: '/api/invalid'
+      - **status**: HTTP status code (Type: string):
+          - Example: '404'
   - **success** (Type: boolean):
       - Example: 'true'
 `

@@ -64,12 +64,12 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
-  - **data** (Type: object):
-    - **id** (Type: string, uuid):
-    - **secret**: Full API key secret (only shown once on creation) (Type: string):
-        - Example: 'skp_abc123def456...'
   - **success** (Type: boolean):
       - Example: 'true'
+  - **data** (Type: object):
+    - **secret**: Full API key secret (only shown once on creation) (Type: string):
+        - Example: 'skp_abc123def456...'
+    - **id** (Type: string, uuid):
 `
 
 // Response Template for the CreateAPIKey tool (Status: 400, Content-Type: application/json)
@@ -110,10 +110,10 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
-  - **message**: Error message describing what went wrong (Type: string):
-      - Example: 'invalid uniqueName'
   - **success** (Type: boolean):
       - Example: 'false'
+  - **message**: Error message describing what went wrong (Type: string):
+      - Example: 'invalid uniqueName'
 `
 
 // Response Template for the CreateAPIKey tool (Status: 500, Content-Type: application/json)
@@ -132,10 +132,10 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
-  - **success** (Type: boolean):
-      - Example: 'false'
   - **message**: Error message describing what went wrong (Type: string):
       - Example: 'invalid uniqueName'
+  - **success** (Type: boolean):
+      - Example: 'false'
 `
 
 // NewCreateAPIKeyMCPTool creates the MCP Tool instance for CreateAPIKey

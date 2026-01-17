@@ -10,9 +10,12 @@ import (
 )
 
 type ListProjectsParams struct {
-	Limit       *int  `json:"limit"`
-	Offset      *int  `json:"offset"`
-	ShowDeleted *bool `json:"show-deleted"`
+	Limit  *int    `json:"limit"`
+	Offset *int    `json:"offset"`
+	Status *string `json:"status"`
+	App    *string `json:"app"`
+	Name   *string `json:"name"`
+	Type   *string `json:"type"`
 }
 
 // ListProjectsHandler is the handler function for the ListProjects tool.
@@ -41,8 +44,17 @@ func ListProjectsHandler(ctx context.Context, request mcp.CallToolRequest) (*mcp
 	if params.Offset != nil {
 		queryParams["offset"] = strconv.Itoa(*params.Offset)
 	}
-	if params.ShowDeleted != nil {
-		queryParams["show-deleted"] = strconv.FormatBool(*params.ShowDeleted)
+	if params.Status != nil {
+		queryParams["status"] = *params.Status
+	}
+	if params.App != nil {
+		queryParams["app"] = *params.App
+	}
+	if params.Name != nil {
+		queryParams["name"] = *params.Name
+	}
+	if params.Type != nil {
+		queryParams["type"] = *params.Type
 	}
 
 	// Make GET request using Resty

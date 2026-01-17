@@ -57,6 +57,8 @@ The template shows a possible response, including its status code and content ty
 - Structure (Type: object):
   - **data** (Type: array):
     - **Items** (Type: object):
+      - **status5xx**: Number of 5xx status code responses (Type: integer):
+          - Example: '5'
       - **timestamp**: Unix timestamp in seconds (Type: integer, int64):
           - Example: '1704067200'
       - **count**: Total number of requests at this timestamp (Type: integer):
@@ -67,8 +69,6 @@ The template shows a possible response, including its status code and content ty
           - Example: '10'
       - **status4xx**: Number of 4xx status code responses (Type: integer):
           - Example: '15'
-      - **status5xx**: Number of 5xx status code responses (Type: integer):
-          - Example: '5'
   - **success** (Type: boolean):
       - Example: 'true'
 `
@@ -111,10 +111,10 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
-  - **success** (Type: boolean):
-      - Example: 'false'
   - **message**: Error message describing what went wrong (Type: string):
       - Example: 'invalid uniqueName'
+  - **success** (Type: boolean):
+      - Example: 'false'
 `
 
 // Response Template for the GetProjectEnvironmentAnalyticsRequestsOverTime tool (Status: 403, Content-Type: application/json)
@@ -199,10 +199,10 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
-  - **success** (Type: boolean):
-      - Example: 'false'
   - **message**: Error message describing what went wrong (Type: string):
       - Example: 'invalid uniqueName'
+  - **success** (Type: boolean):
+      - Example: 'false'
 `
 
 // NewGetProjectEnvironmentAnalyticsRequestsOverTimeMCPTool creates the MCP Tool instance for GetProjectEnvironmentAnalyticsRequestsOverTime

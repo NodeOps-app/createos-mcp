@@ -50,20 +50,20 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
+  - **success** (Type: boolean):
+      - Example: 'true'
   - **data** (Type: object):
     - **data** (Type: array):
       - **Items**: Service instance with optional plan information (Type: object):
     - **pagination** (Type: object):
+      - **offset**: Number of items skipped (Type: integer):
+          - Example: '0'
       - **total**: Total number of items available (Type: integer):
           - Example: '100'
       - **count**: Number of items in the current page (Type: integer):
           - Example: '10'
       - **limit**: Maximum number of items per page (Type: integer):
           - Example: '10'
-      - **offset**: Number of items skipped (Type: integer):
-          - Example: '0'
-  - **success** (Type: boolean):
-      - Example: 'true'
 `
 
 // Response Template for the ListServicesByApp tool (Status: 400, Content-Type: application/json)

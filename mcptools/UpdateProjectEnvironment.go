@@ -82,10 +82,10 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
-  - **data** (Type: string):
-      - Example: 'project environment updated successfully'
   - **success** (Type: boolean):
       - Example: 'true'
+  - **data** (Type: string):
+      - Example: 'project environment updated successfully'
 `
 
 // Response Template for the UpdateProjectEnvironment tool (Status: 400, Content-Type: application/json)
@@ -214,10 +214,10 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
-  - **success** (Type: boolean):
-      - Example: 'false'
   - **message**: Error message describing what went wrong (Type: string):
       - Example: 'invalid uniqueName'
+  - **success** (Type: boolean):
+      - Example: 'false'
 `
 
 // NewUpdateProjectEnvironmentMCPTool creates the MCP Tool instance for UpdateProjectEnvironment
