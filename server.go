@@ -15,7 +15,7 @@ func NewMCPServer() *server.MCPServer {
 		server.WithLogging(),
 	)
 
-	// Register all tools
+	// Register all tools - existing handlers
 	s.AddTool(mcptools.NewAssignDeploymentToProjectEnvironmentMCPTool(), handler.AssignDeploymentToProjectEnvironmentHandler)
 	s.AddTool(mcptools.NewCancelDeploymentMCPTool(), handler.CancelDeploymentHandler)
 	s.AddTool(mcptools.NewCheckAPIKeyUniqueNameMCPTool(), handler.CheckAPIKeyUniqueNameHandler)
@@ -61,6 +61,36 @@ func NewMCPServer() *server.MCPServer {
 	s.AddTool(mcptools.NewUpdateProjectEnvironmentResourcesMCPTool(), handler.UpdateProjectEnvironmentResourcesHandler)
 	s.AddTool(mcptools.NewUpdateProjectSettingsMCPTool(), handler.UpdateProjectSettingsHandler)
 	s.AddTool(mcptools.NewWakeupDeploymentMCPTool(), handler.WakeupDeploymentHandler)
+
+	// Register new tools
+	s.AddTool(mcptools.NewAddProjectsToAppMCPTool(), handler.AddProjectsToAppHandler)
+	s.AddTool(mcptools.NewAddServicesToAppMCPTool(), handler.AddServicesToAppHandler)
+	s.AddTool(mcptools.NewCreateAppMCPTool(), handler.CreateAppHandler)
+	s.AddTool(mcptools.NewCreateDomainMCPTool(), handler.CreateDomainHandler)
+	s.AddTool(mcptools.NewDeleteAppMCPTool(), handler.DeleteAppHandler)
+	s.AddTool(mcptools.NewDeleteDomainMCPTool(), handler.DeleteDomainHandler)
+	s.AddTool(mcptools.NewDownloadDeploymentMCPTool(), handler.DownloadDeploymentHandler)
+	s.AddTool(mcptools.NewGetProjectEnvironmentAnalyticsRequestsOverTimeMCPTool(), handler.GetProjectEnvironmentAnalyticsRequestsOverTimeHandler)
+	s.AddTool(mcptools.NewGetProjectTransferUriMCPTool(), handler.GetProjectTransferUriHandler)
+	s.AddTool(mcptools.NewGetQuotasMCPTool(), handler.GetQuotasHandler)
+	s.AddTool(mcptools.NewGetSecurityScanMCPTool(), handler.GetSecurityScanHandler)
+	s.AddTool(mcptools.NewGetSecurityScanDownloadUriMCPTool(), handler.GetSecurityScanDownloadUriHandler)
+	s.AddTool(mcptools.NewListAppsMCPTool(), handler.ListAppsHandler)
+	s.AddTool(mcptools.NewListDomainsMCPTool(), handler.ListDomainsHandler)
+	s.AddTool(mcptools.NewListProjectTransferHistoryMCPTool(), handler.ListProjectTransferHistoryHandler)
+	s.AddTool(mcptools.NewListProjectsByAppMCPTool(), handler.ListProjectsByAppHandler)
+	s.AddTool(mcptools.NewListServicesByAppMCPTool(), handler.ListServicesByAppHandler)
+	s.AddTool(mcptools.NewRefreshDomainMCPTool(), handler.RefreshDomainHandler)
+	s.AddTool(mcptools.NewRemoveProjectsFromAppMCPTool(), handler.RemoveProjectsFromAppHandler)
+	s.AddTool(mcptools.NewRemoveServicesFromAppMCPTool(), handler.RemoveServicesFromAppHandler)
+	s.AddTool(mcptools.NewRetriggerSecurityScanMCPTool(), handler.RetriggerSecurityScanHandler)
+	s.AddTool(mcptools.NewTransferProjectMCPTool(), handler.TransferProjectHandler)
+	s.AddTool(mcptools.NewTriggerSecurityScanMCPTool(), handler.TriggerSecurityScanHandler)
+	s.AddTool(mcptools.NewUpdateAppMCPTool(), handler.UpdateAppHandler)
+	s.AddTool(mcptools.NewUpdateDomainEnvironmentMCPTool(), handler.UpdateDomainEnvironmentHandler)
+	s.AddTool(mcptools.NewUploadDeploymentBase64FilesMCPTool(), handler.UploadDeploymentBase64FilesHandler)
+	s.AddTool(mcptools.NewUploadDeploymentFilesMCPTool(), handler.UploadDeploymentFilesHandler)
+	s.AddTool(mcptools.NewUploadDeploymentZipMCPTool(), handler.UploadDeploymentZipHandler)
 
 	return s
 }

@@ -51,6 +51,100 @@ The template shows a possible response, including its status code and content ty
 
 - Structure (Type: object):
   - **data** (Type: object):
+    - **data** (Type: array):
+      - **Items** (Type: object):
+        - **cancelReason** (Type: string, nullable):
+            - Nullable: true
+        - **extra**: Additional deployment information (URLs, etc.) (Type: object):
+          - **Additional Properties**:
+            - **property value** (Type: string):
+        - **cancelledAt** (Type: string, date-time, nullable):
+            - Nullable: true
+        - **source**: Deployment source information. For VCS projects: contains branch, commit, and commitMessage. For image projects: contains the image reference. (Type: Combinator):
+          - **One Of the following structures**:
+            - **Option 1**: Source for VCS deployments (Type: object):
+              - **commitMessage**: Git commit message (Type: string):
+                  - Example: 'Fix bug in authentication'
+              - **branch**: Git branch name (Type: string):
+                  - Example: 'main'
+              - **commit**: Git commit SHA (Type: string):
+                  - Example: 'abc123def456'
+            - **Option 2**: Source for image deployments (Type: object):
+              - **image**: Docker image reference (Type: string):
+                  - Example: 'nginx:latest'
+        - **artifactImage** (Type: string, nullable):
+            - Nullable: true
+        - **id** (Type: string, uuid):
+        - **updatedAt** (Type: string, date-time):
+        - **createdAt** (Type: string, date-time):
+        - **projectId** (Type: string, uuid):
+        - **settings**: Build and runtime settings for VCS projects (Type: object):
+          - **hasDockerfile**: Whether the project has a Dockerfile (if true, build settings may be ignored) (Type: boolean):
+              - Default: 'false'
+              - Example: 'false'
+          - **runEnvs**: Runtime environment variables (Type: object):
+              - Max Length: 255
+              - Example: '{"API_KEY":"secret-key","DATABASE_URL":"postgresql://localhost:5432/mydb"}'
+            - **Additional Properties**:
+              - **property value** (Type: string):
+          - **runFlag**: Additional flags to pass to the run command (Type: string, nullable):
+              - Max Length: 255
+              - Nullable: true
+          - **buildFlags**: Build-time environment variables (also accepts buildVars) (Type: object):
+              - Max Length: 255
+              - Example: '{"NEXT_PUBLIC_API_URL":"https://api.example.com","NODE_ENV":"production"}'
+            - **Additional Properties**:
+              - **property value** (Type: string):
+          - **framework**: Framework name (e.g., nextjs, reactjs-spa, reactjs-ssr). If specified, runtime must be compatible. (Type: string, nullable):
+              - Max Length: 255
+              - Nullable: true
+              - Example: 'nextjs'
+          - **port**: Port number the application listens on (Type: integer):
+              - Minimum: 1
+              - Maximum: 65535
+              - Example: '3000'
+          - **buildDir**: Directory where build output is located (Type: string, nullable):
+              - Max Length: 255
+              - Nullable: true
+              - Example: 'dist'
+          - **buildFlag**: Additional flags to pass to the build command (Type: string, nullable):
+              - Max Length: 255
+              - Nullable: true
+              - Example: '-trimpath'
+          - **directoryPath**: Project directory path within the repository (defaults to root) (Type: string, nullable):
+              - Max Length: 255
+              - Nullable: true
+              - Example: '.'
+          - **runCommand**: Command to run the application (Type: string, nullable):
+              - Max Length: 255
+              - Nullable: true
+              - Example: 'npm run start'
+          - **buildVars**: Build-time environment variables (alternative to buildFlags) (Type: object):
+              - Max Length: 255
+              - Example: '{"NEXT_PUBLIC_API_URL":"https://api.example.com","NODE_ENV":"production"}'
+            - **Additional Properties**:
+              - **property value** (Type: string):
+          - **useBuildAI**: Whether to use Build AI for automated build configuration (Type: boolean):
+              - Default: 'false'
+              - Example: 'false'
+          - **ignoreBranches**: List of exact branch names to ignore for automatic deployments (not regex patterns) (Type: array):
+              - Example: '["develop","staging"]'
+            - **Items** (Type: string):
+                - Max Length: 255
+          - **installCommand**: Command to install dependencies (Type: string, nullable):
+              - Max Length: 255
+              - Nullable: true
+              - Example: 'npm install'
+          - **runtime**: Runtime environment (e.g., node:20, golang:1.25, bun:1.3). Required if framework is not specified. (Type: string, nullable):
+              - Max Length: 255
+              - Nullable: true
+              - Example: 'node:20'
+          - **buildCommand**: Command to build the project (Type: string, nullable):
+              - Max Length: 255
+              - Nullable: true
+              - Example: 'npm run build'
+        - **status** (Type: string):
+            - Enum: ['queue', 'building', 'deploying', 'deployed', 'build_error', 'crashing', 'cancelled', 'error', 'sleeping', 'terminating']
     - **pagination** (Type: object):
       - **count**: Number of items in the current page (Type: integer):
           - Example: '10'
@@ -60,100 +154,6 @@ The template shows a possible response, including its status code and content ty
           - Example: '0'
       - **total**: Total number of items available (Type: integer):
           - Example: '100'
-    - **data** (Type: array):
-      - **Items** (Type: object):
-        - **id** (Type: string, uuid):
-        - **status** (Type: string):
-            - Enum: ['queue', 'building', 'deploying', 'deployed', 'build_error', 'crashing', 'cancelled', 'error', 'sleeping', 'terminating']
-        - **cancelledAt** (Type: string, date-time, nullable):
-            - Nullable: true
-        - **createdAt** (Type: string, date-time):
-        - **artifactImage** (Type: string, nullable):
-            - Nullable: true
-        - **cancelReason** (Type: string, nullable):
-            - Nullable: true
-        - **projectId** (Type: string, uuid):
-        - **settings**: Build and runtime settings for VCS projects (Type: object):
-          - **runEnvs**: Runtime environment variables (Type: object):
-              - Max Length: 255
-              - Example: '{"API_KEY":"secret-key","DATABASE_URL":"postgresql://localhost:5432/mydb"}'
-            - **Additional Properties**:
-              - **property value** (Type: string):
-          - **installCommand**: Command to install dependencies (Type: string, nullable):
-              - Max Length: 255
-              - Nullable: true
-              - Example: 'npm install'
-          - **buildFlags**: Build-time environment variables (also accepts buildVars) (Type: object):
-              - Max Length: 255
-              - Example: '{"NEXT_PUBLIC_API_URL":"https://api.example.com","NODE_ENV":"production"}'
-            - **Additional Properties**:
-              - **property value** (Type: string):
-          - **hasDockerfile**: Whether the project has a Dockerfile (if true, build settings may be ignored) (Type: boolean):
-              - Default: 'false'
-              - Example: 'false'
-          - **buildFlag**: Additional flags to pass to the build command (Type: string, nullable):
-              - Max Length: 255
-              - Nullable: true
-              - Example: '-trimpath'
-          - **port**: Port number the application listens on (Type: integer):
-              - Minimum: 1
-              - Maximum: 65535
-              - Example: '3000'
-          - **buildDir**: Directory where build output is located (Type: string, nullable):
-              - Max Length: 255
-              - Nullable: true
-              - Example: 'dist'
-          - **runFlag**: Additional flags to pass to the run command (Type: string, nullable):
-              - Max Length: 255
-              - Nullable: true
-          - **useBuildAI**: Whether to use Build AI for automated build configuration (Type: boolean):
-              - Default: 'false'
-              - Example: 'false'
-          - **directoryPath**: Project directory path within the repository (defaults to root) (Type: string, nullable):
-              - Max Length: 255
-              - Nullable: true
-              - Example: '.'
-          - **ignoreBranches**: List of exact branch names to ignore for automatic deployments (not regex patterns) (Type: array):
-              - Example: '["develop","staging"]'
-            - **Items** (Type: string):
-                - Max Length: 255
-          - **buildVars**: Build-time environment variables (alternative to buildFlags) (Type: object):
-              - Max Length: 255
-              - Example: '{"NEXT_PUBLIC_API_URL":"https://api.example.com","NODE_ENV":"production"}'
-            - **Additional Properties**:
-              - **property value** (Type: string):
-          - **runCommand**: Command to run the application (Type: string, nullable):
-              - Max Length: 255
-              - Nullable: true
-              - Example: 'npm run start'
-          - **framework**: Framework name (e.g., nextjs, reactjs-spa, reactjs-ssr). If specified, runtime must be compatible. (Type: string, nullable):
-              - Max Length: 255
-              - Nullable: true
-              - Example: 'nextjs'
-          - **runtime**: Runtime environment (e.g., node:20, golang:1.25, bun:1.3). Required if framework is not specified. (Type: string, nullable):
-              - Max Length: 255
-              - Nullable: true
-              - Example: 'node:20'
-          - **buildCommand**: Command to build the project (Type: string, nullable):
-              - Max Length: 255
-              - Nullable: true
-              - Example: 'npm run build'
-        - **source**: Deployment source information. For VCS projects: contains branch, commit, and commitMessage. For image projects: contains the image reference. (Type: Combinator):
-          - **One Of the following structures**:
-            - **Option 1**: Source for VCS deployments (Type: object):
-              - **branch**: Git branch name (Type: string):
-                  - Example: 'main'
-              - **commit**: Git commit SHA (Type: string):
-                  - Example: 'abc123def456'
-              - **commitMessage**: Git commit message (Type: string):
-                  - Example: 'Fix bug in authentication'
-            - **Option 2**: Source for image deployments (Type: object):
-              - **image**: Docker image reference (Type: string):
-                  - Example: 'nginx:latest'
-        - **extra**: Additional deployment information (URLs, etc.) (Type: object):
-          - **Additional Properties**:
-            - **property value** (Type: string):
-        - **updatedAt** (Type: string, date-time):
   - **success** (Type: boolean):
       - Example: 'true'
 `
@@ -174,10 +174,10 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
-  - **success** (Type: boolean):
-      - Example: 'false'
   - **message**: Error message describing what went wrong (Type: string):
       - Example: 'invalid uniqueName'
+  - **success** (Type: boolean):
+      - Example: 'false'
 `
 
 // Response Template for the ListDeployments tool (Status: 401, Content-Type: application/json)
@@ -196,10 +196,10 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
-  - **success** (Type: boolean):
-      - Example: 'false'
   - **message**: Error message describing what went wrong (Type: string):
       - Example: 'invalid uniqueName'
+  - **success** (Type: boolean):
+      - Example: 'false'
 `
 
 // Response Template for the ListDeployments tool (Status: 403, Content-Type: application/json)
@@ -262,10 +262,10 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
-  - **success** (Type: boolean):
-      - Example: 'false'
   - **message**: Error message describing what went wrong (Type: string):
       - Example: 'invalid uniqueName'
+  - **success** (Type: boolean):
+      - Example: 'false'
 `
 
 // Response Template for the ListDeployments tool (Status: 500, Content-Type: application/json)
@@ -284,10 +284,10 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
-  - **success** (Type: boolean):
-      - Example: 'false'
   - **message**: Error message describing what went wrong (Type: string):
       - Example: 'invalid uniqueName'
+  - **success** (Type: boolean):
+      - Example: 'false'
 `
 
 // NewListDeploymentsMCPTool creates the MCP Tool instance for ListDeployments

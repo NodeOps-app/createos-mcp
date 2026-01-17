@@ -1,7 +1,7 @@
 port: 8080
 base_url: https://mac-8080.bhautik.in
 authorization_server_url: https://mac-4444.bhautik.in
-api_base_url: https://mac-50001.bhautik.in
+api_base_url: https://api-createos.nodeops.network
 transport: http
 log_level: debug
 

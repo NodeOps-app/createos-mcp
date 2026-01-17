@@ -65,11 +65,11 @@ The template shows a possible response, including its status code and content ty
 - Structure (Type: object):
   - **data** (Type: array):
     - **Items** (Type: object):
-      - **name** (Type: string):
-      - **protected** (Type: boolean):
       - **commit** (Type: object):
         - **sha** (Type: string):
         - **url** (Type: string):
+      - **name** (Type: string):
+      - **protected** (Type: boolean):
   - **success** (Type: boolean):
       - Example: 'true'
 `
@@ -90,10 +90,10 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
-  - **success** (Type: boolean):
-      - Example: 'false'
   - **message**: Error message describing what went wrong (Type: string):
       - Example: 'invalid uniqueName'
+  - **success** (Type: boolean):
+      - Example: 'false'
 `
 
 // Response Template for the ListGithubRepositoryBranches tool (Status: 401, Content-Type: application/json)
@@ -134,10 +134,10 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
-  - **success** (Type: boolean):
-      - Example: 'false'
   - **message**: Error message describing what went wrong (Type: string):
       - Example: 'invalid uniqueName'
+  - **success** (Type: boolean):
+      - Example: 'false'
 `
 
 // Response Template for the ListGithubRepositoryBranches tool (Status: 500, Content-Type: application/json)
@@ -156,10 +156,10 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
-  - **success** (Type: boolean):
-      - Example: 'false'
   - **message**: Error message describing what went wrong (Type: string):
       - Example: 'invalid uniqueName'
+  - **success** (Type: boolean):
+      - Example: 'false'
 `
 
 // NewListGithubRepositoryBranchesMCPTool creates the MCP Tool instance for ListGithubRepositoryBranches
