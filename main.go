@@ -7,6 +7,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"os"
 	"strings"
 
 	"github.com/NodeOps-app/autogen-backend-v2-mcp/config"
@@ -16,6 +17,7 @@ import (
 
 func main() {
 	configPath := flag.String("config", "config.yaml", "Path to the config file")
+	toolsetFlag := flag.String("toolset", "", "Toolset to expose: core or all")
 	flag.Parse()
 
 	if configPath == nil {
@@ -26,7 +28,18 @@ func main() {
 		log.Fatalf("Failed to load config: %v", err)
 	}
 
-	mcpServer := NewMCPServer()
+	toolset := "core"
+	if config.Cfg.Toolset != "" {
+		toolset = config.Cfg.Toolset
+	}
+	if envToolset := os.Getenv("MCP_TOOLSET"); envToolset != "" {
+		toolset = envToolset
+	}
+	if toolsetFlag != nil && *toolsetFlag != "" {
+		toolset = *toolsetFlag
+	}
+
+	mcpServer := NewMCPServer(toolset)
 
 	switch config.Cfg.Transport {
 	case "stdio":

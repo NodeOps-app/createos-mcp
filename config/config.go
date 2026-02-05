@@ -14,6 +14,7 @@ type Config struct {
 	APIBaseUrl             string `yaml:"api_base_url"`
 	Transport              string `yaml:"transport"`
 	LogLevel               string `yaml:"log_level"`
+	Toolset                string `yaml:"toolset"`
 
 	// Scopes and claims
 	SupportedScopes                   []string `yaml:"supported_scopes"` // OAuth server scopes

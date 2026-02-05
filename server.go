@@ -6,7 +6,7 @@ import (
 	"github.com/mark3labs/mcp-go/server"
 )
 
-func NewMCPServer() *server.MCPServer {
+func NewMCPServer(toolset string) *server.MCPServer {
 	// Create a new MCP server
 	s := server.NewMCPServer(
 		"CreateOS MCP Server",
@@ -15,6 +15,31 @@ func NewMCPServer() *server.MCPServer {
 		server.WithLogging(),
 	)
 
+	registerCoreTools(s)
+	if toolset == "all" {
+		registerLegacyTools(s)
+	}
+
+	return s
+}
+
+func registerCoreTools(s *server.MCPServer) {
+	s.AddTool(mcptools.NewCreateOSProjectListMCPTool(), handler.CreateOSProjectListHandler)
+	s.AddTool(mcptools.NewCreateOSProjectGetMCPTool(), handler.CreateOSProjectGetHandler)
+	s.AddTool(mcptools.NewCreateOSProjectCreateVCSMCPTool(), handler.CreateOSProjectCreateVCSHandler)
+	s.AddTool(mcptools.NewCreateOSProjectCreateImageMCPTool(), handler.CreateOSProjectCreateImageHandler)
+	s.AddTool(mcptools.NewCreateOSProjectCreateUploadMCPTool(), handler.CreateOSProjectCreateUploadHandler)
+	s.AddTool(mcptools.NewCreateOSDeploymentListMCPTool(), handler.CreateOSDeploymentListHandler)
+	s.AddTool(mcptools.NewCreateOSDeploymentGetMCPTool(), handler.CreateOSDeploymentGetHandler)
+	s.AddTool(mcptools.NewCreateOSDeploymentTriggerLatestMCPTool(), handler.CreateOSDeploymentTriggerLatestHandler)
+	s.AddTool(mcptools.NewCreateOSDeploymentCancelMCPTool(), handler.CreateOSDeploymentCancelHandler)
+	s.AddTool(mcptools.NewCreateOSDomainListMCPTool(), handler.CreateOSDomainListHandler)
+	s.AddTool(mcptools.NewCreateOSGithubRepositoriesListMCPTool(), handler.CreateOSGithubRepositoriesListHandler)
+	s.AddTool(mcptools.NewCreateOSGithubRepositoryBranchesListMCPTool(), handler.CreateOSGithubRepositoryBranchesListHandler)
+	s.AddTool(mcptools.NewCreateOSProjectEnvironmentAnalyticsMCPTool(), handler.CreateOSProjectEnvironmentAnalyticsHandler)
+}
+
+func registerLegacyTools(s *server.MCPServer) {
 	// Register all tools - existing handlers
 	s.AddTool(mcptools.NewAssignDeploymentToProjectEnvironmentMCPTool(), handler.AssignDeploymentToProjectEnvironmentHandler)
 	s.AddTool(mcptools.NewCancelDeploymentMCPTool(), handler.CancelDeploymentHandler)
@@ -91,6 +116,4 @@ func NewMCPServer() *server.MCPServer {
 	s.AddTool(mcptools.NewUploadDeploymentBase64FilesMCPTool(), handler.UploadDeploymentBase64FilesHandler)
 	s.AddTool(mcptools.NewUploadDeploymentFilesMCPTool(), handler.UploadDeploymentFilesHandler)
 	s.AddTool(mcptools.NewUploadDeploymentZipMCPTool(), handler.UploadDeploymentZipHandler)
-
-	return s
 }
