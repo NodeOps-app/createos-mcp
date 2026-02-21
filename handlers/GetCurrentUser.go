@@ -12,5 +12,5 @@ func GetCurrentUserHandler(ctx context.Context, request mcp.CallToolRequest) (*m
 		return nil, err
 	}
 
-	return makeGetRequest("/v1/user/me", nil, authInfo)
+	return makeGetRequest("/v1/users/me", nil, authInfo)
 }
