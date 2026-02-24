@@ -27,3 +27,4 @@ func DownloadDeploymentHandler(ctx context.Context, request mcp.CallToolRequest)
 	return makeGetRequest(fmt.Sprintf("/v1/projects/%s/deployments/%s/download", params.ProjectID, params.DeploymentID), nil, authInfo)
 }
 
+

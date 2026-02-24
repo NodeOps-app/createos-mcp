@@ -27,3 +27,4 @@ func RefreshDomainHandler(ctx context.Context, request mcp.CallToolRequest) (*mc
 	return makePostRequest(fmt.Sprintf("/v1/projects/%s/domains/%s/refresh", params.ProjectID, params.DomainID), nil, authInfo)
 }
 
+

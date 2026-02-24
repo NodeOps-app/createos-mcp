@@ -27,3 +27,4 @@ func UpdateAppHandler(ctx context.Context, request mcp.CallToolRequest) (*mcp.Ca
 	return makePatchRequest(fmt.Sprintf("/v1/apps/%s", params.AppID), params.Body, authInfo)
 }
 
+

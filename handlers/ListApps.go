@@ -15,3 +15,4 @@ func ListAppsHandler(ctx context.Context, request mcp.CallToolRequest) (*mcp.Cal
 	return makeGetRequest("/v1/apps", nil, authInfo)
 }
 
+

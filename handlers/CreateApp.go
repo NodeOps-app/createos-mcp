@@ -26,3 +26,4 @@ func CreateAppHandler(ctx context.Context, request mcp.CallToolRequest) (*mcp.Ca
 	return makePostRequest("/v1/apps", params.Body, authInfo)
 }
 
+
