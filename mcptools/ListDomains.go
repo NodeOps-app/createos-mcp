@@ -42,10 +42,9 @@ The template shows a possible response, including its status code and content ty
       - **environmentId**: Desired environment ID for this domain (Type: string, uuid, nullable):
           - Nullable: true
           - Example: '550e8400-e29b-41d4-a716-446655440002'
-      - **id**: Domain unique identifier (Type: string, uuid):
-          - Example: '550e8400-e29b-41d4-a716-446655440000'
-      - **createdAt**: When the domain was created (Type: string, date-time):
-          - Example: '2025-01-17T12:00:00Z'
+      - **status**: Current status of the domain (Type: string):
+          - Example: 'active'
+          - Enum: ['pending', 'issuing', 'updating', 'active', 'error', 'deleting']
       - **deletingAt**: When the domain deletion was initiated (Type: string, date-time, nullable):
           - Nullable: true
       - **failedVerificationCount**: Number of failed DNS verification attempts (Type: integer):
@@ -54,20 +53,21 @@ The template shows a possible response, including its status code and content ty
           - Nullable: true
       - **message**: Error or status message (Type: string, nullable):
           - Nullable: true
-      - **name**: Domain name (Type: string):
-          - Example: 'example.com'
-      - **projectId**: Project ID this domain belongs to (Type: string, uuid):
-          - Example: '550e8400-e29b-41d4-a716-446655440001'
-      - **records**: DNS records required for domain verification (Type: object):
-        - **Allows Additional Properties**
       - **domainCertificateId**: Associated SSL certificate ID (Type: string, uuid, nullable):
           - Nullable: true
           - Example: '550e8400-e29b-41d4-a716-446655440003'
-      - **status**: Current status of the domain (Type: string):
-          - Example: 'active'
-          - Enum: ['pending', 'issuing', 'updating', 'active', 'error', 'deleting']
       - **updatedAt**: When the domain was last updated (Type: string, date-time):
           - Example: '2025-01-17T12:00:00Z'
+      - **projectId**: Project ID this domain belongs to (Type: string, uuid):
+          - Example: '550e8400-e29b-41d4-a716-446655440001'
+      - **createdAt**: When the domain was created (Type: string, date-time):
+          - Example: '2025-01-17T12:00:00Z'
+      - **id**: Domain unique identifier (Type: string, uuid):
+          - Example: '550e8400-e29b-41d4-a716-446655440000'
+      - **name**: Domain name (Type: string):
+          - Example: 'example.com'
+      - **records**: DNS records required for domain verification (Type: object):
+        - **Allows Additional Properties**
   - **success** (Type: boolean):
       - Example: 'true'
 `
@@ -110,10 +110,10 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
-  - **message**: Error message describing what went wrong (Type: string):
-      - Example: 'invalid uniqueName'
   - **success** (Type: boolean):
       - Example: 'false'
+  - **message**: Error message describing what went wrong (Type: string):
+      - Example: 'invalid uniqueName'
 `
 
 // Response Template for the ListDomains tool (Status: 403, Content-Type: application/json)
@@ -132,10 +132,10 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
-  - **message**: Error message describing what went wrong (Type: string):
-      - Example: 'invalid uniqueName'
   - **success** (Type: boolean):
       - Example: 'false'
+  - **message**: Error message describing what went wrong (Type: string):
+      - Example: 'invalid uniqueName'
 `
 
 // Response Template for the ListDomains tool (Status: 404, Content-Type: application/json)

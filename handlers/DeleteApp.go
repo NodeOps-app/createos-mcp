@@ -26,3 +26,4 @@ func DeleteAppHandler(ctx context.Context, request mcp.CallToolRequest) (*mcp.Ca
 	return makeDeleteRequest(fmt.Sprintf("/v1/apps/%s", params.AppID), authInfo)
 }
 
+

@@ -15,3 +15,4 @@ func GetQuotasHandler(ctx context.Context, request mcp.CallToolRequest) (*mcp.Ca
 	return makeGetRequest("/v1/quotas", nil, authInfo)
 }
 
+

@@ -27,3 +27,4 @@ func AddProjectsToAppHandler(ctx context.Context, request mcp.CallToolRequest) (
 	return makePostRequest(fmt.Sprintf("/v1/apps/%s/projects", params.AppID), params.Body, authInfo)
 }
 
+

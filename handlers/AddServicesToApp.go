@@ -27,3 +27,4 @@ func AddServicesToAppHandler(ctx context.Context, request mcp.CallToolRequest) (
 	return makePostRequest(fmt.Sprintf("/v1/apps/%s/services", params.AppID), params.Body, authInfo)
 }
 
+

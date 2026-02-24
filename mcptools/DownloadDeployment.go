@@ -43,11 +43,11 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
-  - **success** (Type: boolean):
-      - Example: 'true'
   - **data** (Type: object):
     - **downloadUri**: Signed URL to download the deployment files (valid for 1 hour) (Type: string):
         - Example: 'https://storage.example.com/files/deployment.zip?signature=...'
+  - **success** (Type: boolean):
+      - Example: 'true'
 `
 
 // Response Template for the DownloadDeployment tool (Status: 400, Content-Type: application/json)
@@ -154,10 +154,10 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
-  - **success** (Type: boolean):
-      - Example: 'false'
   - **message**: Error message describing what went wrong (Type: string):
       - Example: 'invalid uniqueName'
+  - **success** (Type: boolean):
+      - Example: 'false'
 `
 
 // Response Template for the DownloadDeployment tool (Status: 500, Content-Type: application/json)
@@ -176,10 +176,10 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
-  - **message**: Error message describing what went wrong (Type: string):
-      - Example: 'invalid uniqueName'
   - **success** (Type: boolean):
       - Example: 'false'
+  - **message**: Error message describing what went wrong (Type: string):
+      - Example: 'invalid uniqueName'
 `
 
 // NewDownloadDeploymentMCPTool creates the MCP Tool instance for DownloadDeployment

@@ -37,6 +37,8 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
+  - **success** (Type: boolean):
+      - Example: 'true'
   - **data** (Type: object):
     - **token**: JWT token for project transfer (valid for 6 hours) (Type: string):
         - Example: 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9...'
@@ -44,8 +46,6 @@ The template shows a possible response, including its status code and content ty
         - Example: '2025-01-18T12:00:00Z'
     - **frontendUri**: Complete frontend URL with token for accepting the transfer (Type: string):
         - Example: 'https://app.example.com/projects/550e8400-e29b-41d4-a716-446655440000/transfer?token=eyJ...&source=ChatGPT'
-  - **success** (Type: boolean):
-      - Example: 'true'
 `
 
 // Response Template for the GetProjectTransferUri tool (Status: 400, Content-Type: application/json)
@@ -152,10 +152,10 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
-  - **success** (Type: boolean):
-      - Example: 'false'
   - **message**: Error message describing what went wrong (Type: string):
       - Example: 'invalid uniqueName'
+  - **success** (Type: boolean):
+      - Example: 'false'
 `
 
 // NewGetProjectTransferUriMCPTool creates the MCP Tool instance for GetProjectTransferUri

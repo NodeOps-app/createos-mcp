@@ -57,10 +57,10 @@ The template shows a possible response, including its status code and content ty
 - Structure (Type: object):
   - **data** (Type: array):
     - **Items** (Type: object):
-      - **path**: Request path (Type: string):
-          - Example: '/api/users'
       - **count**: Number of requests to this path (Type: number, float):
           - Example: '500'
+      - **path**: Request path (Type: string):
+          - Example: '/api/users'
   - **success** (Type: boolean):
       - Example: 'true'
 `
@@ -147,10 +147,10 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
-  - **message**: Error message describing what went wrong (Type: string):
-      - Example: 'invalid uniqueName'
   - **success** (Type: boolean):
       - Example: 'false'
+  - **message**: Error message describing what went wrong (Type: string):
+      - Example: 'invalid uniqueName'
 `
 
 // Response Template for the GetProjectEnvironmentAnalyticsTopHitPaths tool (Status: 500, Content-Type: application/json)

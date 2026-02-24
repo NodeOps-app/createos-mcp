@@ -26,3 +26,4 @@ func ListDomainsHandler(ctx context.Context, request mcp.CallToolRequest) (*mcp.
 	return makeGetRequest(fmt.Sprintf("/v1/projects/%s/domains", params.ProjectID), nil, authInfo)
 }
 
+

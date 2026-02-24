@@ -27,3 +27,4 @@ func CreateDomainHandler(ctx context.Context, request mcp.CallToolRequest) (*mcp
 	return makePostRequest(fmt.Sprintf("/v1/projects/%s/domains", params.ProjectID), params.Body, authInfo)
 }
 
+

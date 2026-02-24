@@ -39,24 +39,24 @@ The template shows a possible response, including its status code and content ty
 - Structure (Type: object):
   - **data** (Type: array):
     - **Items** (Type: object):
-      - **description** (Type: string):
+      - **branch** (Type: string):
+      - **settings** (Type: object):
       - **resources** (Type: object):
-      - **status** (Type: string):
-          - Enum: ['active', 'updating', 'promoting', 'resizing', 'deleting']
-      - **displayName**: Display name for the environment (Type: string):
-      - **updatedAt** (Type: string, date-time):
       - **createdAt** (Type: string, date-time):
+      - **description** (Type: string):
+      - **uniqueName** (Type: string):
       - **projectDeploymentId** (Type: string, uuid, nullable):
           - Nullable: true
-      - **settings** (Type: object):
       - **id** (Type: string, uuid):
+      - **projectId** (Type: string, uuid):
+      - **status** (Type: string):
+          - Enum: ['active', 'updating', 'promoting', 'resizing', 'deleting']
       - **extra**: Additional deployment information (URLs, etc.) (Type: object):
         - **Additional Properties**:
           - **property value** (Type: string):
-      - **uniqueName** (Type: string):
-      - **projectId** (Type: string, uuid):
+      - **displayName**: Display name for the environment (Type: string):
       - **isAutoPromoteEnabled** (Type: boolean):
-      - **branch** (Type: string):
+      - **updatedAt** (Type: string, date-time):
   - **success** (Type: boolean):
       - Example: 'true'
 `
@@ -77,10 +77,10 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
-  - **message**: Error message describing what went wrong (Type: string):
-      - Example: 'invalid uniqueName'
   - **success** (Type: boolean):
       - Example: 'false'
+  - **message**: Error message describing what went wrong (Type: string):
+      - Example: 'invalid uniqueName'
 `
 
 // Response Template for the ListProjectEnvironments tool (Status: 401, Content-Type: application/json)

@@ -55,8 +55,6 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
-  - **success** (Type: boolean):
-      - Example: 'true'
   - **data** (Type: object):
     - **server**: Number of server error requests (5xx status codes) (Type: number, float):
         - Example: '50'
@@ -66,6 +64,8 @@ The template shows a possible response, including its status code and content ty
         - Example: '1250'
     - **client**: Number of client error requests (4xx status codes) (Type: number, float):
         - Example: '100'
+  - **success** (Type: boolean):
+      - Example: 'true'
 `
 
 // Response Template for the GetProjectEnvironmentAnalyticsOverallRequests tool (Status: 400, Content-Type: application/json)
