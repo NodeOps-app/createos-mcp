@@ -28,6 +28,13 @@ The template shows a possible response, including its status code and content ty
 
 - Structure (Type: object):
   - **data** (Type: object):
+    - **projects** (Type: object):
+      - **current**: Currently used (Type: integer):
+          - Example: '3'
+      - **max**: Maximum allowed (Type: integer):
+          - Example: '10'
+      - **remaining**: Remaining available (Type: integer):
+          - Example: '7'
     - **apiKeys** (Type: object):
       - **current**: Currently used (Type: integer):
           - Example: '3'
@@ -35,13 +42,6 @@ The template shows a possible response, including its status code and content ty
           - Example: '10'
       - **remaining**: Remaining available (Type: integer):
           - Example: '7'
-    - **projects** (Type: object):
-      - **max**: Maximum allowed (Type: integer):
-          - Example: '10'
-      - **remaining**: Remaining available (Type: integer):
-          - Example: '7'
-      - **current**: Currently used (Type: integer):
-          - Example: '3'
   - **success** (Type: boolean):
       - Example: 'true'
 `
@@ -62,10 +62,10 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
-  - **message**: Error message describing what went wrong (Type: string):
-      - Example: 'invalid uniqueName'
   - **success** (Type: boolean):
       - Example: 'false'
+  - **message**: Error message describing what went wrong (Type: string):
+      - Example: 'invalid uniqueName'
 `
 
 // Response Template for the GetQuotas tool (Status: 403, Content-Type: application/json)

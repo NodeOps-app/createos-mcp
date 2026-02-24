@@ -65,11 +65,11 @@ The template shows a possible response, including its status code and content ty
 - Structure (Type: object):
   - **data** (Type: array):
     - **Items** (Type: object):
+      - **name** (Type: string):
+      - **protected** (Type: boolean):
       - **commit** (Type: object):
         - **sha** (Type: string):
         - **url** (Type: string):
-      - **name** (Type: string):
-      - **protected** (Type: boolean):
   - **success** (Type: boolean):
       - Example: 'true'
 `

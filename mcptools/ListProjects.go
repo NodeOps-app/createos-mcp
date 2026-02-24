@@ -69,41 +69,41 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
+  - **success** (Type: boolean):
+      - Example: 'true'
   - **data** (Type: object):
     - **data** (Type: array):
       - **Items** (Type: object):
-        - **id** (Type: string, uuid):
-        - **appId**: App ID the project is associated with (Type: string, uuid, nullable):
-            - Nullable: true
         - **enabledSecurityScan**: Whether security scanning is enabled for the project (Type: boolean):
         - **userId** (Type: string):
-        - **displayName** (Type: string):
-        - **source** (Type: object):
-        - **createdAt** (Type: string, date-time):
-        - **description** (Type: string, nullable):
-            - Nullable: true
-        - **updatedAt** (Type: string, date-time):
-        - **deletedAt** (Type: string, date-time, nullable):
-            - Nullable: true
-        - **settings**: Project settings (schema depends on project type) (Type: object):
         - **status** (Type: string):
             - Enum: ['active', 'deleting', 'deleted']
-        - **uniqueName** (Type: string):
+        - **displayName** (Type: string):
+        - **deletedAt** (Type: string, date-time, nullable):
+            - Nullable: true
         - **type** (Type: string):
             - Enum: ['vcs', 'image', 'upload']
+        - **id** (Type: string, uuid):
+        - **updatedAt** (Type: string, date-time):
         - **expireAt**: Expiration time for temporary projects (e.g., GPT-created projects) (Type: string, date-time, nullable):
             - Nullable: true
+        - **uniqueName** (Type: string):
+        - **createdAt** (Type: string, date-time):
+        - **appId**: App ID the project is associated with (Type: string, uuid, nullable):
+            - Nullable: true
+        - **source** (Type: object):
+        - **description** (Type: string, nullable):
+            - Nullable: true
+        - **settings**: Project settings (schema depends on project type) (Type: object):
     - **pagination** (Type: object):
-      - **total**: Total number of items available (Type: integer):
-          - Example: '100'
       - **count**: Number of items in the current page (Type: integer):
           - Example: '10'
       - **limit**: Maximum number of items per page (Type: integer):
           - Example: '10'
       - **offset**: Number of items skipped (Type: integer):
           - Example: '0'
-  - **success** (Type: boolean):
-      - Example: 'true'
+      - **total**: Total number of items available (Type: integer):
+          - Example: '100'
 `
 
 // Response Template for the ListProjects tool (Status: 400, Content-Type: application/json)

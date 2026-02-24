@@ -51,12 +51,12 @@ The template shows a possible response, including its status code and content ty
 - Structure (Type: object):
   - **data** (Type: array):
     - **Items** (Type: object):
+      - **ts** (Type: string, date-time):
       - **createdAt** (Type: string, date-time):
       - **deploymentId** (Type: string, uuid):
       - **lineNumber** (Type: integer, uint32):
       - **log** (Type: string):
       - **stage**: Stage of the deployment (e.g., build, deploy) (Type: string):
-      - **ts** (Type: string, date-time):
   - **success** (Type: boolean):
       - Example: 'true'
 `

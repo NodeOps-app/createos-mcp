@@ -53,27 +53,27 @@ The template shows a possible response, including its status code and content ty
   - **data** (Type: object):
     - **data** (Type: array):
       - **Items** (Type: object):
-        - **deletedAt** (Type: string, date-time, nullable):
+        - **appId**: App ID the project is associated with (Type: string, uuid, nullable):
             - Nullable: true
-        - **updatedAt** (Type: string, date-time):
-        - **expireAt**: Expiration time for temporary projects (e.g., GPT-created projects) (Type: string, date-time, nullable):
+        - **source** (Type: object):
+        - **createdAt** (Type: string, date-time):
+        - **description** (Type: string, nullable):
             - Nullable: true
         - **settings**: Project settings (schema depends on project type) (Type: object):
         - **status** (Type: string):
             - Enum: ['active', 'deleting', 'deleted']
-        - **uniqueName** (Type: string):
-        - **type** (Type: string):
-            - Enum: ['vcs', 'image', 'upload']
-        - **appId**: App ID the project is associated with (Type: string, uuid, nullable):
-            - Nullable: true
-        - **id** (Type: string, uuid):
-        - **createdAt** (Type: string, date-time):
-        - **description** (Type: string, nullable):
-            - Nullable: true
+        - **displayName** (Type: string):
         - **enabledSecurityScan**: Whether security scanning is enabled for the project (Type: boolean):
         - **userId** (Type: string):
-        - **displayName** (Type: string):
-        - **source** (Type: object):
+        - **expireAt**: Expiration time for temporary projects (e.g., GPT-created projects) (Type: string, date-time, nullable):
+            - Nullable: true
+        - **uniqueName** (Type: string):
+        - **deletedAt** (Type: string, date-time, nullable):
+            - Nullable: true
+        - **type** (Type: string):
+            - Enum: ['vcs', 'image', 'upload']
+        - **id** (Type: string, uuid):
+        - **updatedAt** (Type: string, date-time):
     - **pagination** (Type: object):
       - **offset**: Number of items skipped (Type: integer):
           - Example: '0'
@@ -191,10 +191,10 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
-  - **success** (Type: boolean):
-      - Example: 'false'
   - **message**: Error message describing what went wrong (Type: string):
       - Example: 'invalid uniqueName'
+  - **success** (Type: boolean):
+      - Example: 'false'
 `
 
 // NewListProjectsByAppMCPTool creates the MCP Tool instance for ListProjectsByApp

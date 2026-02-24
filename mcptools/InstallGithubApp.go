@@ -52,10 +52,10 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
-  - **data** (Type: string):
-      - Example: 'installation authorized successfully'
   - **success** (Type: boolean):
       - Example: 'true'
+  - **data** (Type: string):
+      - Example: 'installation authorized successfully'
 `
 
 // Response Template for the InstallGithubApp tool (Status: 400, Content-Type: application/json)

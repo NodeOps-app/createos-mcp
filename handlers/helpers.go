@@ -86,16 +86,3 @@ func makeDeleteRequest(path string, authInfo *AuthInfo) (*mcp.CallToolResult, er
 		},
 	}, nil
 }
-
-func makeDeleteRequestWithBody(path string, body interface{}, authInfo *AuthInfo) (*mcp.CallToolResult, error) {
-	resp, err := mcputils.DeleteWithBody(path, body, authInfo.Method, authInfo.Value)
-	if err != nil {
-		return nil, err
-	}
-
-	return &mcp.CallToolResult{
-		Content: []mcp.Content{
-			mcp.NewTextContent(string(resp.Body())),
-		},
-	}, nil
-}

@@ -29,6 +29,7 @@ The template shows a possible response, including its status code and content ty
 - Structure (Type: object):
   - **data** (Type: array):
     - **Items** (Type: object):
+      - **createdAt** (Type: string, date-time):
       - **description** (Type: string, nullable):
           - Nullable: true
       - **expiredAt** (Type: string, date-time, nullable):
@@ -40,7 +41,6 @@ The template shows a possible response, including its status code and content ty
           - Nullable: true
       - **updatedAt** (Type: string, date-time):
       - **userId** (Type: string):
-      - **createdAt** (Type: string, date-time):
   - **success** (Type: boolean):
       - Example: 'true'
 `
