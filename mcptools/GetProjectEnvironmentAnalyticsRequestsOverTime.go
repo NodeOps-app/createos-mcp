@@ -57,6 +57,8 @@ The template shows a possible response, including its status code and content ty
 - Structure (Type: object):
   - **data** (Type: array):
     - **Items** (Type: object):
+      - **status4xx**: Number of 4xx status code responses (Type: integer):
+          - Example: '15'
       - **status5xx**: Number of 5xx status code responses (Type: integer):
           - Example: '5'
       - **timestamp**: Unix timestamp in seconds (Type: integer, int64):
@@ -67,8 +69,6 @@ The template shows a possible response, including its status code and content ty
           - Example: '120'
       - **status3xx**: Number of 3xx status code responses (Type: integer):
           - Example: '10'
-      - **status4xx**: Number of 4xx status code responses (Type: integer):
-          - Example: '15'
   - **success** (Type: boolean):
       - Example: 'true'
 `

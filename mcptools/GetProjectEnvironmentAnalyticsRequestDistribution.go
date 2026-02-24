@@ -55,14 +55,14 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
-  - **success** (Type: boolean):
-      - Example: 'true'
   - **data** (Type: array):
     - **Items** (Type: object):
-      - **status**: HTTP status code (Type: string):
-          - Example: '200'
       - **count**: Number of requests with this status code (Type: number, float):
           - Example: '1000'
+      - **status**: HTTP status code (Type: string):
+          - Example: '200'
+  - **success** (Type: boolean):
+      - Example: 'true'
 `
 
 // Response Template for the GetProjectEnvironmentAnalyticsRequestDistribution tool (Status: 400, Content-Type: application/json)
@@ -81,10 +81,10 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
-  - **message**: Error message describing what went wrong (Type: string):
-      - Example: 'invalid uniqueName'
   - **success** (Type: boolean):
       - Example: 'false'
+  - **message**: Error message describing what went wrong (Type: string):
+      - Example: 'invalid uniqueName'
 `
 
 // Response Template for the GetProjectEnvironmentAnalyticsRequestDistribution tool (Status: 401, Content-Type: application/json)
@@ -147,10 +147,10 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
-  - **success** (Type: boolean):
-      - Example: 'false'
   - **message**: Error message describing what went wrong (Type: string):
       - Example: 'invalid uniqueName'
+  - **success** (Type: boolean):
+      - Example: 'false'
 `
 
 // Response Template for the GetProjectEnvironmentAnalyticsRequestDistribution tool (Status: 500, Content-Type: application/json)
@@ -178,7 +178,7 @@ The template shows a possible response, including its status code and content ty
 // NewGetProjectEnvironmentAnalyticsRequestDistributionMCPTool creates the MCP Tool instance for GetProjectEnvironmentAnalyticsRequestDistribution
 func NewGetProjectEnvironmentAnalyticsRequestDistributionMCPTool() mcp.Tool {
 	return mcp.NewToolWithRawSchema(
-		"GetEnvAnalyticsReqDistribution",
+		"GetProjectEnvironmentAnalyticsRequestDistribution",
 		"Get request distribution by status - Retrieves request distribution grouped by HTTP status code for a project environment.",
 		[]byte(getProjectEnvironmentAnalyticsRequestDistributionInputSchema),
 	)

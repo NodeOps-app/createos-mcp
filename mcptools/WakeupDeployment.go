@@ -43,10 +43,10 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
-  - **success** (Type: boolean):
-      - Example: 'true'
   - **data** (Type: string):
       - Example: 'deployment is being woken up'
+  - **success** (Type: boolean):
+      - Example: 'true'
 `
 
 // Response Template for the WakeupDeployment tool (Status: 400, Content-Type: application/json)

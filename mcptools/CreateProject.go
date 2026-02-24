@@ -533,11 +533,11 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
-  - **status** (Type: string):
-      - Example: 'success'
   - **data** (Type: object):
     - **id**: Unique identifier of the created project (Type: string, uuid):
         - Example: '550e8400-e29b-41d4-a716-446655440000'
+  - **status** (Type: string):
+      - Example: 'success'
 `
 
 // Response Template for the CreateProject tool (Status: 400, Content-Type: application/json)
@@ -600,10 +600,10 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
-  - **success** (Type: boolean):
-      - Example: 'false'
   - **message**: Error message describing what went wrong (Type: string):
       - Example: 'invalid uniqueName'
+  - **success** (Type: boolean):
+      - Example: 'false'
 `
 
 // Response Template for the CreateProject tool (Status: 409, Content-Type: application/json)

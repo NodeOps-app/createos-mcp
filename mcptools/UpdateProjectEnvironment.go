@@ -82,10 +82,10 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
-  - **success** (Type: boolean):
-      - Example: 'true'
   - **data** (Type: string):
       - Example: 'project environment updated successfully'
+  - **success** (Type: boolean):
+      - Example: 'true'
 `
 
 // Response Template for the UpdateProjectEnvironment tool (Status: 400, Content-Type: application/json)

@@ -42,10 +42,10 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
-  - **success** (Type: boolean):
-      - Example: 'true'
   - **data** (Type: string):
       - Example: 'project transferred successfully'
+  - **success** (Type: boolean):
+      - Example: 'true'
 `
 
 // Response Template for the TransferProject tool (Status: 400, Content-Type: application/json)

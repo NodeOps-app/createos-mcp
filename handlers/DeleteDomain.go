@@ -27,3 +27,4 @@ func DeleteDomainHandler(ctx context.Context, request mcp.CallToolRequest) (*mcp
 	return makeDeleteRequest(fmt.Sprintf("/v1/projects/%s/domains/%s", params.ProjectID, params.DomainID), authInfo)
 }
 
+

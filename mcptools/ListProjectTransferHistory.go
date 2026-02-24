@@ -37,10 +37,10 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
+  - **success** (Type: boolean):
+      - Example: 'true'
   - **data** (Type: array):
     - **Items** (Type: object):
-      - **fromUserId**: User ID of the previous owner (Type: string):
-          - Example: 'user_abc123'
       - **id**: Unique identifier of the transfer record (Type: string, uuid):
           - Example: '550e8400-e29b-41d4-a716-446655440001'
       - **projectId**: Project ID that was transferred (Type: string, uuid):
@@ -49,8 +49,8 @@ The template shows a possible response, including its status code and content ty
           - Example: 'user_xyz789'
       - **updatedAt**: Last update time of the record (Type: string, date-time):
       - **createdAt**: When the transfer occurred (Type: string, date-time):
-  - **success** (Type: boolean):
-      - Example: 'true'
+      - **fromUserId**: User ID of the previous owner (Type: string):
+          - Example: 'user_abc123'
 `
 
 // Response Template for the ListProjectTransferHistory tool (Status: 400, Content-Type: application/json)
@@ -135,10 +135,10 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
-  - **message**: Error message describing what went wrong (Type: string):
-      - Example: 'invalid uniqueName'
   - **success** (Type: boolean):
       - Example: 'false'
+  - **message**: Error message describing what went wrong (Type: string):
+      - Example: 'invalid uniqueName'
 `
 
 // Response Template for the ListProjectTransferHistory tool (Status: 500, Content-Type: application/json)
