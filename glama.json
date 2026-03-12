@@ -1,0 +1,9 @@
+{
+  "$schema": "https://glama.ai/mcp/schemas/server.json",
+  "name": "CreateOS MCP",
+  "description": "Full-stack deployment platform. Deploy GitHub repos, Docker containers, and AI-generated apps. Includes databases, environments, security scanning, and template marketplace.",
+  "repository": "https://github.com/NodeOps-app/createos-mcp",
+  "capabilities": {
+    "tools": true
+  }
+}
