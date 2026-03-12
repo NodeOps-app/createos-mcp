@@ -39,12 +39,3 @@ func GetAuthInfo(ctx context.Context, request mcp.CallToolRequest) (*AuthInfo, e
 
 	return nil, fmt.Errorf("authentication required: either X-Api-Key or Authorization Bearer token")
 }
-
-// GetAPIKey is kept for backward compatibility but now uses GetAuthInfo
-func GetAPIKey(ctx context.Context, request mcp.CallToolRequest) (string, error) {
-	authInfo, err := GetAuthInfo(ctx, request)
-	if err != nil {
-		return "", err
-	}
-	return authInfo.Value, nil
-}
