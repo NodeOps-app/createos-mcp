@@ -48,6 +48,28 @@ Built in Go for performance and reliability, the server supports both **Streamab
 
 ---
 
+## Quick Start
+
+Add the CreateOS MCP server to your AI client using this configuration:
+
+```json
+{
+  "createos": {
+    "url": "https://api-createos.nodeops.network/mcp",
+    "type": "http",
+    "headers": {
+      "X-Api-Key": "CREATEOS_API_KEY"
+    }
+  }
+}
+```
+
+> Replace `CREATEOS_API_KEY` with your actual key from [Profile Settings](https://createos.nodeops.network).
+
+For client-specific setup instructions, see the [Integration docs](https://nodeops.network/createos/docs/API-MCP/CreateOS-MCP).
+
+---
+
 ## Usage Examples
 
 Once connected, interact with CreateOS through natural language in your AI assistant:
