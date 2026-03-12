@@ -1,0 +1,75 @@
+name: image-build-push
+
+on:
+  push:
+
+concurrency:
+  cancel-in-progress: true
+  group: ${{ github.workflow }}-${{ github.ref }}
+
+permissions:
+  contents: read
+
+jobs:
+  image-build-push:
+    permissions:
+      contents: read
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout repository
+        uses: actions/checkout@v6
+
+      - name: install asdf & tools
+        uses: asdf-vm/actions/install@v4
+
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.asdf/installs/golang
+            ~/.asdf/plugins/golang
+            ~/.asdf/installs/golang/*/packages/pkg/mod
+            ~/.cache/go-build
+            ~/.cache/golangci-lint
+          key: ${{ runner.os }}-golangci-${{ hashfiles('**/go.sum') }}
+
+      - name: test
+        run: |
+          set -x
+          go test -tags dev ./...
+
+      - name: build
+        run: |
+          set -x
+          cgo_enabled=0	go build -trimpath -ldflags="-s -w -extldflags '-static'" -o nodeops *.go
+          ldd nodeops || true
+
+      - name: get tags
+        id: timestamp
+        run: |
+          echo "timestamp=$(date +%s)" >>$GITHUB_OUTPUT
+          echo "git_short_sha=$(git rev-parse --short ${{ github.sha }})" >>$GITHUB_OUTPUT
+
+      - name: extract metadata (tags, labels) for docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: |
+            ${{ secrets.IMAGE_NAME }}
+          tags: |
+            type=raw,value=${{ github.ref_name }}-${{ steps.timestamp.outputs.git_short_sha }}-${{ steps.timestamp.outputs.timestamp }}
+
+      - name: login to container registry
+        if: ${{ contains('main', github.ref_name) }}
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ secrets.NODEOPS_REG }}
+          username: ${{ secrets.NODEOPS_REG_USER }}
+          password: ${{ secrets.NODEOPS_REG_PASSWORD }}
+
+      - name: Build and push
+        if: ${{ contains('main', github.ref_name) }}
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
