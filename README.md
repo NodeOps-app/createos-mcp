@@ -1,5 +1,9 @@
 # CreateOS MCP Server
 
+<a href="https://glama.ai/mcp/servers/NodeOps-app/createos-mcp">
+  <img width="380" height="200" src="https://glama.ai/mcp/servers/NodeOps-app/createos-mcp/badge" alt="CreateOS MCP server" />
+</a>
+
 ## Configuration
 
 ### Via API Key
