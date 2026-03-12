@@ -1,5 +1,4 @@
 [![GitHub Stars](https://img.shields.io/github/stars/NodeOps-app/createos-mcp?style=flat&logo=github)](https://github.com/NodeOps-app/createos-mcp/stargazers)
-[![GitHub Forks](https://img.shields.io/github/forks/NodeOps-app/createos-mcp?style=flat&logo=github)](https://github.com/NodeOps-app/createos-mcp/network/members)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Go Version](https://img.shields.io/badge/Go-1.25-00ADD8?logo=go&logoColor=white)](https://go.dev)
 [![Build Status](https://img.shields.io/github/actions/workflow/status/NodeOps-app/createos-mcp/ci.yaml?branch=main&logo=github)](https://github.com/NodeOps-app/createos-mcp/actions)
