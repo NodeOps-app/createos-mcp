@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	mcputils "github.com/NodeOps-app/autogen-backend-v2-mcp/helpers"
+	mcputils "github.com/NodeOps-app/createos-mcp/helpers"
 	"github.com/mark3labs/mcp-go/mcp"
 )
 
@@ -25,4 +25,3 @@ func ListProjectEnvironmentsHandler(ctx context.Context, request mcp.CallToolReq
 
 	return makeGetRequest(fmt.Sprintf("/v1/projects/%s/environments", params.ProjectID), nil, authInfo)
 }
-

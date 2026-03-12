@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	mcputils "github.com/NodeOps-app/autogen-backend-v2-mcp/helpers"
+	mcputils "github.com/NodeOps-app/createos-mcp/helpers"
 	"github.com/mark3labs/mcp-go/mcp"
 )
 
@@ -26,4 +26,3 @@ func CreateProjectEnvironmentHandler(ctx context.Context, request mcp.CallToolRe
 
 	return makePostRequest(fmt.Sprintf("/v1/projects/%s/environments", params.ProjectID), params.Body, authInfo)
 }
-

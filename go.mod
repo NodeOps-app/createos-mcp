@@ -1,4 +1,4 @@
-module github.com/NodeOps-app/autogen-backend-v2-mcp
+module github.com/NodeOps-app/createos-mcp
 
 go 1.25.0
 

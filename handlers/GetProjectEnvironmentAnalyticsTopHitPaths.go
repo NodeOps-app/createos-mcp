@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strconv"
 
-	mcputils "github.com/NodeOps-app/autogen-backend-v2-mcp/helpers"
+	mcputils "github.com/NodeOps-app/createos-mcp/helpers"
 	"github.com/mark3labs/mcp-go/mcp"
 )
 
@@ -37,4 +37,3 @@ func GetProjectEnvironmentAnalyticsTopHitPathsHandler(ctx context.Context, reque
 
 	return makeGetRequest(fmt.Sprintf("/v1/projects/%s/environments/%s/analytics/top-hit-paths", params.ProjectID, params.EnvironmentID), queryParams, authInfo)
 }
-

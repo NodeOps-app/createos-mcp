@@ -12,8 +12,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/NodeOps-app/autogen-backend-v2-mcp/config"
-	"github.com/NodeOps-app/autogen-backend-v2-mcp/pkg/oauth"
+	"github.com/NodeOps-app/createos-mcp/config"
+	"github.com/NodeOps-app/createos-mcp/pkg/oauth"
 	"github.com/mark3labs/mcp-go/server"
 	"golang.org/x/time/rate"
 )

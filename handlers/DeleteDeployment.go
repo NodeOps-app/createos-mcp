@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	mcputils "github.com/NodeOps-app/autogen-backend-v2-mcp/helpers"
+	mcputils "github.com/NodeOps-app/createos-mcp/helpers"
 	"github.com/mark3labs/mcp-go/mcp"
 )
 
@@ -26,4 +26,3 @@ func DeleteDeploymentHandler(ctx context.Context, request mcp.CallToolRequest) (
 
 	return makeDeleteRequest(fmt.Sprintf("/v1/projects/%s/deployments/%s", params.ProjectID, params.DeploymentID), authInfo)
 }
-

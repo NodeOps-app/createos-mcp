@@ -1,8 +1,8 @@
 package main
 
 import (
-	handler "github.com/NodeOps-app/autogen-backend-v2-mcp/handlers"
-	"github.com/NodeOps-app/autogen-backend-v2-mcp/mcptools"
+	handler "github.com/NodeOps-app/createos-mcp/handlers"
+	"github.com/NodeOps-app/createos-mcp/mcptools"
 	"github.com/mark3labs/mcp-go/server"
 )
 

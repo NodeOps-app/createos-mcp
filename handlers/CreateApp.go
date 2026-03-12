@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	mcputils "github.com/NodeOps-app/autogen-backend-v2-mcp/helpers"
+	mcputils "github.com/NodeOps-app/createos-mcp/helpers"
 	"github.com/mark3labs/mcp-go/mcp"
 )
 
@@ -25,5 +25,3 @@ func CreateAppHandler(ctx context.Context, request mcp.CallToolRequest) (*mcp.Ca
 
 	return makePostRequest("/v1/apps", params.Body, authInfo)
 }
-
-

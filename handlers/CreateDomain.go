@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	mcputils "github.com/NodeOps-app/autogen-backend-v2-mcp/helpers"
+	mcputils "github.com/NodeOps-app/createos-mcp/helpers"
 	"github.com/mark3labs/mcp-go/mcp"
 )
 
@@ -26,5 +26,3 @@ func CreateDomainHandler(ctx context.Context, request mcp.CallToolRequest) (*mcp
 
 	return makePostRequest(fmt.Sprintf("/v1/projects/%s/domains", params.ProjectID), params.Body, authInfo)
 }
-
-

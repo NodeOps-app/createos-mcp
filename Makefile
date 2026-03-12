@@ -1,10 +1,10 @@
 .PHONY: help build run test clean install deps fmt lint docker-build docker-run
 
 # Variables
-BINARY_NAME := autogen-backend-v2-mcp
+BINARY_NAME := createos-mcp
 CONFIG_PATH := config-files/config.yaml
-GO_VERSION := 1.23.5
-DOCKER_IMAGE := autogen-v2-mcp
+GO_VERSION := 1.25.0
+DOCKER_IMAGE := createos-mcp
 DOCKER_TAG := latest
 
 # Default target

@@ -3,7 +3,7 @@ package mcputils
 import (
 	"fmt"
 
-	"github.com/NodeOps-app/autogen-backend-v2-mcp/config"
+	"github.com/NodeOps-app/createos-mcp/config"
 	"github.com/go-resty/resty/v2"
 )
 

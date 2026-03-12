@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strconv"
 
-	mcputils "github.com/NodeOps-app/autogen-backend-v2-mcp/helpers"
+	mcputils "github.com/NodeOps-app/createos-mcp/helpers"
 	"github.com/mark3labs/mcp-go/mcp"
 )
 
@@ -36,4 +36,3 @@ func ListDeploymentsHandler(ctx context.Context, request mcp.CallToolRequest) (*
 
 	return makeGetRequest(fmt.Sprintf("/v1/projects/%s/deployments", params.ProjectID), queryParams, authInfo)
 }
-
