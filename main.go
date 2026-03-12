@@ -6,12 +6,16 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"net"
 	"net/http"
 	"strings"
+	"sync"
+	"time"
 
 	"github.com/NodeOps-app/autogen-backend-v2-mcp/config"
 	"github.com/NodeOps-app/autogen-backend-v2-mcp/pkg/oauth"
 	"github.com/mark3labs/mcp-go/server"
+	"golang.org/x/time/rate"
 )
 
 func main() {
@@ -38,10 +42,12 @@ func main() {
 
 		var mcpHandler http.Handler = httpServer
 
+		registerStore := newRateLimiterStore()
+
 		mux := http.NewServeMux()
 		mux.Handle("/.well-known/oauth-authorization-server", corsMiddleware(oauthAuthorizationServerHandler()))
 		mux.Handle("/.well-known/oauth-protected-resource", corsMiddleware(prmMetadataHandler()))
-		mux.Handle("/register", corsMiddleware(registerHandler(config.Cfg)))
+		mux.Handle("/register", corsMiddleware(registerRateLimitMiddleware(registerStore, registerHandler(config.Cfg))))
 
 		mcpHandler = corsMiddleware(mcpHandler)
 		mcpHandler = authMiddleware(*config.Cfg, mcpHandler)
@@ -58,6 +64,62 @@ func main() {
 	default:
 		log.Fatalf("Invalid transport mode: %s. Use 'stdio' or 'http'", config.Cfg.Transport)
 	}
+}
+
+type ipLimiter struct {
+	limiter  *rate.Limiter
+	lastSeen time.Time
+}
+
+type rateLimiterStore struct {
+	mu       sync.Mutex
+	limiters map[string]*ipLimiter
+}
+
+func newRateLimiterStore() *rateLimiterStore {
+	store := &rateLimiterStore{
+		limiters: make(map[string]*ipLimiter),
+	}
+	// Periodically clean up stale entries
+	go func() {
+		for range time.Tick(5 * time.Minute) {
+			store.mu.Lock()
+			for ip, l := range store.limiters {
+				if time.Since(l.lastSeen) > 10*time.Minute {
+					delete(store.limiters, ip)
+				}
+			}
+			store.mu.Unlock()
+		}
+	}()
+	return store
+}
+
+func (s *rateLimiterStore) get(ip string) *rate.Limiter {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	l, ok := s.limiters[ip]
+	if !ok {
+		// 5 requests per minute, burst of 5
+		l = &ipLimiter{limiter: rate.NewLimiter(rate.Every(time.Minute/5), 5)}
+		s.limiters[ip] = l
+	}
+	l.lastSeen = time.Now()
+	return l.limiter
+}
+
+func registerRateLimitMiddleware(store *rateLimiterStore, next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		ip, _, err := net.SplitHostPort(r.RemoteAddr)
+		if err != nil {
+			ip = r.RemoteAddr
+		}
+		if !store.get(ip).Allow() {
+			http.Error(w, "Too Many Requests", http.StatusTooManyRequests)
+			return
+		}
+		next.ServeHTTP(w, r)
+	})
 }
 
 func corsMiddleware(next http.Handler) http.Handler {
@@ -83,19 +145,8 @@ func loggingMiddleware(next http.Handler) http.Handler {
 		log.Printf("=== Request ===")
 		log.Printf("Method: %s", r.Method)
 		log.Printf("Path: %s", r.URL.Path)
-		log.Printf("Query: %s", r.URL.RawQuery)
 		log.Printf("RemoteAddr: %s", r.RemoteAddr)
 		log.Printf("User-Agent: %s", r.UserAgent())
-		if r.Method == "POST" || r.Method == "PUT" || r.Method == "PATCH" {
-			// Read body for logging (we'll need to restore it)
-			body, err := io.ReadAll(r.Body)
-			if err == nil {
-				log.Printf("Body: %s", string(body))
-				// Restore body for the next handler
-				r.Body = io.NopCloser(strings.NewReader(string(body)))
-			}
-		}
-		log.Printf("Headers: %v", r.Header)
 		log.Printf("===============")
 		next.ServeHTTP(w, r)
 	})
@@ -234,7 +285,7 @@ type ClientRegistrationResponse struct {
 }
 
 func registerHandler(cfg *config.Config) http.Handler {
-	oauthClient := oauth.NewOAuthClient(cfg.APIBaseUrl, "")
+	oauthClient := oauth.NewOAuthClient(cfg.APIBaseUrl, cfg.MCPServerToken)
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		log.Printf("OAuth Authorization Server endpoint accessed: %s %s", r.Method, r.URL.Path)
@@ -252,14 +303,12 @@ func registerHandler(cfg *config.Config) http.Handler {
 			return
 		}
 
-		fmt.Printf("Request body ---->>>>>>: %s", string(body))
-
 		var registrationRequest ClientRegistrationRequest
 		if err := json.Unmarshal(body, &registrationRequest); err != nil {
 			http.Error(w, "Failed to unmarshal request body", http.StatusInternalServerError)
 			return
 		}
-		log.Printf("Registration request: %+v", registrationRequest)
+		log.Printf("Registration request received for client: %s", registrationRequest.ClientName)
 
 		if len(registrationRequest.Scope) == 0 {
 			registrationRequest.Scope = strings.Join(cfg.SupportedScopes, " ")
@@ -285,7 +334,7 @@ func registerHandler(cfg *config.Config) http.Handler {
 		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 
 		// Write status code
-		w.WriteHeader(http.StatusCreated) // 201 Created for registration
+		w.WriteHeader(http.StatusCreated)
 
 		// Encode JSON response directly to response writer
 		encoder := json.NewEncoder(w)
