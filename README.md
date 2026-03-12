@@ -54,11 +54,13 @@ Add the CreateOS MCP server to your AI client using this configuration:
 
 ```json
 {
-  "createos": {
-    "url": "https://api-createos.nodeops.network/mcp",
-    "type": "http",
-    "headers": {
-      "X-Api-Key": "CREATEOS_API_KEY"
+  "mcpServers": {
+    "createos": {
+      "url": "https://api-createos.nodeops.network/mcp",
+      "type": "http",
+      "headers": {
+        "X-Api-Key": "CREATEOS_API_KEY"
+      }
     }
   }
 }
