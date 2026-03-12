@@ -1,4 +1,4 @@
-## CreateOS MCP Server
+# CreateOS MCP Server
 
 ## Configuration
 
