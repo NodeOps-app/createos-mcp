@@ -1,7 +1,7 @@
 port: 8080
-base_url: 
-authorization_server_url: 
-api_base_url: 
+base_url:
+authorization_server_url:
+api_base_url:
 transport: http
 log_level: debug
 
@@ -28,7 +28,8 @@ code_challenge_methods_supported:
 token_endpoint_auth_methods_supported:
   - none
 
-issuer: 
-authorization_endpoint: 
-token_endpoint: 
-revoke_endpoint: 
+issuer:
+authorization_endpoint:
+token_endpoint:
+revoke_endpoint:
+mcp_server_token:

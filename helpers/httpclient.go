@@ -45,7 +45,7 @@ func Get(path string, queryParams map[string]string, authMethod string, authValu
 	}
 
 	if resp.IsError() {
-		return resp, fmt.Errorf("API error (status %d): %s", resp.StatusCode(), string(resp.Body()))
+		return resp, fmt.Errorf("API error (status %d)", resp.StatusCode())
 	}
 
 	return resp, nil
@@ -71,7 +71,7 @@ func Post(path string, body interface{}, authMethod string, authValue string) (*
 	}
 
 	if resp.IsError() {
-		return resp, fmt.Errorf("API error (status %d): %s", resp.StatusCode(), string(resp.Body()))
+		return resp, fmt.Errorf("API error (status %d)", resp.StatusCode())
 	}
 
 	return resp, nil
@@ -97,7 +97,7 @@ func Put(path string, body interface{}, authMethod string, authValue string) (*r
 	}
 
 	if resp.IsError() {
-		return resp, fmt.Errorf("API error (status %d): %s", resp.StatusCode(), string(resp.Body()))
+		return resp, fmt.Errorf("API error (status %d)", resp.StatusCode())
 	}
 
 	return resp, nil
@@ -123,7 +123,7 @@ func Patch(path string, body interface{}, authMethod string, authValue string) (
 	}
 
 	if resp.IsError() {
-		return resp, fmt.Errorf("API error (status %d): %s", resp.StatusCode(), string(resp.Body()))
+		return resp, fmt.Errorf("API error (status %d)", resp.StatusCode())
 	}
 
 	return resp, nil
@@ -149,7 +149,7 @@ func Delete(path string, authMethod string, authValue string) (*resty.Response, 
 	}
 
 	if resp.IsError() {
-		return resp, fmt.Errorf("API error (status %d): %s", resp.StatusCode(), string(resp.Body()))
+		return resp, fmt.Errorf("API error (status %d)", resp.StatusCode())
 	}
 
 	return resp, nil
@@ -175,7 +175,7 @@ func DeleteWithBody(path string, body interface{}, authMethod string, authValue 
 	}
 
 	if resp.IsError() {
-		return resp, fmt.Errorf("API error (status %d): %s", resp.StatusCode(), string(resp.Body()))
+		return resp, fmt.Errorf("API error (status %d)", resp.StatusCode())
 	}
 
 	return resp, nil

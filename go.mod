@@ -1,10 +1,11 @@
 module github.com/NodeOps-app/autogen-backend-v2-mcp
 
-go 1.23.5
+go 1.25.0
 
 require (
 	github.com/go-resty/resty/v2 v2.17.0
 	github.com/mark3labs/mcp-go v0.43.2
+	golang.org/x/time v0.15.0
 	gopkg.in/yaml.v3 v3.0.1
 )
 
