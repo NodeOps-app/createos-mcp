@@ -52,7 +52,7 @@ func (o OAuthClient) CreateDCRClientRegistration(request DCRClientRegistrationRe
 	}
 
 	if resp.StatusCode() != http.StatusCreated {
-		return response.Data, fmt.Errorf("failed to create DCR client registration: %s", resp.String())
+		return response.Data, fmt.Errorf("failed to create DCR client registration (status %d)", resp.StatusCode())
 	}
 
 	return response.Data, nil

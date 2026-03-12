@@ -27,6 +27,8 @@ type Config struct {
 	AuthorizationEndpoint string `yaml:"authorization_endpoint"`
 	TokenEndpoint         string `yaml:"token_endpoint"`
 	RevokeEndpoint        string `yaml:"revoke_endpoint"`
+
+	MCPServerToken string `yaml:"mcp_server_token"`
 }
 
 var Cfg *Config
