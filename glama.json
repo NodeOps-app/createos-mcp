@@ -1,6 +1,53 @@
 {
   "$schema": "https://glama.ai/mcp/schemas/server.json",
   "name": "CreateOS MCP",
+  "description": "Deploy, manage, and scale full-stack applications directly from your AI assistant. 85+ MCP tools covering projects, deployments, environments, domains, databases, security scanning, analytics, GitHub integration, template marketplace, and more. Supports GitHub repos, Docker containers, and file uploads across 11 runtimes and 15 frameworks.",
+  "repository": "https://github.com/NodeOps-app/createos-mcp",
+  "homepage": "https://nodeops.network/createos/mcp",
+  "author": {
+    "name": "NodeOps",
+    "email": "naman@nodeops.network"
+  },
+  "capabilities": {
+    "tools": true,
+    "resources": false,
+    "prompts": false
+  },
+  "transport": {
+    "type": "http",
+    "url": "https://api-createos.nodeops.network/mcp",
+    "authentication": {
+      "type": "oauth",
+      "flows": ["authorization_code"],
+      "pkce": true
+    }
+  },
+  "categories": [
+    "cloud-infrastructure",
+    "deployment",
+    "devops"
+  ],
+  "tags": [
+    "deployment",
+    "hosting",
+    "cloud",
+    "docker",
+    "github",
+    "devops",
+    "infrastructure",
+    "databases",
+    "security",
+    "analytics",
+    "environments",
+    "domains",
+    "templates",
+    "ai-agents"
+  ],
+  "runtime": "go",
+  "license": "MIT"
+}{
+  "$schema": "https://glama.ai/mcp/schemas/server.json",
+  "name": "CreateOS MCP",
   "description": "Full-stack deployment platform. Deploy GitHub repos, Docker containers, and AI-generated apps. Includes databases, environments, security scanning, and template marketplace.",
   "repository": "https://github.com/NodeOps-app/createos-mcp",
   "capabilities": {
