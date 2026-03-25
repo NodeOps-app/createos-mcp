@@ -3,6 +3,7 @@
 [![Go Version](https://img.shields.io/badge/Go-1.25-00ADD8?logo=go&logoColor=white)](https://go.dev)
 [![Build Status](https://img.shields.io/github/actions/workflow/status/NodeOps-app/createos-mcp/ci.yaml?branch=main&logo=github)](https://github.com/NodeOps-app/createos-mcp/actions)
 [![Last Commit](https://img.shields.io/github/last-commit/NodeOps-app/createos-mcp?logo=github)](https://github.com/NodeOps-app/createos-mcp/commits/main)
+[![NodeOps-app/createos-mcp MCP server](https://glama.ai/mcp/servers/NodeOps-app/createos-mcp/badges/score.svg)](https://glama.ai/mcp/servers/NodeOps-app/createos-mcp)
 
 # CreateOS MCP
 
