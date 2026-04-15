@@ -457,10 +457,10 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
-  - **message**: Error message describing what went wrong (Type: string):
-      - Example: 'invalid uniqueName'
   - **success** (Type: boolean):
       - Example: 'false'
+  - **message**: Error message describing what went wrong (Type: string):
+      - Example: 'invalid uniqueName'
 `
 
 // Response Template for the UpdateProjectSettings tool (Status: 401, Content-Type: application/json)
@@ -479,10 +479,10 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
-  - **message**: Error message describing what went wrong (Type: string):
-      - Example: 'invalid uniqueName'
   - **success** (Type: boolean):
       - Example: 'false'
+  - **message**: Error message describing what went wrong (Type: string):
+      - Example: 'invalid uniqueName'
 `
 
 // Response Template for the UpdateProjectSettings tool (Status: 403, Content-Type: application/json)
@@ -501,10 +501,10 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
-  - **message**: Error message describing what went wrong (Type: string):
-      - Example: 'invalid uniqueName'
   - **success** (Type: boolean):
       - Example: 'false'
+  - **message**: Error message describing what went wrong (Type: string):
+      - Example: 'invalid uniqueName'
 `
 
 // Response Template for the UpdateProjectSettings tool (Status: 404, Content-Type: application/json)
@@ -523,10 +523,10 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
-  - **message**: Error message describing what went wrong (Type: string):
-      - Example: 'invalid uniqueName'
   - **success** (Type: boolean):
       - Example: 'false'
+  - **message**: Error message describing what went wrong (Type: string):
+      - Example: 'invalid uniqueName'
 `
 
 // Response Template for the UpdateProjectSettings tool (Status: 500, Content-Type: application/json)
@@ -545,10 +545,10 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
-  - **message**: Error message describing what went wrong (Type: string):
-      - Example: 'invalid uniqueName'
   - **success** (Type: boolean):
       - Example: 'false'
+  - **message**: Error message describing what went wrong (Type: string):
+      - Example: 'invalid uniqueName'
 `
 
 // NewUpdateProjectSettingsMCPTool creates the MCP Tool instance for UpdateProjectSettings

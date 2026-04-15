@@ -44,33 +44,33 @@ The template shows a possible response, including its status code and content ty
 
 - Structure (Type: object):
   - **data** (Type: object):
-    - **failedReason**: Reason for failure if status is failed (Type: string, nullable):
-        - Nullable: true
-    - **status**: Current status of the security scan (Type: string):
-        - Example: 'success'
-        - Enum: ['pending', 'in_progress', 'success', 'failed']
+    - **type**: Type of security scan (Type: string):
+        - Example: 'vulnerability'
+    - **deploymentId**: Deployment ID this report belongs to (Type: string, uuid):
+        - Example: '550e8400-e29b-41d4-a716-446655440001'
     - **parsedReport**: Parsed security scan results (Type: object, nullable):
         - Nullable: true
       - **Allows Additional Properties**
-    - **type**: Type of security scan (Type: string):
-        - Example: 'vulnerability'
-    - **id**: Security scan report ID (Type: string, uuid):
-        - Example: '550e8400-e29b-41d4-a716-446655440000'
-    - **deploymentId**: Deployment ID this report belongs to (Type: string, uuid):
-        - Example: '550e8400-e29b-41d4-a716-446655440001'
-    - **tool**: Security scanning tool used (Type: string):
-        - Example: 'trivy'
-    - **createdAt**: When the report was created (Type: string, date-time):
-        - Example: '2025-01-17T12:00:00Z'
     - **deletedAt**: When the report was deleted (Type: string, date-time, nullable):
         - Nullable: true
+    - **failedReason**: Reason for failure if status is failed (Type: string, nullable):
+        - Nullable: true
+    - **id**: Security scan report ID (Type: string, uuid):
+        - Example: '550e8400-e29b-41d4-a716-446655440000'
+    - **tool**: Security scanning tool used (Type: string):
+        - Example: 'trivy'
+    - **expiresAt**: When the scan job times out (Type: string, date-time):
+        - Example: '2025-01-18T12:00:00Z'
     - **executor**: Worker that executed the scan (Type: string, nullable):
         - Nullable: true
         - Example: 'worker-1'
-    - **expiresAt**: When the scan job times out (Type: string, date-time):
-        - Example: '2025-01-18T12:00:00Z'
+    - **status**: Current status of the security scan (Type: string):
+        - Example: 'success'
+        - Enum: ['pending', 'in_progress', 'success', 'failed']
     - **updatedAt**: When the report was last updated (Type: string, date-time):
         - Example: '2025-01-17T12:30:00Z'
+    - **createdAt**: When the report was created (Type: string, date-time):
+        - Example: '2025-01-17T12:00:00Z'
   - **success** (Type: boolean):
       - Example: 'true'
 `
@@ -91,10 +91,10 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
-  - **message**: Error message describing what went wrong (Type: string):
-      - Example: 'invalid uniqueName'
   - **success** (Type: boolean):
       - Example: 'false'
+  - **message**: Error message describing what went wrong (Type: string):
+      - Example: 'invalid uniqueName'
 `
 
 // Response Template for the GetSecurityScan tool (Status: 401, Content-Type: application/json)
@@ -113,10 +113,10 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
-  - **message**: Error message describing what went wrong (Type: string):
-      - Example: 'invalid uniqueName'
   - **success** (Type: boolean):
       - Example: 'false'
+  - **message**: Error message describing what went wrong (Type: string):
+      - Example: 'invalid uniqueName'
 `
 
 // Response Template for the GetSecurityScan tool (Status: 403, Content-Type: application/json)
@@ -135,10 +135,10 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
-  - **message**: Error message describing what went wrong (Type: string):
-      - Example: 'invalid uniqueName'
   - **success** (Type: boolean):
       - Example: 'false'
+  - **message**: Error message describing what went wrong (Type: string):
+      - Example: 'invalid uniqueName'
 `
 
 // Response Template for the GetSecurityScan tool (Status: 404, Content-Type: application/json)
@@ -157,10 +157,10 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
-  - **message**: Error message describing what went wrong (Type: string):
-      - Example: 'invalid uniqueName'
   - **success** (Type: boolean):
       - Example: 'false'
+  - **message**: Error message describing what went wrong (Type: string):
+      - Example: 'invalid uniqueName'
 `
 
 // Response Template for the GetSecurityScan tool (Status: 500, Content-Type: application/json)
@@ -179,10 +179,10 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
-  - **message**: Error message describing what went wrong (Type: string):
-      - Example: 'invalid uniqueName'
   - **success** (Type: boolean):
       - Example: 'false'
+  - **message**: Error message describing what went wrong (Type: string):
+      - Example: 'invalid uniqueName'
 `
 
 // NewGetSecurityScanMCPTool creates the MCP Tool instance for GetSecurityScan

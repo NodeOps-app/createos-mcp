@@ -39,35 +39,35 @@ The template shows a possible response, including its status code and content ty
   - **data** (Type: object):
     - **Combines All Of the following structures**:
       - **Part 1**: Project template model (Type: object):
+        - **projectConfiguration** (Type: object):
+        - **environmentConfiguration** (Type: object):
         - **createdAt** (Type: string, date-time):
-        - **name** (Type: string):
-        - **deploymentResources** (Type: object):
-        - **useCases** (Type: string):
+        - **description** (Type: string):
         - **imageUri** (Type: string):
-        - **updatedAt** (Type: string, date-time):
         - **categories** (Type: array):
           - **Items** (Type: string):
+        - **id** (Type: string, uuid):
+        - **buildResources** (Type: object):
+        - **name** (Type: string):
+        - **userId** (Type: string):
+        - **useCases** (Type: string):
+        - **overview** (Type: string):
+        - **projectId** (Type: string, uuid):
+        - **updatedAt** (Type: string, date-time):
+        - **environmentId** (Type: string, uuid):
         - **status** (Type: string):
             - Enum: ['draft', 'underReview', 'publishing', 'listed', 'rejected', 'deleted']
-        - **projectConfiguration** (Type: object):
-        - **id** (Type: string, uuid):
-        - **projectId** (Type: string, uuid):
-        - **amount** (Type: number):
+        - **deploymentResources** (Type: object):
         - **videoUrl** (Type: string):
-        - **environmentConfiguration** (Type: object):
-        - **environmentId** (Type: string, uuid):
-        - **buildResources** (Type: object):
-        - **overview** (Type: string):
-        - **description** (Type: string):
-        - **userId** (Type: string):
+        - **amount** (Type: number):
       - **Part 2** (Type: object):
-        - **hasUserPurchased** (Type: boolean):
-        - **templatePurchasedId** (Type: string, uuid, nullable):
-            - Nullable: true
         - **author** (Type: object):
           - **id**: User ID of the author (Type: string):
           - **name**: Display name or email local part (Type: string, nullable):
               - Nullable: true
+        - **hasUserPurchased** (Type: boolean):
+        - **templatePurchasedId** (Type: string, uuid, nullable):
+            - Nullable: true
   - **status** (Type: string):
       - Example: 'success'
 `
@@ -88,10 +88,10 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
-  - **message**: Error message describing what went wrong (Type: string):
-      - Example: 'invalid uniqueName'
   - **success** (Type: boolean):
       - Example: 'false'
+  - **message**: Error message describing what went wrong (Type: string):
+      - Example: 'invalid uniqueName'
 `
 
 // Response Template for the GetProjectTemplate tool (Status: 403, Content-Type: application/json)
@@ -132,10 +132,10 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
-  - **message**: Error message describing what went wrong (Type: string):
-      - Example: 'invalid uniqueName'
   - **success** (Type: boolean):
       - Example: 'false'
+  - **message**: Error message describing what went wrong (Type: string):
+      - Example: 'invalid uniqueName'
 `
 
 // Response Template for the GetProjectTemplate tool (Status: 500, Content-Type: application/json)

@@ -39,24 +39,24 @@ The template shows a possible response, including its status code and content ty
 - Structure (Type: object):
   - **data** (Type: array):
     - **Items** (Type: object):
-      - **branch** (Type: string):
-      - **settings** (Type: object):
-      - **resources** (Type: object):
-      - **createdAt** (Type: string, date-time):
-      - **description** (Type: string):
-      - **uniqueName** (Type: string):
-      - **projectDeploymentId** (Type: string, uuid, nullable):
-          - Nullable: true
-      - **id** (Type: string, uuid):
-      - **projectId** (Type: string, uuid):
       - **status** (Type: string):
           - Enum: ['active', 'updating', 'promoting', 'resizing', 'deleting']
+      - **branch** (Type: string):
+      - **displayName**: Display name for the environment (Type: string):
+      - **resources** (Type: object):
       - **extra**: Additional deployment information (URLs, etc.) (Type: object):
         - **Additional Properties**:
           - **property value** (Type: string):
-      - **displayName**: Display name for the environment (Type: string):
-      - **isAutoPromoteEnabled** (Type: boolean):
+      - **id** (Type: string, uuid):
+      - **uniqueName** (Type: string):
+      - **projectDeploymentId** (Type: string, uuid, nullable):
+          - Nullable: true
+      - **settings** (Type: object):
+      - **createdAt** (Type: string, date-time):
+      - **projectId** (Type: string, uuid):
       - **updatedAt** (Type: string, date-time):
+      - **description** (Type: string):
+      - **isAutoPromoteEnabled** (Type: boolean):
   - **success** (Type: boolean):
       - Example: 'true'
 `
@@ -99,10 +99,10 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
-  - **message**: Error message describing what went wrong (Type: string):
-      - Example: 'invalid uniqueName'
   - **success** (Type: boolean):
       - Example: 'false'
+  - **message**: Error message describing what went wrong (Type: string):
+      - Example: 'invalid uniqueName'
 `
 
 // Response Template for the ListProjectEnvironments tool (Status: 403, Content-Type: application/json)
@@ -121,10 +121,10 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
-  - **message**: Error message describing what went wrong (Type: string):
-      - Example: 'invalid uniqueName'
   - **success** (Type: boolean):
       - Example: 'false'
+  - **message**: Error message describing what went wrong (Type: string):
+      - Example: 'invalid uniqueName'
 `
 
 // Response Template for the ListProjectEnvironments tool (Status: 404, Content-Type: application/json)
@@ -143,10 +143,10 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
-  - **message**: Error message describing what went wrong (Type: string):
-      - Example: 'invalid uniqueName'
   - **success** (Type: boolean):
       - Example: 'false'
+  - **message**: Error message describing what went wrong (Type: string):
+      - Example: 'invalid uniqueName'
 `
 
 // Response Template for the ListProjectEnvironments tool (Status: 422, Content-Type: application/json)
@@ -165,10 +165,10 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
-  - **message**: Error message describing what went wrong (Type: string):
-      - Example: 'invalid uniqueName'
   - **success** (Type: boolean):
       - Example: 'false'
+  - **message**: Error message describing what went wrong (Type: string):
+      - Example: 'invalid uniqueName'
 `
 
 // Response Template for the ListProjectEnvironments tool (Status: 500, Content-Type: application/json)
@@ -187,10 +187,10 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
-  - **message**: Error message describing what went wrong (Type: string):
-      - Example: 'invalid uniqueName'
   - **success** (Type: boolean):
       - Example: 'false'
+  - **message**: Error message describing what went wrong (Type: string):
+      - Example: 'invalid uniqueName'
 `
 
 // NewListProjectEnvironmentsMCPTool creates the MCP Tool instance for ListProjectEnvironments

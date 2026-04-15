@@ -50,20 +50,20 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
-  - **success** (Type: boolean):
-      - Example: 'true'
   - **data** (Type: object):
     - **data** (Type: array):
       - **Items**: Service instance with optional plan information (Type: object):
     - **pagination** (Type: object):
-      - **offset**: Number of items skipped (Type: integer):
-          - Example: '0'
-      - **total**: Total number of items available (Type: integer):
-          - Example: '100'
       - **count**: Number of items in the current page (Type: integer):
           - Example: '10'
       - **limit**: Maximum number of items per page (Type: integer):
           - Example: '10'
+      - **offset**: Number of items skipped (Type: integer):
+          - Example: '0'
+      - **total**: Total number of items available (Type: integer):
+          - Example: '100'
+  - **success** (Type: boolean):
+      - Example: 'true'
 `
 
 // Response Template for the ListServicesByApp tool (Status: 400, Content-Type: application/json)
@@ -82,10 +82,10 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
-  - **message**: Error message describing what went wrong (Type: string):
-      - Example: 'invalid uniqueName'
   - **success** (Type: boolean):
       - Example: 'false'
+  - **message**: Error message describing what went wrong (Type: string):
+      - Example: 'invalid uniqueName'
 `
 
 // Response Template for the ListServicesByApp tool (Status: 401, Content-Type: application/json)
@@ -104,10 +104,10 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
-  - **message**: Error message describing what went wrong (Type: string):
-      - Example: 'invalid uniqueName'
   - **success** (Type: boolean):
       - Example: 'false'
+  - **message**: Error message describing what went wrong (Type: string):
+      - Example: 'invalid uniqueName'
 `
 
 // Response Template for the ListServicesByApp tool (Status: 403, Content-Type: application/json)
@@ -126,10 +126,10 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
-  - **message**: Error message describing what went wrong (Type: string):
-      - Example: 'invalid uniqueName'
   - **success** (Type: boolean):
       - Example: 'false'
+  - **message**: Error message describing what went wrong (Type: string):
+      - Example: 'invalid uniqueName'
 `
 
 // Response Template for the ListServicesByApp tool (Status: 404, Content-Type: application/json)
@@ -170,10 +170,10 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
-  - **message**: Error message describing what went wrong (Type: string):
-      - Example: 'invalid uniqueName'
   - **success** (Type: boolean):
       - Example: 'false'
+  - **message**: Error message describing what went wrong (Type: string):
+      - Example: 'invalid uniqueName'
 `
 
 // NewListServicesByAppMCPTool creates the MCP Tool instance for ListServicesByApp

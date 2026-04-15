@@ -38,11 +38,11 @@ The template shows a possible response, including its status code and content ty
 - Structure (Type: object):
   - **data** (Type: array):
     - **Items** (Type: object):
-      - **private** (Type: boolean):
-      - **defaultBranch** (Type: string):
       - **fullName** (Type: string):
       - **id** (Type: integer, int64):
       - **name** (Type: string):
+      - **private** (Type: boolean):
+      - **defaultBranch** (Type: string):
   - **success** (Type: boolean):
       - Example: 'true'
 `
@@ -63,10 +63,10 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
-  - **message**: Error message describing what went wrong (Type: string):
-      - Example: 'invalid uniqueName'
   - **success** (Type: boolean):
       - Example: 'false'
+  - **message**: Error message describing what went wrong (Type: string):
+      - Example: 'invalid uniqueName'
 `
 
 // Response Template for the ListGithubRepositories tool (Status: 401, Content-Type: application/json)
@@ -85,10 +85,10 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
-  - **message**: Error message describing what went wrong (Type: string):
-      - Example: 'invalid uniqueName'
   - **success** (Type: boolean):
       - Example: 'false'
+  - **message**: Error message describing what went wrong (Type: string):
+      - Example: 'invalid uniqueName'
 `
 
 // Response Template for the ListGithubRepositories tool (Status: 404, Content-Type: application/json)
@@ -107,10 +107,10 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
-  - **message**: Error message describing what went wrong (Type: string):
-      - Example: 'invalid uniqueName'
   - **success** (Type: boolean):
       - Example: 'false'
+  - **message**: Error message describing what went wrong (Type: string):
+      - Example: 'invalid uniqueName'
 `
 
 // Response Template for the ListGithubRepositories tool (Status: 500, Content-Type: application/json)
@@ -129,10 +129,10 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
-  - **message**: Error message describing what went wrong (Type: string):
-      - Example: 'invalid uniqueName'
   - **success** (Type: boolean):
       - Example: 'false'
+  - **message**: Error message describing what went wrong (Type: string):
+      - Example: 'invalid uniqueName'
 `
 
 // NewListGithubRepositoriesMCPTool creates the MCP Tool instance for ListGithubRepositories

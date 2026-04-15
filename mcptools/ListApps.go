@@ -29,6 +29,10 @@ The template shows a possible response, including its status code and content ty
 - Structure (Type: object):
   - **data** (Type: array):
     - **Items** (Type: object):
+      - **updatedAt** (Type: string, date-time):
+      - **userId**: User ID of the app owner (Type: string):
+      - **color**: Hex color code for the app (Type: string):
+          - Example: '#3B82F6'
       - **createdAt** (Type: string, date-time):
       - **description**: Description of the app (Type: string, nullable):
           - Nullable: true
@@ -37,10 +41,6 @@ The template shows a possible response, including its status code and content ty
           - Example: '550e8400-e29b-41d4-a716-446655440000'
       - **name**: Name of the app (Type: string):
           - Example: 'My Application'
-      - **updatedAt** (Type: string, date-time):
-      - **userId**: User ID of the app owner (Type: string):
-      - **color**: Hex color code for the app (Type: string):
-          - Example: '#3B82F6'
   - **success** (Type: boolean):
       - Example: 'true'
 `
@@ -61,10 +61,10 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
-  - **message**: Error message describing what went wrong (Type: string):
-      - Example: 'invalid uniqueName'
   - **success** (Type: boolean):
       - Example: 'false'
+  - **message**: Error message describing what went wrong (Type: string):
+      - Example: 'invalid uniqueName'
 `
 
 // Response Template for the ListApps tool (Status: 500, Content-Type: application/json)
@@ -83,10 +83,10 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
-  - **message**: Error message describing what went wrong (Type: string):
-      - Example: 'invalid uniqueName'
   - **success** (Type: boolean):
       - Example: 'false'
+  - **message**: Error message describing what went wrong (Type: string):
+      - Example: 'invalid uniqueName'
 `
 
 // NewListAppsMCPTool creates the MCP Tool instance for ListApps
