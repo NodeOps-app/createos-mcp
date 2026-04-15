@@ -28,12 +28,12 @@ The template shows a possible response, including its status code and content ty
 
 - Structure (Type: array):
   - **Items** (Type: object):
-    - **editables**: Editable configuration options (Type: object):
     - **name**: Name of the framework or runtime (Type: string):
     - **runtimes**: List of compatible runtimes (for frameworks) (Type: array):
       - **Items** (Type: string):
     - **type** (Type: string):
         - Enum: ['framework', 'runtime']
+    - **editables**: Editable configuration options (Type: object):
 `
 
 // Response Template for the GetSupportedProjectTypes tool (Status: 401, Content-Type: application/json)

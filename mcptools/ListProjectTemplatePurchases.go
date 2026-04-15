@@ -40,48 +40,48 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
-  - **status** (Type: string):
-      - Example: 'success'
   - **data** (Type: object):
+    - **purchases** (Type: array):
+      - **Items** (Type: object):
+        - **projectTemplateId** (Type: string, uuid):
+        - **purchasedAmount** (Type: number):
+        - **template**: Project template model (Type: object):
+          - **categories** (Type: array):
+            - **Items** (Type: string):
+          - **id** (Type: string, uuid):
+          - **buildResources** (Type: object):
+          - **name** (Type: string):
+          - **userId** (Type: string):
+          - **useCases** (Type: string):
+          - **description** (Type: string):
+          - **imageUri** (Type: string):
+          - **updatedAt** (Type: string, date-time):
+          - **environmentId** (Type: string, uuid):
+          - **status** (Type: string):
+              - Enum: ['draft', 'underReview', 'publishing', 'listed', 'rejected', 'deleted']
+          - **overview** (Type: string):
+          - **projectId** (Type: string, uuid):
+          - **amount** (Type: number):
+          - **deploymentResources** (Type: object):
+          - **videoUrl** (Type: string):
+          - **createdAt** (Type: string, date-time):
+          - **projectConfiguration** (Type: object):
+          - **environmentConfiguration** (Type: object):
+        - **updatedAt** (Type: string, date-time):
+        - **userId** (Type: string):
+        - **createdAt** (Type: string, date-time):
+        - **id** (Type: string, uuid):
     - **pagination** (Type: object):
-      - **total**: Total number of items available (Type: integer):
-          - Example: '100'
       - **count**: Number of items in the current page (Type: integer):
           - Example: '10'
       - **limit**: Maximum number of items per page (Type: integer):
           - Example: '10'
       - **offset**: Number of items skipped (Type: integer):
           - Example: '0'
-    - **purchases** (Type: array):
-      - **Items** (Type: object):
-        - **projectTemplateId** (Type: string, uuid):
-        - **purchasedAmount** (Type: number):
-        - **template**: Project template model (Type: object):
-          - **useCases** (Type: string):
-          - **createdAt** (Type: string, date-time):
-          - **name** (Type: string):
-          - **deploymentResources** (Type: object):
-          - **id** (Type: string, uuid):
-          - **imageUri** (Type: string):
-          - **updatedAt** (Type: string, date-time):
-          - **categories** (Type: array):
-            - **Items** (Type: string):
-          - **status** (Type: string):
-              - Enum: ['draft', 'underReview', 'publishing', 'listed', 'rejected', 'deleted']
-          - **projectConfiguration** (Type: object):
-          - **environmentId** (Type: string, uuid):
-          - **projectId** (Type: string, uuid):
-          - **amount** (Type: number):
-          - **videoUrl** (Type: string):
-          - **environmentConfiguration** (Type: object):
-          - **userId** (Type: string):
-          - **buildResources** (Type: object):
-          - **overview** (Type: string):
-          - **description** (Type: string):
-        - **updatedAt** (Type: string, date-time):
-        - **userId** (Type: string):
-        - **createdAt** (Type: string, date-time):
-        - **id** (Type: string, uuid):
+      - **total**: Total number of items available (Type: integer):
+          - Example: '100'
+  - **status** (Type: string):
+      - Example: 'success'
 `
 
 // Response Template for the ListProjectTemplatePurchases tool (Status: 401, Content-Type: application/json)
@@ -100,10 +100,10 @@ The template shows a possible response, including its status code and content ty
 ## Response Structure
 
 - Structure (Type: object):
-  - **message**: Error message describing what went wrong (Type: string):
-      - Example: 'invalid uniqueName'
   - **success** (Type: boolean):
       - Example: 'false'
+  - **message**: Error message describing what went wrong (Type: string):
+      - Example: 'invalid uniqueName'
 `
 
 // Response Template for the ListProjectTemplatePurchases tool (Status: 500, Content-Type: application/json)

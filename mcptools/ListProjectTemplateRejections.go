@@ -39,11 +39,11 @@ The template shows a possible response, including its status code and content ty
   - **data** (Type: object):
     - **rejections** (Type: array):
       - **Items** (Type: object):
-        - **updatedAt** (Type: string, date-time):
-        - **createdAt** (Type: string, date-time):
         - **id** (Type: integer):
         - **projectTemplateId** (Type: string, uuid):
         - **rejectionReason** (Type: string):
+        - **updatedAt** (Type: string, date-time):
+        - **createdAt** (Type: string, date-time):
   - **status** (Type: string):
       - Example: 'success'
 `
