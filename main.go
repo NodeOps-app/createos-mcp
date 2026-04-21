@@ -168,7 +168,7 @@ func authMiddleware(cfg config.Config, next http.Handler) http.Handler {
 		// If both are missing, send 401 with WWW-Authenticate header pointing to PRM endpoint
 		if apiKey == "" && bearerToken == "" {
 			prmURL := fmt.Sprintf("%s/.well-known/oauth-protected-resource", cfg.BaseURL)
-			w.Header().Set("WWW-Authenticate", fmt.Sprintf(`Bearer realm="mcp", resource_metadata="%s"`, prmURL))
+			w.Header().Set("WWW-Authenticate", fmt.Sprintf(`Bearer realm="createos", resource_metadata="%s"`, prmURL))
 			w.WriteHeader(http.StatusUnauthorized)
 			return
 		}
