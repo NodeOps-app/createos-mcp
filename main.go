@@ -194,7 +194,7 @@ func prmMetadataHandler() http.Handler {
 		}
 
 		prm := PRMMetadata{
-			Resource:             fmt.Sprintf("%s/mcp", config.Cfg.BaseURL),
+			Resource:             config.Cfg.BaseURL,
 			AuthorizationServers: []string{config.Cfg.BaseURL},
 			ScopesSupported:      config.Cfg.SupportedScopes,
 		}
