@@ -1,0 +1,79 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: createos-mcp
+  labels:
+    app: createos-mcp
+    version: v2
+spec:
+  securityContext:
+    runAsNonRoot: true
+    seccompProfile:
+      type: RuntimeDefault
+  volumes:
+    - name: mcp-config
+      configMap:
+        name: createos-mcp-config
+        # ConfigMap must contain a key named "config.yaml" with the
+        # rendered MCP config (BaseURL, Port, Transport, etc).
+        items:
+          - key: config.yaml
+            path: config.yaml
+  containers:
+    - name: mcp
+      image: createos-mcp:v2.0.0
+      imagePullPolicy: IfNotPresent
+      env:
+        - name: WORKERD_URL
+          value: http://127.0.0.1:8787
+        - name: CREATEOS_MCP_CONFIG
+          value: /etc/createos/config.yaml
+      volumeMounts:
+        - name: mcp-config
+          mountPath: /etc/createos
+          readOnly: true
+      ports:
+        - name: metrics
+          containerPort: 9090
+        - name: mcp
+          containerPort: 8080
+      readinessProbe:
+        httpGet:
+          path: /readyz
+          port: mcp
+        initialDelaySeconds: 5
+        periodSeconds: 5
+      securityContext:
+        readOnlyRootFilesystem: true
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop: ["ALL"]
+    - name: workerd
+      image: createos-mcp-workerd:v2.0.0
+      imagePullPolicy: IfNotPresent
+      env:
+        - name: BACKEND_URL
+          valueFrom:
+            secretKeyRef:
+              name: createos-mcp
+              key: BACKEND_URL
+      ports:
+        - name: workerd
+          containerPort: 8787
+      readinessProbe:
+        httpGet:
+          path: /health
+          port: workerd
+        initialDelaySeconds: 3
+        periodSeconds: 5
+      livenessProbe:
+        httpGet:
+          path: /health
+          port: workerd
+        initialDelaySeconds: 30
+        periodSeconds: 30
+      securityContext:
+        readOnlyRootFilesystem: true
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop: ["ALL"]

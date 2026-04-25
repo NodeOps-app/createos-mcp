@@ -1,0 +1,16 @@
+name: token-budget
+on:
+  pull_request:
+    paths:
+      - 'server.go'
+      - 'codemode/tools.go'
+      - 'scripts/count-tokens.ts'
+      - '.github/workflows/token-budget.yml'
+jobs:
+  budget:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v1
+      - run: bun install --frozen-lockfile
+      - run: bun scripts/count-tokens.ts

@@ -1,0 +1,14 @@
+{
+  "name": "createos-mcp-tooling",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "count-tokens": "bun scripts/count-tokens.ts",
+    "smoke": "bun scripts/smoke.ts",
+    "soak": "bun scripts/soak.ts"
+  },
+  "devDependencies": {
+    "tiktoken": "^1.0.17",
+    "@types/bun": "latest"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "name": "createos-mcp-codemode",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "bun build spec-loader.js --target=browser --format=esm --outfile=dist/spec-loader.bundled.js",
+    "dev": "bun run build && workerd serve --experimental config.capnp",
+    "test": "bun test",
+    "resolve-spec": "bun scripts/resolve-spec.ts",
+    "gen-sdk": "bun scripts/gen-sdk.ts"
+  },
+  "devDependencies": {
+    "workerd": "^1.20240909.0",
+    "yaml": "^2.5.0",
+    "@types/bun": "latest"
+  }
+}

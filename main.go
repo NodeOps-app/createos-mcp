@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"flag"
 	"fmt"
@@ -8,18 +9,25 @@ import (
 	"log"
 	"net"
 	"net/http"
+	"os"
 	"strings"
 	"sync"
 	"time"
 
+	"github.com/NodeOps-app/createos-mcp/codemode"
 	"github.com/NodeOps-app/createos-mcp/config"
 	"github.com/NodeOps-app/createos-mcp/pkg/oauth"
 	"github.com/mark3labs/mcp-go/server"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"golang.org/x/time/rate"
 )
 
 func main() {
-	configPath := flag.String("config", "config.yaml", "Path to the config file")
+	defaultConfig := os.Getenv("CREATEOS_MCP_CONFIG")
+	if defaultConfig == "" {
+		defaultConfig = "config.yaml"
+	}
+	configPath := flag.String("config", defaultConfig, "Path to the config file (env: CREATEOS_MCP_CONFIG)")
 	flag.Parse()
 
 	if configPath == nil {
@@ -31,6 +39,14 @@ func main() {
 	}
 
 	mcpServer := NewMCPServer()
+
+	// Code Mode: workerd sidecar health probe.
+	wd := os.Getenv("WORKERD_URL")
+	if wd == "" {
+		wd = "http://127.0.0.1:8787"
+	}
+	cmMonitor := codemode.NewHealthMonitor(codemode.NewClient(wd))
+	cmMonitor.Start(context.Background(), 5*time.Second)
 
 	switch config.Cfg.Transport {
 	case "stdio":
@@ -51,7 +67,24 @@ func main() {
 
 		mcpHandler = corsMiddleware(mcpHandler)
 		mcpHandler = authMiddleware(*config.Cfg, mcpHandler)
+		// Inject incoming HTTP request headers into the request context so
+		// codemode.AuthFromRequest's stdio fallback (AuthFromContext) finds
+		// them. AuthFromRequest's primary path reads mcp.CallToolRequest.Header
+		// directly; this is belt-and-braces for transports where the MCP
+		// library does not surface headers on the request struct.
+		mcpHandler = codemodeAuthHeadersMiddleware(mcpHandler)
 		mux.Handle("/mcp", mcpHandler)
+
+		mux.HandleFunc("/readyz", func(w http.ResponseWriter, r *http.Request) {
+			if cmMonitor.Ready() {
+				w.WriteHeader(http.StatusOK)
+				_, _ = w.Write([]byte(`{"ok":true}`))
+				return
+			}
+			w.WriteHeader(http.StatusServiceUnavailable)
+			_, _ = w.Write([]byte(`{"ok":false,"reason":"workerd sidecar not ready"}`))
+		})
+		mux.Handle("/metrics", promhttp.Handler())
 
 		// Wrap the entire mux with logging middleware to log ALL requests
 		rootHandler := loggingMiddleware(mux)
@@ -152,20 +185,43 @@ func loggingMiddleware(next http.Handler) http.Handler {
 	})
 }
 
+func codemodeAuthHeadersMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		headers := map[string]string{}
+		if v := r.Header.Get("X-Api-Key"); v != "" {
+			headers["X-Api-Key"] = v
+		}
+		if v := r.Header.Get("Authorization"); v != "" {
+			headers["Authorization"] = v
+		}
+		if len(headers) > 0 {
+			r = r.WithContext(codemode.WithAuthHeaders(r.Context(), headers))
+		}
+		next.ServeHTTP(w, r)
+	})
+}
+
 func authMiddleware(cfg config.Config, next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		apiKey := r.Header.Get("X-Api-Key")
-		bearerToken := r.Header.Get("Authorization")
-		if bearerToken != "" {
-			parts := strings.Split(bearerToken, " ")
-			if len(parts) < 2 || parts[1] == "" {
+		authHeader := r.Header.Get("Authorization")
+		var bearerToken string
+		if authHeader != "" {
+			// Only "Bearer <token>" is accepted. Anything else (e.g.
+			// "Basic abc", a missing scheme, or empty token) is rejected
+			// before falling through to the missing-credentials check —
+			// otherwise a stray Authorization header would silently
+			// satisfy the auth gate.
+			parts := strings.SplitN(authHeader, " ", 2)
+			if len(parts) != 2 || !strings.EqualFold(parts[0], "Bearer") || parts[1] == "" {
 				w.WriteHeader(http.StatusUnauthorized)
 				return
 			}
+			bearerToken = parts[1]
 		}
 
-		// either api key or bearer token is required
-		// If both are missing, send 401 with WWW-Authenticate header pointing to PRM endpoint
+		// Either an API key or a Bearer token is required.
+		// If both are missing, send 401 with WWW-Authenticate header pointing to PRM endpoint.
 		if apiKey == "" && bearerToken == "" {
 			prmURL := fmt.Sprintf("%s/.well-known/oauth-protected-resource", cfg.BaseURL)
 			w.Header().Set("WWW-Authenticate", fmt.Sprintf(`Bearer realm="createos", resource_metadata="%s"`, prmURL))
