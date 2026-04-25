@@ -18,6 +18,7 @@ import (
 	"github.com/NodeOps-app/createos-mcp/config"
 	"github.com/NodeOps-app/createos-mcp/pkg/oauth"
 	"github.com/mark3labs/mcp-go/server"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"golang.org/x/time/rate"
 )
 
@@ -73,6 +74,7 @@ func main() {
 			w.WriteHeader(http.StatusServiceUnavailable)
 			_, _ = w.Write([]byte(`{"ok":false,"reason":"workerd sidecar not ready"}`))
 		})
+		mux.Handle("/metrics", promhttp.Handler())
 
 		// Wrap the entire mux with logging middleware to log ALL requests
 		rootHandler := loggingMiddleware(mux)

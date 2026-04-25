@@ -15,7 +15,7 @@
 
 The [Model Context Protocol (MCP)](https://modelcontextprotocol.io) is an open standard originated by Anthropic that enables AI assistants — Claude, Cursor, GitHub Copilot, Windsurf, Gemini, and others — to securely connect to external tools, APIs, and services through a unified interface. The latest MCP Authorization and Streamable HTTP specifications are fully implemented.
 
-**CreateOS MCP** is a production-grade MCP server that exposes **85+ tools** for full-stack application deployment and infrastructure management on the [CreateOS](https://createos.nodeops.network) platform. Connect it once to your AI coding tool, then deploy projects, manage environments, configure domains, run security scans, analyze deployment metrics, and more — all through natural language.
+**CreateOS MCP** is a production-grade MCP server that exposes **10 tools** (7 native + 3 code-mode) for full-stack application deployment and infrastructure management on the [CreateOS](https://createos.nodeops.network) platform. Connect it once to your AI coding tool, then deploy projects, manage environments, configure domains, run security scans, analyze deployment metrics, and more — all through natural language. The full ~100-endpoint CreateOS API is reachable via the `search`/`execute`/`pollJob` Code Mode tools backed by a `workerd` V8 sandbox.
 
 Instead of switching between dashboards, CLIs, and documentation, you stay in your editor and let your AI handle the infrastructure. CreateOS MCP turns prompts like *"deploy my app from this GitHub repo"* or *"scale the staging environment to 3 replicas"* into real actions, executed instantly.
 
@@ -25,7 +25,7 @@ Built in Go for performance and reliability, the server supports both **Streamab
 
 ## Features
 
-- 🚀 **85+ MCP Tools** — Full coverage of the CreateOS platform API: projects, deployments, environments, domains, templates, and more
+- 🚀 **10 MCP Tools** — 7 native fast-path tools plus 3 code-mode tools (search/execute/pollJob) that reach the full ~100-endpoint CreateOS platform API
 - 🔌 **9 Supported Clients** — Cursor, VS Code + Copilot, Claude Desktop, Claude Code, Windsurf, Gemini CLI, Gemini Code Assist, Opencode, Zapier, and ElevenLabs
 - 🔐 **Secure Authentication** — API key and OAuth 2.0 with Dynamic Client Registration (RFC 7591), Protected Resource Metadata (RFC 9728)
 - ⚡ **Dual Transport** — Streamable HTTP for remote access, stdio for local/embedded use
@@ -200,9 +200,41 @@ npx @modelcontextprotocol/inspector
 
 ---
 
+## Code Mode (v2)
+
+CreateOS MCP v2 exposes only 10 tools. The CreateOS API surface (~100 endpoints) is reachable via three code-mode tools:
+
+- `search(code)` — read the OpenAPI spec from a sandboxed JS arrow fn. No network.
+- `execute(code)` — run JS that calls `api.<group>.<operationId>(args)` (or `api.raw(method, path, opts)`) against the API. Chained operations run in one sandbox call.
+- `pollJob(jobId)` — when an `execute` exceeds 90s it returns `{status: "running", jobId}`. Loop `pollJob` until `status != "running"`.
+
+The sandbox is a `workerd` sidecar running each call in a fresh V8 isolate (Dynamic Worker Loader). No filesystem, no env vars, no ambient `fetch` — only the pre-installed `api` proxy, `console`, and `sleep` are available.
+
+### Native fast-path tools (always available)
+
+`GetQuotas`, `GetSupportedProjectTypes`, `CheckProjectUniqueName`, `CreateProject`, `UploadDeploymentBase64Files`, `GetDeployment`, `CancelDeployment`.
+
+### Example
+
+```js
+// execute(code)
+async () => {
+  const { data: dep } = await api.deployments.create({ projectId: "...", source: "upload" });
+  for (let i = 0; i < 20; i++) {
+    await sleep(30000);
+    const s = await api.deployments.get({ id: dep.id });
+    if (s.data.status === "deployed") return s.data.url;
+    if (s.data.status === "failed") throw new Error(s.data.error);
+  }
+  throw new Error("timeout");
+}
+```
+
+If the deploy takes > 90s, the call returns `{status:"running", jobId}`; loop `pollJob(jobId)` until done.
+
 ## Supported Tools
 
-The server exposes **85+ tools** organized into the following categories:
+The server exposes **10 tools** organized into the following categories:
 
 | Category | Tools | Description |
 |----------|-------|-------------|

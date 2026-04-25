@@ -4,9 +4,30 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"time"
 
 	"github.com/mark3labs/mcp-go/mcp"
 )
+
+func observe(mode Mode, outcome string, start time.Time) {
+	RunDuration.WithLabelValues(string(mode), outcome).Observe(time.Since(start).Seconds())
+}
+
+func outcomeFromResult(r *RunResult) string {
+	switch r.Status {
+	case "done":
+		return "success"
+	case "running":
+		return "async"
+	case "error":
+		if r.ErrorKind != "" {
+			return r.ErrorKind
+		}
+		return "user_error"
+	default:
+		return "unknown"
+	}
+}
 
 const searchInputSchema = `{
   "type": "object",
@@ -32,6 +53,10 @@ type Handler struct {
 }
 
 func (h *Handler) Search(ctx context.Context, req mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+	start := time.Now()
+	outcome := "bad_input"
+	defer func() { observe(ModeSearch, outcome, start) }()
+
 	args, ok := req.Params.Arguments.(map[string]interface{})
 	if !ok {
 		return mcp.NewToolResultError("invalid arguments type"), nil
@@ -46,10 +71,13 @@ func (h *Handler) Search(ctx context.Context, req mcp.CallToolRequest) (*mcp.Cal
 	}
 	result, err := h.Client.Run(ctx, RunRequest{Mode: ModeSearch, Code: code})
 	if err != nil {
+		outcome = "infra"
 		return mcp.NewToolResultError(fmt.Sprintf("code mode unavailable: %v", err)), nil
 	}
+	outcome = outcomeFromResult(result)
 	out, err := json.Marshal(result)
 	if err != nil {
+		outcome = "encode"
 		return mcp.NewToolResultError(fmt.Sprintf("encode: %v", err)), nil
 	}
 	return mcp.NewToolResultText(string(out)), nil
@@ -118,6 +146,10 @@ func NewExecuteTool() mcp.Tool {
 }
 
 func (h *Handler) Execute(ctx context.Context, req mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+	start := time.Now()
+	outcome := "bad_input"
+	defer func() { observe(ModeExecute, outcome, start) }()
+
 	args, ok := req.Params.Arguments.(map[string]interface{})
 	if !ok {
 		return mcp.NewToolResultError("invalid arguments type"), nil
@@ -133,10 +165,13 @@ func (h *Handler) Execute(ctx context.Context, req mcp.CallToolRequest) (*mcp.Ca
 	auth := AuthFromContext(ctx)
 	result, err := h.Client.Run(ctx, RunRequest{Mode: ModeExecute, Code: code, AuthCtx: auth})
 	if err != nil {
+		outcome = "infra"
 		return mcp.NewToolResultError(fmt.Sprintf("code mode unavailable: %v", err)), nil
 	}
+	outcome = outcomeFromResult(result)
 	out, err := json.Marshal(result)
 	if err != nil {
+		outcome = "encode"
 		return mcp.NewToolResultError(fmt.Sprintf("encode: %v", err)), nil
 	}
 	return mcp.NewToolResultText(string(out)), nil

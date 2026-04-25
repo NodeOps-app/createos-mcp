@@ -23,11 +23,14 @@ func (h *HealthMonitor) Start(ctx context.Context, interval time.Duration) {
 		check := func() {
 			cctx, cancel := context.WithTimeout(ctx, 2*time.Second)
 			defer cancel()
-			if err := h.client.Health(cctx); err != nil {
+			stats, err := h.client.HealthStats(cctx)
+			if err != nil {
 				h.ready.Store(false)
 				return
 			}
 			h.ready.Store(true)
+			JobsRunning.Set(float64(stats.JobsRunning))
+			JobStoreSize.Set(float64(stats.JobStoreSize))
 		}
 		check()
 		for {
