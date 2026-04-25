@@ -13,9 +13,10 @@ const config :Workerd.Config = (
 
 const dispatcher :Workerd.Worker = (
   modules = [
-    (name = "dispatcher.js",  esModule = embed "dispatcher.js"),
-    (name = "spec-loader.js", esModule = embed "dist/spec-loader.bundled.js"),
-    (name = "host.js",        esModule = embed "host.js"),
+    (name = "dispatcher.js",      esModule = embed "dispatcher.js"),
+    (name = "spec-loader.js",     esModule = embed "dist/spec-loader.bundled.js"),
+    (name = "host.js",            esModule = embed "host.js"),
+    (name = "api-sdk-builder.js", esModule = embed "api-sdk-builder.js"),
   ],
   bindings = [
     (name = "API",    service = "api-proxy"),

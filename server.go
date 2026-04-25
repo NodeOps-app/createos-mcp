@@ -114,6 +114,7 @@ func NewMCPServer() *server.MCPServer {
 	}
 	cmHandler := &codemode.Handler{Client: codemode.NewClient(workerdURL)}
 	s.AddTool(codemode.NewSearchTool(), cmHandler.Search)
+	s.AddTool(codemode.NewExecuteTool(), cmHandler.Execute)
 
 	return s
 }

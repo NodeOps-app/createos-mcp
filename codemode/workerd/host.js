@@ -1,6 +1,7 @@
-// Builds the source string for a per-call `host` ESM module.
-// Exports: spec (always), api (execute mode only), console, sleep.
-export function buildHostModule({ specRef, mode, apiCallId }) {
+// Builds the source for a per-call `host.js` ESM module.
+// Exports spec/console/sleep. `api` is constructed in main.js from the
+// callback installed via setApi() RPC.
+export function buildHostModule({ specRef }) {
   const parts = [];
   parts.push(`const spec = JSON.parse(${JSON.stringify(JSON.stringify(specRef))});`);
   parts.push(`const __logs = [];`);
@@ -24,22 +25,19 @@ export function buildHostModule({ specRef, mode, apiCallId }) {
     if (ms > 60000) ms = 60000;
     return new Promise((r) => setTimeout(r, ms));
   }`);
-  if (mode === "execute") {
-    parts.push(`const api = (typeof globalThis.__codemodeApi === "function") ? globalThis.__codemodeApi(${JSON.stringify(apiCallId)}) : undefined;`);
-  } else {
-    parts.push(`const api = undefined;`);
-  }
-  parts.push(`export { spec, api, console, sleep };`);
+  parts.push(`export { spec, console, sleep };`);
   parts.push(`export function __getLogs() { return __logs; }`);
   return parts.join("\n");
 }
 
 export function wrapMainModule(userCode) {
   return `
-import { spec, api, console, sleep, __getLogs } from "host.js";
-const userFn = (${userCode});
+import { spec, console, sleep, __getLogs } from "host.js";
+import { buildApi } from "api-sdk.js";
 export default {
-  async run(_) {
+  async run(callback) {
+    const api = callback ? buildApi(callback) : undefined;
+    const userFn = (${userCode});
     try {
       const result = await userFn();
       return { ok: true, result, logs: __getLogs() };
@@ -47,6 +45,7 @@ export default {
       return {
         ok: false,
         error: String(e?.message ?? e),
+        kind: e?.name ?? "Error",
         stack: e?.stack ?? null,
         logs: __getLogs(),
       };

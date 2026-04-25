@@ -45,6 +45,33 @@ func TestHandler_Search_Success(t *testing.T) {
 	}
 }
 
+func TestHandler_Execute_ForwardsAuth(t *testing.T) {
+	var seen RunRequest
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		_ = json.NewDecoder(r.Body).Decode(&seen)
+		_, _ = w.Write([]byte(`{"status":"done","result":1}`))
+	}))
+	defer srv.Close()
+
+	h := &Handler{Client: NewClient(srv.URL)}
+	ctx := WithAuthHeaders(context.Background(), map[string]string{"X-Api-Key": "k"})
+	req := mcp.CallToolRequest{}
+	req.Params.Arguments = map[string]interface{}{"code": "async () => 1"}
+	res, err := h.Execute(ctx, req)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if res.IsError {
+		t.Fatalf("unexpected error: %#v", res.Content)
+	}
+	if seen.Mode != ModeExecute {
+		t.Fatalf("mode %q", seen.Mode)
+	}
+	if seen.AuthCtx == nil || seen.AuthCtx.APIKey != "k" {
+		t.Fatalf("authCtx %+v", seen.AuthCtx)
+	}
+}
+
 func TestHandler_Search_MissingCode(t *testing.T) {
 	h := &Handler{Client: NewClient("http://invalid")}
 	req := mcp.CallToolRequest{}

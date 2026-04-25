@@ -1,5 +1,6 @@
 import { loadSpec } from "./spec-loader.js";
 import { buildHostModule, wrapMainModule } from "./host.js";
+import { buildSdkModule } from "./api-sdk-builder.js";
 
 let specState = { status: "uninitialized", error: null, data: null };
 let specPromise = null;
@@ -22,37 +23,58 @@ async function ensureSpec(env) {
   return specPromise;
 }
 
-const SEARCH_TIMEOUT_MS = 5000;
+const SEARCH_TIMEOUT_MS = 5_000;
+const EXECUTE_SYNC_TIMEOUT_MS = 90_000;
 
-async function runIsolate(env, { mode, code }) {
+function withTimeout(promise, ms) {
+  let to;
+  const timer = new Promise((_, rej) => {
+    to = setTimeout(() => rej(new Error(`timeout after ${ms}ms`)), ms);
+  });
+  return Promise.race([promise, timer]).finally(() => clearTimeout(to));
+}
+
+function makeApiCallback(apiBinding, authCtx) {
+  return async function apiCall({ method, path, query, headers, body }) {
+    const r = await apiBinding.fetch("https://internal/proxy", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+        mode: "authenticated",
+        method, path, query, headers, body, authCtx,
+      }),
+    });
+    if (!r.ok) {
+      const text = await r.text();
+      const err = new Error(`api-proxy ${r.status}: ${text}`);
+      err.name = "ProxyError";
+      throw err;
+    }
+    return r.json();
+  };
+}
+
+async function runIsolate(env, { mode, code, authCtx }) {
   const specData = await ensureSpec(env);
   const isolateId = `iso-${crypto.randomUUID()}`;
-  const hostSrc = buildHostModule({
-    specRef: specData.spec,
-    mode,
-    apiCallId: null,
-  });
+
+  const sdkSrc  = buildSdkModule(specData.spec);
+  const hostSrc = buildHostModule({ specRef: specData.spec });
   const mainSrc = wrapMainModule(code);
 
   const worker = env.LOADER.get(isolateId, () => ({
     compatibilityDate: "2024-09-09",
     mainModule: "main.js",
     modules: {
-      "main.js": mainSrc,
-      "host.js": hostSrc,
+      "main.js":    mainSrc,
+      "host.js":    hostSrc,
+      "api-sdk.js": sdkSrc,
     },
   }));
-  const entry = worker.getEntrypoint();
-  return entry.run(null);
-}
 
-function withTimeout(promise, ms) {
-  return Promise.race([
-    promise,
-    new Promise((_, rej) =>
-      setTimeout(() => rej(new Error(`timeout after ${ms}ms`)), ms),
-    ),
-  ]);
+  const entry = worker.getEntrypoint();
+  const cb = mode === "execute" ? makeApiCallback(env.API, authCtx) : null;
+  return entry.run(cb);
 }
 
 export default {
@@ -75,55 +97,37 @@ export default {
 
     if (url.pathname === "/run" && req.method === "POST") {
       let body;
-      try {
-        body = await req.json();
-      } catch {
-        return Response.json({ status: "error", error: "invalid json" }, { status: 400 });
-      }
-      const { mode, code } = body;
-      if (mode !== "search") {
-        return Response.json(
-          { status: "error", error: "phase 1 supports mode=search only" },
-          { status: 501 },
-        );
+      try { body = await req.json(); }
+      catch { return Response.json({ status: "error", error: "invalid json" }, { status: 400 }); }
+
+      const { mode, code, authCtx } = body;
+      if (mode !== "search" && mode !== "execute") {
+        return Response.json({ status: "error", error: "mode must be search or execute" }, { status: 400 });
       }
       if (typeof code !== "string" || code.length === 0) {
-        return Response.json(
-          { status: "error", error: "code must be a non-empty string" },
-          { status: 400 },
-        );
+        return Response.json({ status: "error", error: "code required" }, { status: 400 });
       }
       if (code.length > 1024 * 1024) {
-        return Response.json(
-          { status: "error", error: "code exceeds 1MB" },
-          { status: 413 },
-        );
+        return Response.json({ status: "error", error: "code exceeds 1MB" }, { status: 413 });
       }
+
+      const timeout = mode === "search" ? SEARCH_TIMEOUT_MS : EXECUTE_SYNC_TIMEOUT_MS;
       try {
-        const result = await withTimeout(
-          runIsolate(env, { mode, code }),
-          SEARCH_TIMEOUT_MS,
-        );
+        const result = await withTimeout(runIsolate(env, { mode, code, authCtx }), timeout);
         if (result.ok) {
-          return Response.json({
-            status: "done",
-            result: result.result,
-            logs: result.logs,
-          });
+          return Response.json({ status: "done", result: result.result, logs: result.logs });
         }
         return Response.json({
           status: "error",
-          errorKind: "userCode",
+          errorKind: result.kind === "ProxyError" ? "infra" : "userCode",
           error: result.error,
           stack: result.stack,
           logs: result.logs,
         });
       } catch (e) {
-        return Response.json({
-          status: "error",
-          errorKind: "infra",
-          error: String(e?.message ?? e),
-        });
+        const msg = String(e?.message ?? e);
+        const errorKind = msg.startsWith("timeout") ? "timeout" : "infra";
+        return Response.json({ status: "error", errorKind, error: msg });
       }
     }
 

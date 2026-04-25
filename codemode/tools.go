@@ -54,3 +54,47 @@ func (h *Handler) Search(ctx context.Context, req mcp.CallToolRequest) (*mcp.Cal
 	}
 	return mcp.NewToolResultText(string(out)), nil
 }
+
+const executeInputSchema = `{
+  "type": "object",
+  "properties": {
+    "code": {
+      "type": "string",
+      "description": "JavaScript async arrow function. Available globals: spec, api, console, sleep. api.<group>.<operationId>(args) calls the CreateOS API with caller auth. api.raw(method, path, opts) is an escape hatch. Throws ApiError on non-2xx. Return any JSON-serialisable value."
+    }
+  },
+  "required": ["code"]
+}`
+
+func NewExecuteTool() mcp.Tool {
+	return mcp.NewToolWithRawSchema(
+		"execute",
+		"Execute JavaScript against the CreateOS API. Single sandbox call may chain multiple api calls. Returns either {status:'done', result, logs} or {status:'running', jobId} (long-running ops, polled via pollJob).",
+		[]byte(executeInputSchema),
+	)
+}
+
+func (h *Handler) Execute(ctx context.Context, req mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+	args, ok := req.Params.Arguments.(map[string]interface{})
+	if !ok {
+		return mcp.NewToolResultError("invalid arguments type"), nil
+	}
+	rawCode, ok := args["code"]
+	if !ok {
+		return mcp.NewToolResultError("missing required argument: code"), nil
+	}
+	code, ok := rawCode.(string)
+	if !ok {
+		return mcp.NewToolResultError("code must be a string"), nil
+	}
+	auth := AuthFromContext(ctx)
+	result, err := h.Client.Run(ctx, RunRequest{Mode: ModeExecute, Code: code, AuthCtx: auth})
+	if err != nil {
+		return mcp.NewToolResultError(fmt.Sprintf("code mode unavailable: %v", err)), nil
+	}
+	out, err := json.Marshal(result)
+	if err != nil {
+		return mcp.NewToolResultError(fmt.Sprintf("encode: %v", err)), nil
+	}
+	return mcp.NewToolResultText(string(out)), nil
+}
