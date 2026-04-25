@@ -16,9 +16,11 @@ import (
 // CreateOS OpenAPI spec, served by the workerd sidecar.
 func NewMCPServer() *server.MCPServer {
 	s := server.NewMCPServer(
-		"MCP Server",
+		"CreateOS MCP (Code Mode v2)",
 		"2.0.0",
 		server.WithToolCapabilities(true),
+		server.WithResourceCapabilities(false, false),
+		server.WithPromptCapabilities(false),
 		server.WithLogging(),
 	)
 
@@ -40,6 +42,17 @@ func NewMCPServer() *server.MCPServer {
 	s.AddTool(codemode.NewSearchTool(), cmHandler.Search)
 	s.AddTool(codemode.NewExecuteTool(), cmHandler.Execute)
 	s.AddTool(codemode.NewPollJobTool(), cmHandler.PollJob)
+
+	// Discovery surface so clients/agents can pull deeper docs on demand.
+	introRes, introHandler := codemode.NewIntroResource()
+	s.AddResource(introRes, server.ResourceHandlerFunc(introHandler))
+	apiRes, apiHandler := codemode.NewAPIShapeResource()
+	s.AddResource(apiRes, server.ResourceHandlerFunc(apiHandler))
+
+	deployPrompt, deployHandler := codemode.NewDeployExamplePrompt()
+	s.AddPrompt(deployPrompt, server.PromptHandlerFunc(deployHandler))
+	discoveryPrompt, discoveryHandler := codemode.NewAPIDiscoveryPrompt()
+	s.AddPrompt(discoveryPrompt, server.PromptHandlerFunc(discoveryHandler))
 
 	return s
 }

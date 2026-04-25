@@ -34,18 +34,36 @@ const searchInputSchema = `{
   "properties": {
     "code": {
       "type": "string",
-      "description": "JavaScript async arrow function. Available globals: spec (CreateOS OpenAPI, $refs resolved), console, sleep. Return any JSON-serialisable value."
+      "description": "Async arrow fn. Globals: spec, console, sleep. Example: 'async () => Object.entries(spec.paths).filter(([p]) => p.includes(\"deploy\")).map(([p,m]) => ({path:p, ops:Object.keys(m)}))'."
     }
   },
   "required": ["code"]
 }`
 
+const searchToolDescription = `Code Mode: introspect the CreateOS OpenAPI spec from a sandboxed JS arrow fn.
+
+When: discover endpoints/params/schemas BEFORE calling execute. No network in this mode.
+
+Globals: spec ($refs resolved, descriptions stripped), console, sleep(ms).
+Result envelope: {status:"done"|"error", result, logs} | {status:"error", errorKind:"userCode"|"timeout"|"infra", error, stack}.
+Limits: 5s timeout, 1MB code, 64KB result.
+
+See resource code-mode://intro and prompt code-mode/api-discovery.`
+
+func toolMeta() *mcp.Meta {
+	return &mcp.Meta{
+		AdditionalFields: map[string]any{
+			"mode":    "code",
+			"sandbox": "workerd",
+			"version": "v2",
+		},
+	}
+}
+
 func NewSearchTool() mcp.Tool {
-	return mcp.NewToolWithRawSchema(
-		"search",
-		"Search the CreateOS OpenAPI spec. Write a JS async arrow function that reads `spec` and returns matches. No network access in this mode. Use to discover endpoints, parameters, and shapes before calling execute().",
-		[]byte(searchInputSchema),
-	)
+	t := mcp.NewToolWithRawSchema("search", searchToolDescription, []byte(searchInputSchema))
+	t.Meta = toolMeta()
+	return t
 }
 
 type Handler struct {
@@ -88,18 +106,24 @@ const pollJobInputSchema = `{
   "properties": {
     "jobId": {
       "type": "string",
-      "description": "Job id returned by execute() when status was running."
+      "description": "j_<uuid> from a prior execute() that returned status:'running'."
     }
   },
   "required": ["jobId"]
 }`
 
+const pollJobToolDescription = `Code Mode: drain a long-running execute() job.
+
+When: a prior execute() returned {status:"running", jobId}. Loop until status != "running".
+Blocks up to ~90s per call (long-poll).
+
+Result envelope: {status:"running", jobId, logsSoFar} | {status:"done", result, logs} | {status:"error", errorKind:"userCode"|"timeout"|"infra"|"jobMissing", error, stack}.
+Wall cap on the underlying job: 600s. Jobs evicted 30 min after terminal.`
+
 func NewPollJobTool() mcp.Tool {
-	return mcp.NewToolWithRawSchema(
-		"pollJob",
-		"Poll a long-running execute() job. Blocks up to ~90s; returns {status: 'running'|'done'|'error', ...}. Loop until status != 'running'.",
-		[]byte(pollJobInputSchema),
-	)
+	t := mcp.NewToolWithRawSchema("pollJob", pollJobToolDescription, []byte(pollJobInputSchema))
+	t.Meta = toolMeta()
+	return t
 }
 
 func (h *Handler) PollJob(ctx context.Context, req mcp.CallToolRequest) (*mcp.CallToolResult, error) {
@@ -131,18 +155,36 @@ const executeInputSchema = `{
   "properties": {
     "code": {
       "type": "string",
-      "description": "JavaScript async arrow function. Available globals: spec, api, console, sleep. api.<group>.<operationId>(args) calls the CreateOS API with caller auth. api.raw(method, path, opts) is an escape hatch. Throws ApiError on non-2xx. Return any JSON-serialisable value."
+      "description": "Async arrow fn. Globals: spec, api, console, sleep. Example: 'async () => { const {data} = await api.projects.listProjects({limit:5}); return data; }'. Or escape hatch: 'async () => (await api.raw(\"POST\",\"/v1/x\",{body:{...}})).body'."
     }
   },
   "required": ["code"]
 }`
 
+const executeToolDescription = `Code Mode: run JS against the CreateOS API in a fresh V8 isolate. Auth forwarded from caller.
+
+API shape:
+  api.<group>.<operationId>(args)   typed call; group = first OpenAPI tag, operationId from spec.
+  api.raw(method, path, {query, headers, body})  escape hatch for unmapped routes.
+  Path params come from args by name: api.projects.getProject({id:"..."}).
+  Query/body inferred from operation; pass {body:{...}} explicitly to override.
+
+Errors: non-2xx throws ApiError {name, status, body, path}. Catch in user code if you want to handle them.
+
+Result envelope:
+  sync     -> {status:"done", result, logs}
+  >90s     -> {status:"running", jobId} -> loop pollJob(jobId)
+  failure  -> {status:"error", errorKind:"userCode"|"timeout"|"infra"|"capacity", error, stack, logs}
+
+Limits: 90s sync window, 600s wall cap, 1MB code, 64KB result, 50 concurrent jobs.
+Sandbox: no fs, no env, no ambient fetch. Only api/console/sleep/spec.
+
+See resource code-mode://api-shape and prompt code-mode/deploy-example.`
+
 func NewExecuteTool() mcp.Tool {
-	return mcp.NewToolWithRawSchema(
-		"execute",
-		"Execute JavaScript against the CreateOS API. Single sandbox call may chain multiple api calls. Returns either {status:'done', result, logs} or {status:'running', jobId} (long-running ops, polled via pollJob).",
-		[]byte(executeInputSchema),
-	)
+	t := mcp.NewToolWithRawSchema("execute", executeToolDescription, []byte(executeInputSchema))
+	t.Meta = toolMeta()
+	return t
 }
 
 func (h *Handler) Execute(ctx context.Context, req mcp.CallToolRequest) (*mcp.CallToolResult, error) {
