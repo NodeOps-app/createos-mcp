@@ -14,8 +14,11 @@ const SAFE_REQUEST_HEADERS = new Set([
   "if-modified-since",
   "if-unmodified-since",
   "x-request-id",
-  "x-access-token",
 ]);
+// Note: x-api-key, x-access-token, authorization, cookie are intentionally
+// NOT in the request allowlist. They are credential headers populated only
+// by buildAuthHeaders from the trusted authCtx — user code must never be
+// able to inject them via the request `headers` field.
 
 // Response headers we relay back to user code. Strips Set-Cookie and any
 // x-internal-*, x-vault-*, x-sentinel-* style headers so backend internals

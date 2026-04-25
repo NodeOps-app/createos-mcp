@@ -204,17 +204,24 @@ func codemodeAuthHeadersMiddleware(next http.Handler) http.Handler {
 func authMiddleware(cfg config.Config, next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		apiKey := r.Header.Get("X-Api-Key")
-		bearerToken := r.Header.Get("Authorization")
-		if bearerToken != "" {
-			parts := strings.Split(bearerToken, " ")
-			if len(parts) < 2 || parts[1] == "" {
+		authHeader := r.Header.Get("Authorization")
+		var bearerToken string
+		if authHeader != "" {
+			// Only "Bearer <token>" is accepted. Anything else (e.g.
+			// "Basic abc", a missing scheme, or empty token) is rejected
+			// before falling through to the missing-credentials check —
+			// otherwise a stray Authorization header would silently
+			// satisfy the auth gate.
+			parts := strings.SplitN(authHeader, " ", 2)
+			if len(parts) != 2 || !strings.EqualFold(parts[0], "Bearer") || parts[1] == "" {
 				w.WriteHeader(http.StatusUnauthorized)
 				return
 			}
+			bearerToken = parts[1]
 		}
 
-		// either api key or bearer token is required
-		// If both are missing, send 401 with WWW-Authenticate header pointing to PRM endpoint
+		// Either an API key or a Bearer token is required.
+		// If both are missing, send 401 with WWW-Authenticate header pointing to PRM endpoint.
 		if apiKey == "" && bearerToken == "" {
 			prmURL := fmt.Sprintf("%s/.well-known/oauth-protected-resource", cfg.BaseURL)
 			w.Header().Set("WWW-Authenticate", fmt.Sprintf(`Bearer realm="createos", resource_metadata="%s"`, prmURL))

@@ -126,6 +126,30 @@ describe("api-proxy", () => {
     expect(called).toBe(false);
   });
 
+  test("user-injected X-Access-Token / X-Api-Key are stripped (no credential smuggling)", async () => {
+    let captured;
+    globalThis.fetch = mock(async (_url, init) => {
+      captured = init;
+      return new Response("[]", { status: 200, headers: { "content-type": "application/json" } });
+    });
+    await call({
+      mode: "authenticated",
+      method: "GET",
+      path: "/v1/projects",
+      authCtx: { apiKey: "real-key" }, // bearer NOT set
+      headers: {
+        "X-Access-Token": "smuggled-bearer",
+        "X-Api-Key":      "smuggled-key",
+        "Authorization":  "Bearer smuggled",
+        "Cookie":         "session=stolen",
+      },
+    });
+    expect(captured.headers["X-Api-Key"]).toBe("real-key");
+    expect(captured.headers["X-Access-Token"]).toBeUndefined();
+    expect(captured.headers["Authorization"]).toBeUndefined();
+    expect(captured.headers["Cookie"]).toBeUndefined();
+  });
+
   test("user headers cannot override auth", async () => {
     let captured;
     globalThis.fetch = mock(async (_url, init) => {

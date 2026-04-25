@@ -29,7 +29,16 @@ const WALL_CAP_MS       = 600_000;
 const JOB_TTL_MS        = 30 * 60_000;
 const RESULT_CAP_BYTES  = 64 * 1024;
 
+// DoS guards. Bound the number of in-flight isolates and the size of the
+// jobStore so a flood of long-running executes (or of stuck CPU-bound code
+// that workerd cannot synchronously terminate) cannot exhaust memory or
+// pin every worker. /run returns 429 when a limit is hit.
+const MAX_RUNNING_JOBS    = 50;   // concurrent execute jobs
+const MAX_JOB_STORE_TOTAL = 500;  // running + finished-but-not-yet-evicted
+const MAX_RUNNING_SEARCHES = 50;  // concurrent search isolates
+
 const jobStore = new Map();
+let runningSearches = 0;
 
 function nowMs() { return Date.now(); }
 
@@ -38,6 +47,12 @@ function evictOldJobs() {
   for (const [id, j] of jobStore.entries()) {
     if (j.finishedAt && t - j.finishedAt > JOB_TTL_MS) jobStore.delete(id);
   }
+}
+
+function countRunningJobs() {
+  let n = 0;
+  for (const j of jobStore.values()) if (j.status === "running") n++;
+  return n;
 }
 
 function notifyWaiters(job) {
@@ -234,6 +249,13 @@ export default {
 
       // Search: simple sync timeout (5s). Timeout disposes the isolate.
       if (mode === "search") {
+        if (runningSearches >= MAX_RUNNING_SEARCHES) {
+          return Response.json(
+            { status: "error", errorKind: "capacity", error: "code mode at search capacity" },
+            { status: 429 },
+          );
+        }
+        runningSearches++;
         try {
           const out = await startIsolateRun(env, { mode, code, authCtx, timeoutMs: SEARCH_TIMEOUT_MS });
           if (out.ok) {
@@ -257,10 +279,26 @@ export default {
             errorKind: msg.includes("timeout") ? "timeout" : "infra",
             error: msg,
           });
+        } finally {
+          runningSearches--;
         }
       }
 
-      // Execute: register job, race sync window vs completion.
+      // Execute: enforce concurrency + total caps before registering a job.
+      const runningJobs = countRunningJobs();
+      if (runningJobs >= MAX_RUNNING_JOBS) {
+        return Response.json(
+          { status: "error", errorKind: "capacity", error: "too many running jobs" },
+          { status: 429 },
+        );
+      }
+      if (jobStore.size >= MAX_JOB_STORE_TOTAL) {
+        return Response.json(
+          { status: "error", errorKind: "capacity", error: "job store full" },
+          { status: 429 },
+        );
+      }
+
       const jobId = `j_${crypto.randomUUID()}`;
       const job = newJob();
       jobStore.set(jobId, job);
