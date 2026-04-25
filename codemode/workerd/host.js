@@ -31,14 +31,17 @@ export function buildHostModule({ specRef }) {
 }
 
 export function wrapMainModule(userCode) {
+  // userCode is interpolated into a wrapper function so a parse/syntax
+  // error surfaces as a SyntaxError caught by the inner try, returning
+  // {ok:false} with userCode kind — not an infra failure.
   return `
 import { spec, console, sleep, __getLogs } from "host.js";
 import { buildApi } from "api-sdk.js";
 export default {
   async run(callback) {
     const api = callback ? buildApi(callback) : undefined;
-    const userFn = (${userCode});
     try {
+      const userFn = (${userCode});
       const result = await userFn();
       return { ok: true, result, logs: __getLogs() };
     } catch (e) {

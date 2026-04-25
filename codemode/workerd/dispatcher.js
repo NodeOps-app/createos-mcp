@@ -88,7 +88,7 @@ function bestEffortDispose(stub) {
   } catch { /* noop */ }
 }
 
-async function startIsolateRun(env, { mode, code, authCtx }) {
+async function startIsolateRun(env, { mode, code, authCtx, timeoutMs }) {
   const specData = await ensureSpec(env);
   const isolateId = `iso-${crypto.randomUUID()}`;
 
@@ -105,24 +105,26 @@ async function startIsolateRun(env, { mode, code, authCtx }) {
   const entry = worker.getEntrypoint();
   const cb = mode === "execute" ? makeApiCallback(env.API, authCtx) : null;
 
-  const runPromise = entry.run(cb);
-
-  let wallTimerHandle;
-  const wallTimer = new Promise((_, rej) => {
-    wallTimerHandle = setTimeout(() => rej(new Error("wall_timeout")), WALL_CAP_MS);
+  const cap = typeof timeoutMs === "number" ? timeoutMs : WALL_CAP_MS;
+  let timerHandle;
+  const timer = new Promise((_, rej) => {
+    timerHandle = setTimeout(
+      () => rej(new Error(mode === "search" ? "search_timeout" : "wall_timeout")),
+      cap,
+    );
   });
 
   try {
-    const result = await Promise.race([runPromise, wallTimer]);
-    clearTimeout(wallTimerHandle);
-    return result;
-  } catch (e) {
-    clearTimeout(wallTimerHandle);
-    if (String(e?.message) === "wall_timeout") {
-      bestEffortDispose(entry);
-      bestEffortDispose(worker);
-    }
-    throw e;
+    return await Promise.race([entry.run(cb), timer]);
+  } finally {
+    clearTimeout(timerHandle);
+    // Always dispose entry+worker. On success this releases the cached
+    // worker promptly so /run does not accumulate isolates faster than
+    // the Worker Loader's LRU can evict them. On timeout this also
+    // severs the api-proxy callback so runaway code's further calls
+    // surface as ProxyError instead of being silently delivered.
+    bestEffortDispose(entry);
+    bestEffortDispose(worker);
   }
 }
 
@@ -230,13 +232,10 @@ export default {
         return Response.json({ status: "error", error: "code exceeds 1MB" }, { status: 413 });
       }
 
-      // Search: simple sync timeout.
+      // Search: simple sync timeout (5s). Timeout disposes the isolate.
       if (mode === "search") {
         try {
-          const out = await Promise.race([
-            startIsolateRun(env, { mode, code, authCtx }),
-            new Promise((_, rej) => setTimeout(() => rej(new Error("search_timeout")), SEARCH_TIMEOUT_MS)),
-          ]);
+          const out = await startIsolateRun(env, { mode, code, authCtx, timeoutMs: SEARCH_TIMEOUT_MS });
           if (out.ok) {
             return Response.json({
               status: "done",
@@ -268,7 +267,7 @@ export default {
 
       const runPromise = (async () => {
         try {
-          const out = await startIsolateRun(env, { mode, code, authCtx });
+          const out = await startIsolateRun(env, { mode, code, authCtx, timeoutMs: WALL_CAP_MS });
           if (out.ok) finaliseJob(job, { kind: "done", result: out.result, logs: out.logs });
           else finaliseJob(job, { kind: "userError", error: out.error, stack: out.stack, logs: out.logs });
         } catch (e) {

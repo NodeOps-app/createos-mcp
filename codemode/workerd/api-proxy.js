@@ -14,6 +14,7 @@ const SAFE_REQUEST_HEADERS = new Set([
   "if-modified-since",
   "if-unmodified-since",
   "x-request-id",
+  "x-access-token",
 ]);
 
 // Response headers we relay back to user code. Strips Set-Cookie and any
@@ -30,11 +31,17 @@ const SAFE_RESPONSE_HEADERS = new Set([
   "x-request-id",
 ]);
 
+// Auth header names match the native Go client (helpers/httpclient.go):
+//   api-key    -> "X-Api-Key"
+//   bearer     -> "X-Access-Token"  (NOT "Authorization: Bearer" — backend
+//                   accepts the X-Access-Token header used by the native
+//                   handlers; using Authorization here would silently fail
+//                   on Bearer-authenticated callers.)
 function buildAuthHeaders(authCtx) {
   const headers = {};
   if (!authCtx) return headers;
   if (authCtx.apiKey) headers["X-Api-Key"] = authCtx.apiKey;
-  if (authCtx.bearer) headers["Authorization"] = `Bearer ${authCtx.bearer}`;
+  if (authCtx.bearer) headers["X-Access-Token"] = authCtx.bearer;
   return headers;
 }
 
@@ -56,30 +63,35 @@ function sanitizeResponseHeaders(h) {
   return out;
 }
 
-// Path validation: must be a server-relative path starting with "/" and not
-// "//" (which URL would treat as protocol-relative). Rejects absolute URLs to
-// prevent SSRF / credential exfiltration via api.raw("GET", "https://attacker").
+// Path validation + base path preservation.
+//   - request `path` MUST start with single "/" (rejects "https://..." SSRF
+//     and "//attacker" protocol-relative).
+//   - if BACKEND_URL has a path prefix (e.g. "https://host/api"), the prefix
+//     is preserved and the request path is appended: prefix + path.
+//   - bootstrap path ("/api-docs/openapi.yaml") in api-proxy bootstrap mode
+//     uses the same prefix-aware concatenation via raw `env.BACKEND_URL +
+//     path`, which is fine when BACKEND_URL has no trailing slash.
 function buildUrl(base, path, query) {
   if (typeof path !== "string" || !path.startsWith("/") || path.startsWith("//")) {
     throw new Error("path must be a server-relative path starting with '/'");
   }
-  const u = new URL(base);
-  // Combine base path + request path; new URL("/foo", "https://h/x") drops "/x"
-  // intentionally — we want the host's root, then request path appended.
-  u.pathname = path.split("?")[0];
-  const qIdx = path.indexOf("?");
-  if (qIdx !== -1) u.search = path.slice(qIdx);
+  const baseUrl = new URL(base);
+  // Strip any trailing slash on the base path so we don't end up with "//".
+  const basePath = baseUrl.pathname.replace(/\/+$/, "");
+  const [reqPath, reqQuery] = path.split("?", 2);
+  baseUrl.pathname = basePath + reqPath;
+  if (reqQuery !== undefined) baseUrl.search = "?" + reqQuery;
   if (query && typeof query === "object") {
     for (const [k, v] of Object.entries(query)) {
       if (v == null) continue;
       if (Array.isArray(v)) {
-        for (const item of v) u.searchParams.append(k, String(item));
+        for (const item of v) baseUrl.searchParams.append(k, String(item));
       } else {
-        u.searchParams.set(k, String(v));
+        baseUrl.searchParams.set(k, String(v));
       }
     }
   }
-  return u.toString();
+  return baseUrl.toString();
 }
 
 export default {
@@ -99,8 +111,14 @@ export default {
           { status: 400 },
         );
       }
-      const url = env.BACKEND_URL + path;
-      const r = await fetch(url, { method: "GET" });
+      // Use buildUrl so a BACKEND_URL with a path prefix is honoured.
+      let bootUrl;
+      try {
+        bootUrl = buildUrl(env.BACKEND_URL, path, null);
+      } catch (e) {
+        return Response.json({ error: String(e?.message ?? e) }, { status: 400 });
+      }
+      const r = await fetch(bootUrl, { method: "GET" });
       const text = await r.text();
       return Response.json({
         status: r.status,

@@ -10,6 +10,15 @@ spec:
     runAsNonRoot: true
     seccompProfile:
       type: RuntimeDefault
+  volumes:
+    - name: mcp-config
+      configMap:
+        name: createos-mcp-config
+        # ConfigMap must contain a key named "config.yaml" with the
+        # rendered MCP config (BaseURL, Port, Transport, etc).
+        items:
+          - key: config.yaml
+            path: config.yaml
   containers:
     - name: mcp
       image: createos-mcp:v2.0.0
@@ -17,6 +26,12 @@ spec:
       env:
         - name: WORKERD_URL
           value: http://127.0.0.1:8787
+        - name: CREATEOS_MCP_CONFIG
+          value: /etc/createos/config.yaml
+      volumeMounts:
+        - name: mcp-config
+          mountPath: /etc/createos
+          readOnly: true
       ports:
         - name: metrics
           containerPort: 9090

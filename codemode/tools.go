@@ -162,7 +162,7 @@ func (h *Handler) Execute(ctx context.Context, req mcp.CallToolRequest) (*mcp.Ca
 	if !ok {
 		return mcp.NewToolResultError("code must be a string"), nil
 	}
-	auth := AuthFromContext(ctx)
+	auth := AuthFromRequest(ctx, req)
 	result, err := h.Client.Run(ctx, RunRequest{Mode: ModeExecute, Code: code, AuthCtx: auth})
 	if err != nil {
 		outcome = "infra"

@@ -41,7 +41,7 @@ describe("api-proxy", () => {
     expect(captured.init.headers["X-Api-Key"]).toBe("k1");
   });
 
-  test("authenticated mode injects Bearer", async () => {
+  test("authenticated mode injects X-Access-Token (matches native)", async () => {
     let captured;
     globalThis.fetch = mock(async (url, init) => {
       captured = { url, init };
@@ -56,7 +56,48 @@ describe("api-proxy", () => {
       path: "/v1/projects",
       authCtx: { bearer: "tok" },
     });
-    expect(captured.init.headers["Authorization"]).toBe("Bearer tok");
+    expect(captured.init.headers["X-Access-Token"]).toBe("tok");
+    expect(captured.init.headers["Authorization"]).toBeUndefined();
+  });
+
+  test("BACKEND_URL with path prefix is preserved", async () => {
+    let captured;
+    globalThis.fetch = mock(async (url, init) => {
+      captured = { url, init };
+      return new Response("[]", { status: 200, headers: { "content-type": "application/json" } });
+    });
+    const r = await apiProxy.fetch(
+      new Request("https://internal/proxy", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          mode: "authenticated",
+          method: "GET",
+          path: "/v1/projects",
+          authCtx: { apiKey: "k" },
+        }),
+      }),
+      { BACKEND_URL: "https://backend.test/api" },
+    );
+    expect(captured.url).toBe("https://backend.test/api/v1/projects");
+    expect(r.status).toBe(200);
+  });
+
+  test("bootstrap honours BACKEND_URL path prefix", async () => {
+    let captured;
+    globalThis.fetch = mock(async (url) => {
+      captured = url;
+      return new Response("openapi: 3.0", { status: 200 });
+    });
+    await apiProxy.fetch(
+      new Request("https://internal/proxy", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ mode: "bootstrap", method: "GET", path: "/api-docs/openapi.yaml" }),
+      }),
+      { BACKEND_URL: "https://backend.test/api" },
+    );
+    expect(captured).toBe("https://backend.test/api/api-docs/openapi.yaml");
   });
 
   test("rejects absolute URL in path (SSRF guard)", async () => {

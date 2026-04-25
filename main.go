@@ -23,7 +23,11 @@ import (
 )
 
 func main() {
-	configPath := flag.String("config", "config.yaml", "Path to the config file")
+	defaultConfig := os.Getenv("CREATEOS_MCP_CONFIG")
+	if defaultConfig == "" {
+		defaultConfig = "config.yaml"
+	}
+	configPath := flag.String("config", defaultConfig, "Path to the config file (env: CREATEOS_MCP_CONFIG)")
 	flag.Parse()
 
 	if configPath == nil {
@@ -63,6 +67,12 @@ func main() {
 
 		mcpHandler = corsMiddleware(mcpHandler)
 		mcpHandler = authMiddleware(*config.Cfg, mcpHandler)
+		// Inject incoming HTTP request headers into the request context so
+		// codemode.AuthFromRequest's stdio fallback (AuthFromContext) finds
+		// them. AuthFromRequest's primary path reads mcp.CallToolRequest.Header
+		// directly; this is belt-and-braces for transports where the MCP
+		// library does not surface headers on the request struct.
+		mcpHandler = codemodeAuthHeadersMiddleware(mcpHandler)
 		mux.Handle("/mcp", mcpHandler)
 
 		mux.HandleFunc("/readyz", func(w http.ResponseWriter, r *http.Request) {
@@ -171,6 +181,22 @@ func loggingMiddleware(next http.Handler) http.Handler {
 		log.Printf("RemoteAddr: %s", r.RemoteAddr)
 		log.Printf("User-Agent: %s", r.UserAgent())
 		log.Printf("===============")
+		next.ServeHTTP(w, r)
+	})
+}
+
+func codemodeAuthHeadersMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		headers := map[string]string{}
+		if v := r.Header.Get("X-Api-Key"); v != "" {
+			headers["X-Api-Key"] = v
+		}
+		if v := r.Header.Get("Authorization"); v != "" {
+			headers["Authorization"] = v
+		}
+		if len(headers) > 0 {
+			r = r.WithContext(codemode.WithAuthHeaders(r.Context(), headers))
+		}
 		next.ServeHTTP(w, r)
 	})
 }
