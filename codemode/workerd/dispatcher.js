@@ -77,6 +77,17 @@ function makeApiCallback(apiBinding, authCtx) {
   };
 }
 
+// Attempt best-effort isolate teardown on wall-timeout. workerd does not
+// expose a synchronous isolate.terminate() API, so the V8 isolate continues
+// to run user code until the Worker Loader's LRU evicts it. Disposing the
+// entry stub releases the RPC connection so subsequent api-proxy calls from
+// the runaway code surface as ProxyError instead of being silently delivered.
+function bestEffortDispose(stub) {
+  try {
+    if (stub && typeof stub[Symbol.dispose] === "function") stub[Symbol.dispose]();
+  } catch { /* noop */ }
+}
+
 async function startIsolateRun(env, { mode, code, authCtx }) {
   const specData = await ensureSpec(env);
   const isolateId = `iso-${crypto.randomUUID()}`;
@@ -96,11 +107,23 @@ async function startIsolateRun(env, { mode, code, authCtx }) {
 
   const runPromise = entry.run(cb);
 
+  let wallTimerHandle;
   const wallTimer = new Promise((_, rej) => {
-    setTimeout(() => rej(new Error("wall_timeout")), WALL_CAP_MS);
+    wallTimerHandle = setTimeout(() => rej(new Error("wall_timeout")), WALL_CAP_MS);
   });
 
-  return Promise.race([runPromise, wallTimer]);
+  try {
+    const result = await Promise.race([runPromise, wallTimer]);
+    clearTimeout(wallTimerHandle);
+    return result;
+  } catch (e) {
+    clearTimeout(wallTimerHandle);
+    if (String(e?.message) === "wall_timeout") {
+      bestEffortDispose(entry);
+      bestEffortDispose(worker);
+    }
+    throw e;
+  }
 }
 
 function newJob() {

@@ -61,8 +61,16 @@ func startWorkerd(t *testing.T, backendURL string) (string, func()) {
 		t.Fatal(err)
 	}
 	cancel := func() {
+		if cmd.Process == nil {
+			return
+		}
 		_ = cmd.Process.Kill()
+		// Reap so the OS port + pid table are clean before the next test
+		// (workerd binds a fixed loopback port; concurrent/back-to-back
+		// integration tests would otherwise collide).
 		_, _ = cmd.Process.Wait()
+		// Belt-and-braces: socket close lags pid reap on macOS.
+		time.Sleep(100 * time.Millisecond)
 	}
 	t.Cleanup(cancel)
 	deadline := time.Now().Add(15 * time.Second)

@@ -59,6 +59,79 @@ describe("api-proxy", () => {
     expect(captured.init.headers["Authorization"]).toBe("Bearer tok");
   });
 
+  test("rejects absolute URL in path (SSRF guard)", async () => {
+    let called = false;
+    globalThis.fetch = mock(async () => { called = true; return new Response("nope"); });
+    const r = await call({
+      mode: "authenticated",
+      method: "GET",
+      path: "https://attacker.example/x",
+      authCtx: { apiKey: "secret" },
+    });
+    expect(r.status).toBe(400);
+    expect(called).toBe(false);
+  });
+
+  test("rejects protocol-relative // path", async () => {
+    let called = false;
+    globalThis.fetch = mock(async () => { called = true; return new Response("nope"); });
+    const r = await call({
+      mode: "authenticated",
+      method: "GET",
+      path: "//attacker.example/x",
+      authCtx: { apiKey: "secret" },
+    });
+    expect(r.status).toBe(400);
+    expect(called).toBe(false);
+  });
+
+  test("user headers cannot override auth", async () => {
+    let captured;
+    globalThis.fetch = mock(async (_url, init) => {
+      captured = init;
+      return new Response("[]", { status: 200, headers: { "content-type": "application/json" } });
+    });
+    await call({
+      mode: "authenticated",
+      method: "GET",
+      path: "/v1/projects",
+      authCtx: { apiKey: "real-key" },
+      headers: { "X-Api-Key": "spoofed", "Authorization": "Bearer spoofed", "X-Internal-Bypass": "1" },
+    });
+    expect(captured.headers["X-Api-Key"]).toBe("real-key");
+    expect(captured.headers["Authorization"]).toBeUndefined();
+    expect(captured.headers["X-Internal-Bypass"]).toBeUndefined();
+  });
+
+  test("strips Set-Cookie + internal x-* response headers", async () => {
+    globalThis.fetch = mock(async () => new Response("[]", {
+      status: 200,
+      headers: {
+        "content-type": "application/json",
+        "set-cookie": "session=secret",
+        "x-internal-token": "leak",
+        "etag": "abc",
+      },
+    }));
+    const r = await call({ mode: "authenticated", method: "GET", path: "/v1/projects", authCtx: { apiKey: "k" } });
+    const body = await r.json();
+    expect(body.headers["set-cookie"]).toBeUndefined();
+    expect(body.headers["x-internal-token"]).toBeUndefined();
+    expect(body.headers["etag"]).toBe("abc");
+  });
+
+  test("invalid JSON request body returns 400", async () => {
+    const r = await apiProxy.fetch(
+      new Request("https://internal/proxy", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: "not json",
+      }),
+      env,
+    );
+    expect(r.status).toBe(400);
+  });
+
   test("query string assembled", async () => {
     let captured;
     globalThis.fetch = mock(async (url, init) => {
