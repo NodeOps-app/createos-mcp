@@ -1,6 +1,9 @@
 package main
 
 import (
+	"os"
+
+	"github.com/NodeOps-app/createos-mcp/codemode"
 	handler "github.com/NodeOps-app/createos-mcp/handlers"
 	"github.com/NodeOps-app/createos-mcp/mcptools"
 	"github.com/mark3labs/mcp-go/server"
@@ -103,6 +106,14 @@ func NewMCPServer() *server.MCPServer {
 	s.AddTool(mcptools.NewUploadDeploymentFilesMCPTool(), handler.UploadDeploymentFilesHandler)
 	s.AddTool(mcptools.NewUploadDeploymentZipMCPTool(), handler.UploadDeploymentZipHandler)
 	s.AddTool(mcptools.NewWakeupDeploymentMCPTool(), handler.WakeupDeploymentHandler)
+
+	// Code Mode (v2): search tool. execute + pollJob registered in later phases.
+	workerdURL := os.Getenv("WORKERD_URL")
+	if workerdURL == "" {
+		workerdURL = "http://127.0.0.1:8787"
+	}
+	cmHandler := &codemode.Handler{Client: codemode.NewClient(workerdURL)}
+	s.AddTool(codemode.NewSearchTool(), cmHandler.Search)
 
 	return s
 }

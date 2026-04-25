@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"flag"
 	"fmt"
@@ -8,10 +9,12 @@ import (
 	"log"
 	"net"
 	"net/http"
+	"os"
 	"strings"
 	"sync"
 	"time"
 
+	"github.com/NodeOps-app/createos-mcp/codemode"
 	"github.com/NodeOps-app/createos-mcp/config"
 	"github.com/NodeOps-app/createos-mcp/pkg/oauth"
 	"github.com/mark3labs/mcp-go/server"
@@ -31,6 +34,14 @@ func main() {
 	}
 
 	mcpServer := NewMCPServer()
+
+	// Code Mode: workerd sidecar health probe.
+	wd := os.Getenv("WORKERD_URL")
+	if wd == "" {
+		wd = "http://127.0.0.1:8787"
+	}
+	cmMonitor := codemode.NewHealthMonitor(codemode.NewClient(wd))
+	cmMonitor.Start(context.Background(), 5*time.Second)
 
 	switch config.Cfg.Transport {
 	case "stdio":
@@ -52,6 +63,16 @@ func main() {
 		mcpHandler = corsMiddleware(mcpHandler)
 		mcpHandler = authMiddleware(*config.Cfg, mcpHandler)
 		mux.Handle("/mcp", mcpHandler)
+
+		mux.HandleFunc("/readyz", func(w http.ResponseWriter, r *http.Request) {
+			if cmMonitor.Ready() {
+				w.WriteHeader(http.StatusOK)
+				_, _ = w.Write([]byte(`{"ok":true}`))
+				return
+			}
+			w.WriteHeader(http.StatusServiceUnavailable)
+			_, _ = w.Write([]byte(`{"ok":false,"reason":"workerd sidecar not ready"}`))
+		})
 
 		// Wrap the entire mux with logging middleware to log ALL requests
 		rootHandler := loggingMiddleware(mux)
