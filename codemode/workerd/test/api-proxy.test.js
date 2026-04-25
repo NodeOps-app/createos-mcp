@@ -133,6 +133,86 @@ describe("api-proxy", () => {
     expect(called).toBe(false);
   });
 
+  test("rejects percent-encoded dot-segment ('/%2e%2e/admin')", async () => {
+    let called = false;
+    globalThis.fetch = mock(async () => { called = true; return new Response("nope"); });
+    const r = await apiProxy.fetch(
+      new Request("https://internal/proxy", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          mode: "authenticated",
+          method: "GET",
+          path: "/%2e%2e/admin",
+          authCtx: { apiKey: "k" },
+        }),
+      }),
+      { BACKEND_URL: "https://backend.test/api" },
+    );
+    expect(r.status).toBe(400);
+    expect(called).toBe(false);
+  });
+
+  test("rejects mixed-case encoded dot-segment ('/%2E%2e/admin')", async () => {
+    let called = false;
+    globalThis.fetch = mock(async () => { called = true; return new Response("nope"); });
+    const r = await apiProxy.fetch(
+      new Request("https://internal/proxy", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          mode: "authenticated",
+          method: "GET",
+          path: "/%2E%2e/admin",
+          authCtx: { apiKey: "k" },
+        }),
+      }),
+      { BACKEND_URL: "https://backend.test/api" },
+    );
+    expect(r.status).toBe(400);
+    expect(called).toBe(false);
+  });
+
+  test("rejects partial-encoded dot-segment ('/%2e./admin')", async () => {
+    let called = false;
+    globalThis.fetch = mock(async () => { called = true; return new Response("nope"); });
+    const r = await apiProxy.fetch(
+      new Request("https://internal/proxy", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          mode: "authenticated",
+          method: "GET",
+          path: "/%2e./admin",
+          authCtx: { apiKey: "k" },
+        }),
+      }),
+      { BACKEND_URL: "https://backend.test/api" },
+    );
+    expect(r.status).toBe(400);
+    expect(called).toBe(false);
+  });
+
+  test("rejects invalid percent-encoding ('/%ZZ/admin')", async () => {
+    let called = false;
+    globalThis.fetch = mock(async () => { called = true; return new Response("nope"); });
+    const r = await apiProxy.fetch(
+      new Request("https://internal/proxy", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          mode: "authenticated",
+          method: "GET",
+          path: "/%ZZ/admin",
+          authCtx: { apiKey: "k" },
+        }),
+      }),
+      { BACKEND_URL: "https://backend.test/api" },
+    );
+    expect(r.status).toBe(400);
+    expect(called).toBe(false);
+  });
+
   test("rejects dot-segment in middle of path ('/v1/foo/../../admin')", async () => {
     let called = false;
     globalThis.fetch = mock(async () => { called = true; return new Response("nope"); });

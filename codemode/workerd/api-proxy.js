@@ -78,13 +78,21 @@ function buildUrl(base, path, query) {
   if (typeof path !== "string" || !path.startsWith("/") || path.startsWith("//")) {
     throw new Error("path must be a server-relative path starting with '/'");
   }
-  // Reject dot-segments. URL normalisation collapses "/api/../admin" to
-  // "/admin", which would let user code escape any BACKEND_URL path
-  // prefix and reach unrelated routes.
+  // Reject dot-segments — both raw and percent-encoded. URL normalisation
+  // collapses "/api/../admin" (and "/api/%2e%2e/admin", "/api/%2E./admin",
+  // etc., because RFC 3986 §3.3 treats percent-encoded "." as identical
+  // to literal ".") to "/admin", which would let user code escape any
+  // BACKEND_URL path prefix and reach unrelated routes.
   const [pathOnly, reqQuery] = path.split("?", 2);
   for (const seg of pathOnly.split("/")) {
-    if (seg === "." || seg === "..") {
-      throw new Error("path may not contain '.' or '..' segments");
+    let decoded;
+    try {
+      decoded = decodeURIComponent(seg);
+    } catch {
+      throw new Error("path contains invalid percent-encoding");
+    }
+    if (decoded === "." || decoded === "..") {
+      throw new Error("path may not contain '.' or '..' segments (raw or encoded)");
     }
   }
   const baseUrl = new URL(base);
