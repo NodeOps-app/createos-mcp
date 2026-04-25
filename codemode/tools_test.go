@@ -72,6 +72,36 @@ func TestHandler_Execute_ForwardsAuth(t *testing.T) {
 	}
 }
 
+func TestHandler_PollJob_OK(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		_, _ = w.Write([]byte(`{"status":"done","result":1}`))
+	}))
+	defer srv.Close()
+	h := &Handler{Client: NewClient(srv.URL)}
+	req := mcp.CallToolRequest{}
+	req.Params.Arguments = map[string]interface{}{"jobId": "j1"}
+	res, err := h.PollJob(context.Background(), req)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if res.IsError {
+		t.Fatalf("unexpected error: %#v", res.Content)
+	}
+}
+
+func TestHandler_PollJob_MissingId(t *testing.T) {
+	h := &Handler{Client: NewClient("http://invalid")}
+	req := mcp.CallToolRequest{}
+	req.Params.Arguments = map[string]interface{}{}
+	res, err := h.PollJob(context.Background(), req)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !res.IsError {
+		t.Fatal("want error")
+	}
+}
+
 func TestHandler_Search_MissingCode(t *testing.T) {
 	h := &Handler{Client: NewClient("http://invalid")}
 	req := mcp.CallToolRequest{}

@@ -24,14 +24,37 @@ async function ensureSpec(env) {
 }
 
 const SEARCH_TIMEOUT_MS = 5_000;
-const EXECUTE_SYNC_TIMEOUT_MS = 90_000;
+const SYNC_WINDOW_MS    = 90_000;
+const WALL_CAP_MS       = 600_000;
+const JOB_TTL_MS        = 30 * 60_000;
+const RESULT_CAP_BYTES  = 64 * 1024;
 
-function withTimeout(promise, ms) {
-  let to;
-  const timer = new Promise((_, rej) => {
-    to = setTimeout(() => rej(new Error(`timeout after ${ms}ms`)), ms);
-  });
-  return Promise.race([promise, timer]).finally(() => clearTimeout(to));
+const jobStore = new Map();
+
+function nowMs() { return Date.now(); }
+
+function evictOldJobs() {
+  const t = nowMs();
+  for (const [id, j] of jobStore.entries()) {
+    if (j.finishedAt && t - j.finishedAt > JOB_TTL_MS) jobStore.delete(id);
+  }
+}
+
+function notifyWaiters(job) {
+  for (const w of job.waiters) w();
+  job.waiters.clear();
+}
+
+function maybeTruncateResult(result) {
+  try {
+    const s = JSON.stringify(result);
+    if (s.length > RESULT_CAP_BYTES) {
+      return { __truncated: true, preview: s.slice(0, RESULT_CAP_BYTES) };
+    }
+    return result;
+  } catch (e) {
+    return { __unserialisable: String(e) };
+  }
 }
 
 function makeApiCallback(apiBinding, authCtx) {
@@ -54,7 +77,7 @@ function makeApiCallback(apiBinding, authCtx) {
   };
 }
 
-async function runIsolate(env, { mode, code, authCtx }) {
+async function startIsolateRun(env, { mode, code, authCtx }) {
   const specData = await ensureSpec(env);
   const isolateId = `iso-${crypto.randomUUID()}`;
 
@@ -65,20 +88,92 @@ async function runIsolate(env, { mode, code, authCtx }) {
   const worker = env.LOADER.get(isolateId, () => ({
     compatibilityDate: "2024-09-09",
     mainModule: "main.js",
-    modules: {
-      "main.js":    mainSrc,
-      "host.js":    hostSrc,
-      "api-sdk.js": sdkSrc,
-    },
+    modules: { "main.js": mainSrc, "host.js": hostSrc, "api-sdk.js": sdkSrc },
   }));
 
   const entry = worker.getEntrypoint();
   const cb = mode === "execute" ? makeApiCallback(env.API, authCtx) : null;
-  return entry.run(cb);
+
+  const runPromise = entry.run(cb);
+
+  const wallTimer = new Promise((_, rej) => {
+    setTimeout(() => rej(new Error("wall_timeout")), WALL_CAP_MS);
+  });
+
+  return Promise.race([runPromise, wallTimer]);
+}
+
+function newJob() {
+  return {
+    status: "running",
+    result: null,
+    error: null,
+    errorKind: null,
+    stack: null,
+    logs: [],
+    createdAt: nowMs(),
+    finishedAt: null,
+    waiters: new Set(),
+  };
+}
+
+function finaliseJob(job, isolateOutcome) {
+  if (isolateOutcome.kind === "done") {
+    job.status = "done";
+    job.result = maybeTruncateResult(isolateOutcome.result);
+    job.logs = isolateOutcome.logs ?? [];
+  } else if (isolateOutcome.kind === "userError") {
+    job.status = "error";
+    job.errorKind = "userCode";
+    job.error = isolateOutcome.error;
+    job.stack = isolateOutcome.stack;
+    job.logs = isolateOutcome.logs ?? [];
+  } else if (isolateOutcome.kind === "wallTimeout") {
+    job.status = "error";
+    job.errorKind = "timeout";
+    job.error = "wall timeout (600s)";
+  } else {
+    job.status = "error";
+    job.errorKind = "infra";
+    job.error = isolateOutcome.error ?? "unknown";
+  }
+  job.finishedAt = nowMs();
+  notifyWaiters(job);
+}
+
+function jobResponse(jobId, job) {
+  if (job.status === "running") {
+    return { status: "running", jobId, logsSoFar: job.logs.slice(-50) };
+  }
+  if (job.status === "done") {
+    return { status: "done", result: job.result, logs: job.logs };
+  }
+  return {
+    status: "error",
+    errorKind: job.errorKind,
+    error: job.error,
+    stack: job.stack,
+    logs: job.logs,
+  };
+}
+
+async function awaitJobUntil(jobId, deadlineMs) {
+  const job = jobStore.get(jobId);
+  if (!job) return null;
+  if (job.status !== "running") return job;
+  return new Promise((resolve) => {
+    let to;
+    const cleanup = () => { job.waiters.delete(wake); clearTimeout(to); };
+    const wake = () => { cleanup(); resolve(job); };
+    job.waiters.add(wake);
+    const remaining = Math.max(0, deadlineMs - nowMs());
+    to = setTimeout(() => { cleanup(); resolve(job); }, remaining);
+  });
 }
 
 export default {
   async fetch(req, env, ctx) {
+    evictOldJobs();
     const url = new URL(req.url);
 
     if (url.pathname === "/health") {
@@ -89,6 +184,8 @@ export default {
           specVersion: data.version,
           endpointCount: data.endpointCount,
           loadedAt: data.loadedAt,
+          jobsRunning: [...jobStore.values()].filter((j) => j.status === "running").length,
+          jobStoreSize: jobStore.size,
         });
       } catch (e) {
         return Response.json({ ok: false, error: String(e) }, { status: 503 });
@@ -99,7 +196,6 @@ export default {
       let body;
       try { body = await req.json(); }
       catch { return Response.json({ status: "error", error: "invalid json" }, { status: 400 }); }
-
       const { mode, code, authCtx } = body;
       if (mode !== "search" && mode !== "execute") {
         return Response.json({ status: "error", error: "mode must be search or execute" }, { status: 400 });
@@ -111,24 +207,78 @@ export default {
         return Response.json({ status: "error", error: "code exceeds 1MB" }, { status: 413 });
       }
 
-      const timeout = mode === "search" ? SEARCH_TIMEOUT_MS : EXECUTE_SYNC_TIMEOUT_MS;
-      try {
-        const result = await withTimeout(runIsolate(env, { mode, code, authCtx }), timeout);
-        if (result.ok) {
-          return Response.json({ status: "done", result: result.result, logs: result.logs });
+      // Search: simple sync timeout.
+      if (mode === "search") {
+        try {
+          const out = await Promise.race([
+            startIsolateRun(env, { mode, code, authCtx }),
+            new Promise((_, rej) => setTimeout(() => rej(new Error("search_timeout")), SEARCH_TIMEOUT_MS)),
+          ]);
+          if (out.ok) {
+            return Response.json({
+              status: "done",
+              result: maybeTruncateResult(out.result),
+              logs: out.logs,
+            });
+          }
+          return Response.json({
+            status: "error",
+            errorKind: "userCode",
+            error: out.error,
+            stack: out.stack,
+            logs: out.logs,
+          });
+        } catch (e) {
+          const msg = String(e?.message ?? e);
+          return Response.json({
+            status: "error",
+            errorKind: msg.includes("timeout") ? "timeout" : "infra",
+            error: msg,
+          });
         }
-        return Response.json({
-          status: "error",
-          errorKind: result.kind === "ProxyError" ? "infra" : "userCode",
-          error: result.error,
-          stack: result.stack,
-          logs: result.logs,
-        });
-      } catch (e) {
-        const msg = String(e?.message ?? e);
-        const errorKind = msg.startsWith("timeout") ? "timeout" : "infra";
-        return Response.json({ status: "error", errorKind, error: msg });
       }
+
+      // Execute: register job, race sync window vs completion.
+      const jobId = `j_${crypto.randomUUID()}`;
+      const job = newJob();
+      jobStore.set(jobId, job);
+
+      const runPromise = (async () => {
+        try {
+          const out = await startIsolateRun(env, { mode, code, authCtx });
+          if (out.ok) finaliseJob(job, { kind: "done", result: out.result, logs: out.logs });
+          else finaliseJob(job, { kind: "userError", error: out.error, stack: out.stack, logs: out.logs });
+        } catch (e) {
+          if (String(e?.message) === "wall_timeout") {
+            finaliseJob(job, { kind: "wallTimeout" });
+          } else {
+            finaliseJob(job, { kind: "infra", error: String(e?.message ?? e) });
+          }
+        }
+      })();
+
+      if (ctx?.waitUntil) ctx.waitUntil(runPromise);
+
+      const deadline = nowMs() + SYNC_WINDOW_MS;
+      const finished = await awaitJobUntil(jobId, deadline);
+      return Response.json(jobResponse(jobId, finished ?? job));
+    }
+
+    if (url.pathname === "/poll" && req.method === "POST") {
+      let body;
+      try { body = await req.json(); }
+      catch { return Response.json({ status: "error", error: "invalid json" }, { status: 400 }); }
+      const jobId = body.jobId;
+      if (!jobId || typeof jobId !== "string") {
+        return Response.json({ status: "error", errorKind: "userCode", error: "jobId required" }, { status: 400 });
+      }
+      const job = jobStore.get(jobId);
+      if (!job) {
+        return Response.json({ status: "error", errorKind: "jobMissing", error: "unknown jobId" });
+      }
+      const deadline = nowMs() + SYNC_WINDOW_MS;
+      const finished = await awaitJobUntil(jobId, deadline);
+      return Response.json(jobResponse(jobId, finished ?? job));
     }
 
     return new Response("not found", { status: 404 });

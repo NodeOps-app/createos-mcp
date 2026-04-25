@@ -55,6 +55,49 @@ func (h *Handler) Search(ctx context.Context, req mcp.CallToolRequest) (*mcp.Cal
 	return mcp.NewToolResultText(string(out)), nil
 }
 
+const pollJobInputSchema = `{
+  "type": "object",
+  "properties": {
+    "jobId": {
+      "type": "string",
+      "description": "Job id returned by execute() when status was running."
+    }
+  },
+  "required": ["jobId"]
+}`
+
+func NewPollJobTool() mcp.Tool {
+	return mcp.NewToolWithRawSchema(
+		"pollJob",
+		"Poll a long-running execute() job. Blocks up to ~90s; returns {status: 'running'|'done'|'error', ...}. Loop until status != 'running'.",
+		[]byte(pollJobInputSchema),
+	)
+}
+
+func (h *Handler) PollJob(ctx context.Context, req mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+	args, ok := req.Params.Arguments.(map[string]interface{})
+	if !ok {
+		return mcp.NewToolResultError("invalid arguments type"), nil
+	}
+	rawID, ok := args["jobId"]
+	if !ok {
+		return mcp.NewToolResultError("missing required argument: jobId"), nil
+	}
+	jobID, ok := rawID.(string)
+	if !ok || jobID == "" {
+		return mcp.NewToolResultError("jobId must be a non-empty string"), nil
+	}
+	result, err := h.Client.Poll(ctx, jobID)
+	if err != nil {
+		return mcp.NewToolResultError(fmt.Sprintf("code mode unavailable: %v", err)), nil
+	}
+	out, err := json.Marshal(result)
+	if err != nil {
+		return mcp.NewToolResultError(fmt.Sprintf("encode: %v", err)), nil
+	}
+	return mcp.NewToolResultText(string(out)), nil
+}
+
 const executeInputSchema = `{
   "type": "object",
   "properties": {

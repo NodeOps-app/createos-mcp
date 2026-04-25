@@ -80,6 +80,32 @@ func (c *Client) Run(ctx context.Context, req RunRequest) (*RunResult, error) {
 	return &out, nil
 }
 
+type PollRequest struct {
+	JobID string `json:"jobId"`
+}
+
+func (c *Client) Poll(ctx context.Context, jobID string) (*RunResult, error) {
+	buf, err := json.Marshal(PollRequest{JobID: jobID})
+	if err != nil {
+		return nil, err
+	}
+	httpReq, err := http.NewRequestWithContext(ctx, http.MethodPost, c.baseURL+"/poll", bytes.NewReader(buf))
+	if err != nil {
+		return nil, err
+	}
+	httpReq.Header.Set("Content-Type", "application/json")
+	resp, err := c.http.Do(httpReq)
+	if err != nil {
+		return nil, fmt.Errorf("workerd: %w", err)
+	}
+	defer resp.Body.Close()
+	var out RunResult
+	if err := json.NewDecoder(resp.Body).Decode(&out); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
 func (c *Client) Health(ctx context.Context) error {
 	httpReq, err := http.NewRequestWithContext(ctx, http.MethodGet, c.baseURL+"/health", nil)
 	if err != nil {
