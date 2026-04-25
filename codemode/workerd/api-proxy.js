@@ -78,11 +78,19 @@ function buildUrl(base, path, query) {
   if (typeof path !== "string" || !path.startsWith("/") || path.startsWith("//")) {
     throw new Error("path must be a server-relative path starting with '/'");
   }
+  // Reject dot-segments. URL normalisation collapses "/api/../admin" to
+  // "/admin", which would let user code escape any BACKEND_URL path
+  // prefix and reach unrelated routes.
+  const [pathOnly, reqQuery] = path.split("?", 2);
+  for (const seg of pathOnly.split("/")) {
+    if (seg === "." || seg === "..") {
+      throw new Error("path may not contain '.' or '..' segments");
+    }
+  }
   const baseUrl = new URL(base);
   // Strip any trailing slash on the base path so we don't end up with "//".
   const basePath = baseUrl.pathname.replace(/\/+$/, "");
-  const [reqPath, reqQuery] = path.split("?", 2);
-  baseUrl.pathname = basePath + reqPath;
+  baseUrl.pathname = basePath + pathOnly;
   if (reqQuery !== undefined) baseUrl.search = "?" + reqQuery;
   if (query && typeof query === "object") {
     for (const [k, v] of Object.entries(query)) {
@@ -177,15 +185,25 @@ export default {
     clearTimeout(t);
 
     const contentType = resp.headers.get("content-type") ?? "";
+    // Always read text first. resp.json() consumes the body, so a
+    // resp.text() fallback would throw "body already used" if the JSON
+    // parse failed mid-stream. Reading text once and parsing in-process
+    // avoids that.
     let dataBody;
+    let raw;
+    try {
+      raw = await resp.text();
+    } catch (e) {
+      raw = `<failed to read body: ${String(e?.message ?? e)}>`;
+    }
     if (contentType.includes("application/json")) {
       try {
-        dataBody = await resp.json();
+        dataBody = JSON.parse(raw);
       } catch {
-        dataBody = await resp.text();
+        dataBody = raw;
       }
     } else {
-      dataBody = await resp.text();
+      dataBody = raw;
     }
     return Response.json({
       status: resp.status,

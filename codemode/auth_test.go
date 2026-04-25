@@ -58,7 +58,27 @@ func TestAuthFromRequest_Bearer(t *testing.T) {
 	}
 }
 
+func TestAuthFromRequest_FallsBackToEnv(t *testing.T) {
+	t.Setenv("CREATEOS_API_KEY", "env-key")
+	t.Setenv("CREATEOS_BEARER", "")
+	req := mcp.CallToolRequest{}
+	got := AuthFromRequest(context.Background(), req)
+	if got == nil || got.APIKey != "env-key" {
+		t.Fatalf("got %+v", got)
+	}
+}
+
+func TestAuthFromEnv_None(t *testing.T) {
+	t.Setenv("CREATEOS_API_KEY", "")
+	t.Setenv("CREATEOS_BEARER", "")
+	if AuthFromEnv() != nil {
+		t.Fatal("want nil")
+	}
+}
+
 func TestAuthFromRequest_FallsBackToContext(t *testing.T) {
+	t.Setenv("CREATEOS_API_KEY", "")
+	t.Setenv("CREATEOS_BEARER", "")
 	req := mcp.CallToolRequest{}
 	ctx := WithAuthHeaders(context.Background(), map[string]string{"X-Api-Key": "ctx-key"})
 	got := AuthFromRequest(ctx, req)

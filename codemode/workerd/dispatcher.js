@@ -55,6 +55,24 @@ function countRunningJobs() {
   return n;
 }
 
+// Evict the oldest finished job to make room. Returns true if anything was
+// evicted; false if every job is currently running (caller should 429).
+function evictOldestFinished() {
+  let oldestId = null;
+  let oldestFinished = Infinity;
+  for (const [id, j] of jobStore.entries()) {
+    if (j.finishedAt && j.finishedAt < oldestFinished) {
+      oldestFinished = j.finishedAt;
+      oldestId = id;
+    }
+  }
+  if (oldestId !== null) {
+    jobStore.delete(oldestId);
+    return true;
+  }
+  return false;
+}
+
 function notifyWaiters(job) {
   for (const w of job.waiters) w();
   job.waiters.clear();
@@ -131,6 +149,20 @@ async function startIsolateRun(env, { mode, code, authCtx, timeoutMs }) {
 
   try {
     return await Promise.race([entry.run(cb), timer]);
+  } catch (e) {
+    // SyntaxError thrown by the dynamic ESM compile (because userCode
+    // failed to parse) is reclassified as a userCode error so the model
+    // sees actionable feedback rather than an opaque infra failure.
+    if (e && (e.name === "SyntaxError" || /SyntaxError/.test(String(e?.message ?? "")))) {
+      return {
+        ok: false,
+        error: String(e?.message ?? e),
+        kind: "SyntaxError",
+        stack: e?.stack ?? null,
+        logs: [],
+      };
+    }
+    throw e;
   } finally {
     clearTimeout(timerHandle);
     // Always dispose entry+worker. On success this releases the cached
@@ -285,6 +317,10 @@ export default {
       }
 
       // Execute: enforce concurrency + total caps before registering a job.
+      // Running cap is hard. Total cap evicts the oldest finished job
+      // (LRU on finishedAt) before falling back to 429 — this prevents a
+      // burst of fast successful executes from filling the store and
+      // 429-ing subsequent requests for the next 30 min.
       const runningJobs = countRunningJobs();
       if (runningJobs >= MAX_RUNNING_JOBS) {
         return Response.json(
@@ -293,10 +329,12 @@ export default {
         );
       }
       if (jobStore.size >= MAX_JOB_STORE_TOTAL) {
-        return Response.json(
-          { status: "error", errorKind: "capacity", error: "job store full" },
-          { status: 429 },
-        );
+        if (!evictOldestFinished()) {
+          return Response.json(
+            { status: "error", errorKind: "capacity", error: "job store full (all running)" },
+            { status: 429 },
+          );
+        }
       }
 
       const jobId = `j_${crypto.randomUUID()}`;

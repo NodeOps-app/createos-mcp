@@ -113,6 +113,57 @@ describe("api-proxy", () => {
     expect(called).toBe(false);
   });
 
+  test("rejects dot-segment escape ('/../admin')", async () => {
+    let called = false;
+    globalThis.fetch = mock(async () => { called = true; return new Response("nope"); });
+    const r = await apiProxy.fetch(
+      new Request("https://internal/proxy", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          mode: "authenticated",
+          method: "GET",
+          path: "/../admin",
+          authCtx: { apiKey: "k" },
+        }),
+      }),
+      { BACKEND_URL: "https://backend.test/api" },
+    );
+    expect(r.status).toBe(400);
+    expect(called).toBe(false);
+  });
+
+  test("rejects dot-segment in middle of path ('/v1/foo/../../admin')", async () => {
+    let called = false;
+    globalThis.fetch = mock(async () => { called = true; return new Response("nope"); });
+    const r = await apiProxy.fetch(
+      new Request("https://internal/proxy", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          mode: "authenticated",
+          method: "GET",
+          path: "/v1/foo/../../admin",
+          authCtx: { apiKey: "k" },
+        }),
+      }),
+      { BACKEND_URL: "https://backend.test/api" },
+    );
+    expect(r.status).toBe(400);
+    expect(called).toBe(false);
+  });
+
+  test("invalid JSON body with json content-type returns raw text without throwing", async () => {
+    globalThis.fetch = mock(async () => new Response("not json {{{", {
+      status: 200,
+      headers: { "content-type": "application/json" },
+    }));
+    const r = await call({ mode: "authenticated", method: "GET", path: "/v1/x", authCtx: { apiKey: "k" } });
+    expect(r.status).toBe(200);
+    const body = await r.json();
+    expect(body.body).toBe("not json {{{");
+  });
+
   test("rejects protocol-relative // path", async () => {
     let called = false;
     globalThis.fetch = mock(async () => { called = true; return new Response("nope"); });

@@ -31,9 +31,13 @@ export function buildHostModule({ specRef }) {
 }
 
 export function wrapMainModule(userCode) {
-  // userCode is interpolated into a wrapper function so a parse/syntax
-  // error surfaces as a SyntaxError caught by the inner try, returning
-  // {ok:false} with userCode kind — not an infra failure.
+  // userCode is interpolated into the module body. Note: a syntax error in
+  // userCode causes the dynamic ESM module compile to fail BEFORE run() is
+  // ever called, so it surfaces from the dispatcher as kind=infra (the
+  // worker loader factory throws). Only runtime errors thrown from inside
+  // userFn are caught by the try below and returned as kind=userCode.
+  // The dispatcher distinguishes them by inspecting the error name
+  // ("SyntaxError" → reclassify to userCode) before responding.
   return `
 import { spec, console, sleep, __getLogs } from "host.js";
 import { buildApi } from "api-sdk.js";
