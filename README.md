@@ -15,7 +15,7 @@
 
 The [Model Context Protocol (MCP)](https://modelcontextprotocol.io) is an open standard originated by Anthropic that enables AI assistants — Claude, Cursor, GitHub Copilot, Windsurf, Gemini, and others — to securely connect to external tools, APIs, and services through a unified interface. The latest MCP Authorization and Streamable HTTP specifications are fully implemented.
 
-**CreateOS MCP** is a production-grade MCP server that exposes **85+ tools** for full-stack application deployment and infrastructure management on the [CreateOS](https://createos.nodeops.network) platform. Connect it once to your AI coding tool, then deploy projects, manage environments, configure domains, run security scans, analyze deployment metrics, and more — all through natural language.
+**CreateOS MCP** is a production-grade MCP server that exposes **85+ tools** for full-stack application deployment and infrastructure management on the [CreateOS](https://createos.sh/app) platform. Connect it once to your AI coding tool, then deploy projects, manage environments, configure domains, run security scans, analyze deployment metrics, and more — all through natural language.
 
 Instead of switching between dashboards, CLIs, and documentation, you stay in your editor and let your AI handle the infrastructure. CreateOS MCP turns prompts like *"deploy my app from this GitHub repo"* or *"scale the staging environment to 3 replicas"* into real actions, executed instantly.
 
@@ -42,7 +42,7 @@ Built in Go for performance and reliability, the server supports both **Streamab
 
 ## Prerequisites
 
-1. Create an account at [createos.nodeops.network](https://createos.nodeops.network)
+1. Create an account at [createos.nodeops.network](https://createos.sh/app)
 2. Navigate to **Profile Settings** and generate your API key
 
 > 📺 [Watch the API key retrieval tutorial](https://ik.imagekit.io/nodeops/No%20Sound/API%20Key_Retrieval.mp4)
@@ -67,7 +67,7 @@ Add the CreateOS MCP server to your AI client using this configuration:
 }
 ```
 
-> Replace `CREATEOS_API_KEY` with your actual key from [Profile Settings](https://createos.nodeops.network).
+> Replace `CREATEOS_API_KEY` with your actual key from [Profile Settings](https://createos.sh/app).
 
 For client-specific setup instructions, see the [Integration docs](https://nodeops.network/createos/docs/API-MCP/CreateOS-MCP).
 
@@ -295,13 +295,13 @@ SOFTWARE.
 - [Anthropic](https://anthropic.com) for creating the [Model Context Protocol](https://modelcontextprotocol.io) specification
 - [mark3labs/mcp-go](https://github.com/mark3labs/mcp-go) for the excellent Go MCP SDK
 - [Cursor](https://cursor.com), [GitHub Copilot](https://github.com/features/copilot), [Windsurf](https://windsurf.com), [Google Gemini](https://gemini.google.com), and the broader AI tooling ecosystem for driving MCP adoption
-- The [CreateOS](https://createos.nodeops.network) team for building the deployment platform
+- The [CreateOS](https://createos.sh/app) team for building the deployment platform
 
 ---
 
 <p align="center">
   <a href="https://nodeops.network/createos/docs/API-MCP/CreateOS-MCP">📚 Full Documentation</a> &nbsp;·&nbsp;
-  <a href="https://createos.nodeops.network">🌐 CreateOS Platform</a> &nbsp;·&nbsp;
+  <a href="https://createos.sh/app">🌐 CreateOS Platform</a> &nbsp;·&nbsp;
   <a href="https://github.com/NodeOps-app/createos-mcp/issues">🐛 Report Bug</a>
 </p>
 
