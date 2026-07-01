@@ -42,7 +42,7 @@ Built in Go for performance and reliability, the server supports both **Streamab
 
 ## Prerequisites
 
-1. Create an account at [createos.nodeops.network](https://createos.sh/app)
+1. Create an account at [createos.sh/app](https://createos.sh/app)
 2. Navigate to **Profile Settings** and generate your API key
 
 > 📺 [Watch the API key retrieval tutorial](https://ik.imagekit.io/nodeops/No%20Sound/API%20Key_Retrieval.mp4)
