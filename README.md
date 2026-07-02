@@ -69,7 +69,7 @@ Add the CreateOS MCP server to your AI client using this configuration:
 
 > Replace `CREATEOS_API_KEY` with your actual key from [Profile Settings](https://createos.sh/app).
 
-For client-specific setup instructions, see the [Integration docs](https://nodeops.network/createos/docs/API-MCP/CreateOS-MCP).
+For client-specific setup instructions, see the [Integration docs](https://createos.sh/docs).
 
 ---
 
@@ -300,7 +300,7 @@ SOFTWARE.
 ---
 
 <p align="center">
-  <a href="https://nodeops.network/createos/docs/API-MCP/CreateOS-MCP">📚 Full Documentation</a> &nbsp;·&nbsp;
+  <a href="https://createos.sh/docs">📚 Full Documentation</a> &nbsp;·&nbsp;
   <a href="https://createos.sh/app">🌐 CreateOS Platform</a> &nbsp;·&nbsp;
   <a href="https://github.com/NodeOps-app/createos-mcp/issues">🐛 Report Bug</a>
 </p>
