@@ -2,6 +2,7 @@ port: 8080
 base_url:
 authorization_server_url:
 api_base_url:
+sandbox_api_base_url:
 transport: http
 log_level: debug
 

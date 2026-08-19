@@ -86,3 +86,42 @@ func makeDeleteRequest(path string, authInfo *AuthInfo) (*mcp.CallToolResult, er
 		},
 	}, nil
 }
+
+func makeSandboxPostRequest(path string, body interface{}, authInfo *AuthInfo) (*mcp.CallToolResult, error) {
+	resp, err := mcputils.SandboxPost(path, body, authInfo.Method, authInfo.Value)
+	if err != nil {
+		return nil, err
+	}
+
+	return &mcp.CallToolResult{
+		Content: []mcp.Content{
+			mcp.NewTextContent(string(resp.Body())),
+		},
+	}, nil
+}
+
+func makeSandboxPatchRequest(path string, body interface{}, authInfo *AuthInfo) (*mcp.CallToolResult, error) {
+	resp, err := mcputils.SandboxPatch(path, body, authInfo.Method, authInfo.Value)
+	if err != nil {
+		return nil, err
+	}
+
+	return &mcp.CallToolResult{
+		Content: []mcp.Content{
+			mcp.NewTextContent(string(resp.Body())),
+		},
+	}, nil
+}
+
+func makeSandboxDeleteRequest(path string, authInfo *AuthInfo) (*mcp.CallToolResult, error) {
+	resp, err := mcputils.SandboxDelete(path, authInfo.Method, authInfo.Value)
+	if err != nil {
+		return nil, err
+	}
+
+	return &mcp.CallToolResult{
+		Content: []mcp.Content{
+			mcp.NewTextContent(string(resp.Body())),
+		},
+	}, nil
+}

@@ -11,14 +11,37 @@ import (
 
 // Client returns a configured Resty client with base URL and auth token
 func Client() *resty.Client {
-	baseURL := config.Cfg.APIBaseUrl
-
 	client := resty.New().
-		SetBaseURL(baseURL).
+		SetBaseURL(config.Cfg.APIBaseUrl).
 		SetHeader("Content-Type", "application/json").
 		SetHeader("Accept", "application/json")
 
 	return client
+}
+
+func SandboxClient() (*resty.Client, error) {
+	if config.Cfg.SandboxAPIBaseUrl == "" {
+		return nil, fmt.Errorf("sandbox_api_base_url is required for sandbox tools")
+	}
+
+	client := resty.New().
+		SetBaseURL(config.Cfg.SandboxAPIBaseUrl).
+		SetHeader("Content-Type", "application/json").
+		SetHeader("Accept", "application/json")
+
+	return client, nil
+}
+
+func setAuth(req *resty.Request, authMethod string, authValue string) error {
+	switch authMethod {
+	case "api-key":
+		req.SetHeader("X-Api-Key", authValue)
+	case "bearer-token":
+		req.SetHeader("X-Access-Token", authValue)
+	default:
+		return fmt.Errorf("unsupported auth method: %s", authMethod)
+	}
+	return nil
 }
 
 // Get makes a GET request with authentication
@@ -176,6 +199,72 @@ func DeleteWithBody(path string, body interface{}, authMethod string, authValue 
 
 	if resp.IsError() {
 		return resp, fmt.Errorf("API error (status %d)", resp.StatusCode())
+	}
+
+	return resp, nil
+}
+
+// SandboxPost makes a POST request to the sandbox API with authentication.
+func SandboxPost(path string, body interface{}, authMethod string, authValue string) (*resty.Response, error) {
+	client, err := SandboxClient()
+	if err != nil {
+		return nil, err
+	}
+	req := client.R().SetBody(body)
+	if err := setAuth(req, authMethod, authValue); err != nil {
+		return nil, err
+	}
+
+	resp, err := req.Post(path)
+	if err != nil {
+		return nil, fmt.Errorf("sandbox POST request failed: %w", err)
+	}
+	if resp.IsError() {
+		return resp, fmt.Errorf("sandbox API error (status %d)", resp.StatusCode())
+	}
+
+	return resp, nil
+}
+
+// SandboxPatch makes a PATCH request to the sandbox API with authentication.
+func SandboxPatch(path string, body interface{}, authMethod string, authValue string) (*resty.Response, error) {
+	client, err := SandboxClient()
+	if err != nil {
+		return nil, err
+	}
+	req := client.R().SetBody(body)
+	if err := setAuth(req, authMethod, authValue); err != nil {
+		return nil, err
+	}
+
+	resp, err := req.Patch(path)
+	if err != nil {
+		return nil, fmt.Errorf("sandbox PATCH request failed: %w", err)
+	}
+	if resp.IsError() {
+		return resp, fmt.Errorf("sandbox API error (status %d)", resp.StatusCode())
+	}
+
+	return resp, nil
+}
+
+// SandboxDelete makes a DELETE request to the sandbox API with authentication.
+func SandboxDelete(path string, authMethod string, authValue string) (*resty.Response, error) {
+	client, err := SandboxClient()
+	if err != nil {
+		return nil, err
+	}
+	req := client.R()
+	if err := setAuth(req, authMethod, authValue); err != nil {
+		return nil, err
+	}
+
+	resp, err := req.Delete(path)
+	if err != nil {
+		return nil, fmt.Errorf("sandbox DELETE request failed: %w", err)
+	}
+	if resp.IsError() {
+		return resp, fmt.Errorf("sandbox API error (status %d)", resp.StatusCode())
 	}
 
 	return resp, nil

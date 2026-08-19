@@ -151,6 +151,7 @@ port: 8080
 base_url: https://your-domain.com
 authorization_server_url: https://your-auth-server.com
 api_base_url: https://api.createos.nodeops.network
+sandbox_api_base_url: https://your-fc-control-api.example.com
 transport: http       # "http" or "stdio"
 log_level: debug
 
