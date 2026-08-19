@@ -100,6 +100,19 @@ func makeSandboxPostRequest(path string, body interface{}, authInfo *AuthInfo) (
 	}, nil
 }
 
+func makeSandboxGetRequest(path string, queryParams map[string]string, authInfo *AuthInfo) (*mcp.CallToolResult, error) {
+	resp, err := mcputils.SandboxGet(path, queryParams, authInfo.Method, authInfo.Value)
+	if err != nil {
+		return nil, err
+	}
+
+	return &mcp.CallToolResult{
+		Content: []mcp.Content{
+			mcp.NewTextContent(string(resp.Body())),
+		},
+	}, nil
+}
+
 func makeSandboxPatchRequest(path string, body interface{}, authInfo *AuthInfo) (*mcp.CallToolResult, error) {
 	resp, err := mcputils.SandboxPatch(path, body, authInfo.Method, authInfo.Value)
 	if err != nil {
@@ -114,7 +127,11 @@ func makeSandboxPatchRequest(path string, body interface{}, authInfo *AuthInfo) 
 }
 
 func makeSandboxDeleteRequest(path string, authInfo *AuthInfo) (*mcp.CallToolResult, error) {
-	resp, err := mcputils.SandboxDelete(path, authInfo.Method, authInfo.Value)
+	return makeSandboxDeleteRequestWithQuery(path, nil, authInfo)
+}
+
+func makeSandboxDeleteRequestWithQuery(path string, queryParams map[string]string, authInfo *AuthInfo) (*mcp.CallToolResult, error) {
+	resp, err := mcputils.SandboxDelete(path, queryParams, authInfo.Method, authInfo.Value)
 	if err != nil {
 		return nil, err
 	}

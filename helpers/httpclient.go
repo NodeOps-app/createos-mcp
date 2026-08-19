@@ -226,6 +226,31 @@ func SandboxPost(path string, body interface{}, authMethod string, authValue str
 	return resp, nil
 }
 
+// SandboxGet makes a GET request to the sandbox API with authentication.
+func SandboxGet(path string, queryParams map[string]string, authMethod string, authValue string) (*resty.Response, error) {
+	client, err := SandboxClient()
+	if err != nil {
+		return nil, err
+	}
+	req := client.R()
+	if err := setAuth(req, authMethod, authValue); err != nil {
+		return nil, err
+	}
+	for key, value := range queryParams {
+		req.SetQueryParam(key, value)
+	}
+
+	resp, err := req.Get(path)
+	if err != nil {
+		return nil, fmt.Errorf("sandbox GET request failed: %w", err)
+	}
+	if resp.IsError() {
+		return resp, fmt.Errorf("sandbox API error (status %d)", resp.StatusCode())
+	}
+
+	return resp, nil
+}
+
 // SandboxPatch makes a PATCH request to the sandbox API with authentication.
 func SandboxPatch(path string, body interface{}, authMethod string, authValue string) (*resty.Response, error) {
 	client, err := SandboxClient()
@@ -249,7 +274,7 @@ func SandboxPatch(path string, body interface{}, authMethod string, authValue st
 }
 
 // SandboxDelete makes a DELETE request to the sandbox API with authentication.
-func SandboxDelete(path string, authMethod string, authValue string) (*resty.Response, error) {
+func SandboxDelete(path string, queryParams map[string]string, authMethod string, authValue string) (*resty.Response, error) {
 	client, err := SandboxClient()
 	if err != nil {
 		return nil, err
@@ -257,6 +282,9 @@ func SandboxDelete(path string, authMethod string, authValue string) (*resty.Res
 	req := client.R()
 	if err := setAuth(req, authMethod, authValue); err != nil {
 		return nil, err
+	}
+	for key, value := range queryParams {
+		req.SetQueryParam(key, value)
 	}
 
 	resp, err := req.Delete(path)
