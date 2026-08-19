@@ -12,6 +12,7 @@ type Config struct {
 	BaseURL                string `yaml:"base_url"`
 	AuthorizationServerUrl string `yaml:"authorization_server_url"`
 	APIBaseUrl             string `yaml:"api_base_url"`
+	SandboxAPIBaseUrl      string `yaml:"sandbox_api_base_url"`
 	Transport              string `yaml:"transport"`
 	LogLevel               string `yaml:"log_level"`
 

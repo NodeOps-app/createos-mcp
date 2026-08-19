@@ -151,6 +151,7 @@ port: 8080
 base_url: https://your-domain.com
 authorization_server_url: https://your-auth-server.com
 api_base_url: https://api.createos.nodeops.network
+sandbox_api_base_url: https://your-fc-control-api.example.com
 transport: http       # "http" or "stdio"
 log_level: debug
 
@@ -220,6 +221,9 @@ The server exposes **85+ tools** organized into the following categories:
 | **GitHub** | `InstallGithubApp`, `ListConnectedGithubAccounts`, `ListGithubRepositories`, `ListGithubRepositoryBranches`, `GetGithubRepositoryContent` | GitHub integration for repo-based deployments |
 | **Account** | `GetCurrentUser`, `GetQuotas`, `GetSupportedProjectTypes` | User info, quotas, and platform capabilities |
 | **Transfers** | `TransferProject`, `GetProjectTransferUri`, `ListProjectTransferHistory` | Transfer project ownership between accounts |
+| **Sandboxes** | `CreateSandbox`, `UpdateSandbox`, `ExecSandbox`, `DeleteSandbox` | Create, update, execute commands in, and destroy sandbox VMs |
+| **Sandbox Disks** | `CreateDisk`, `ListDisks`, `GetDisk`, `DeleteDisk`, `AttachSandboxDisk`, `DetachSandboxDisk`, `ListSandboxDisks` | Register S3 disks and attach them to sandboxes |
+| **Sandbox Networks** | `CreateNetwork`, `ListNetworks`, `GetNetwork`, `DeleteNetwork`, `AttachSandboxNetwork`, `DetachSandboxNetwork` | Create private sandbox networks and manage membership |
 
 ---
 
