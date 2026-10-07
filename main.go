@@ -144,7 +144,7 @@ func corsMiddleware(next http.Handler) http.Handler {
 
 func loggingMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		id := requestid.Resolve(r.Header.Get(requestid.Header))
+		id := requestid.New()
 		r.Header.Set(requestid.Header, id)
 		w.Header().Set(requestid.Header, id)
 		r = r.WithContext(requestid.WithContext(r.Context(), id))

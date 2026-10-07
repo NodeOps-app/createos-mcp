@@ -21,7 +21,7 @@ type AuthInfo struct {
 func GetAuthInfo(ctx context.Context, request mcp.CallToolRequest) (*AuthInfo, error) {
 	id := requestid.FromContext(ctx)
 	if id == "" {
-		id = requestid.Resolve(request.Header.Get(requestid.Header))
+		id = requestid.New()
 	}
 	ctx = requestid.WithContext(ctx, id)
 	log.Printf("request_id=%s MCP tool requested tool=%q", id, request.Params.Name)
