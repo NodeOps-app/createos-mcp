@@ -23,7 +23,7 @@ func handleRequest(ctx context.Context, request mcp.CallToolRequest) (*AuthInfo,
 }
 
 func makeGetRequest(path string, queryParams map[string]string, authInfo *AuthInfo) (*mcp.CallToolResult, error) {
-	resp, err := mcputils.Get(path, queryParams, authInfo.Method, authInfo.Value)
+	resp, err := mcputils.Get(authInfo.Context, path, queryParams, authInfo.Method, authInfo.Value)
 	if err != nil {
 		return nil, err
 	}
@@ -36,7 +36,7 @@ func makeGetRequest(path string, queryParams map[string]string, authInfo *AuthIn
 }
 
 func makePostRequest(path string, body interface{}, authInfo *AuthInfo) (*mcp.CallToolResult, error) {
-	resp, err := mcputils.Post(path, body, authInfo.Method, authInfo.Value)
+	resp, err := mcputils.Post(authInfo.Context, path, body, authInfo.Method, authInfo.Value)
 	if err != nil {
 		return nil, err
 	}
@@ -49,7 +49,7 @@ func makePostRequest(path string, body interface{}, authInfo *AuthInfo) (*mcp.Ca
 }
 
 func makePutRequest(path string, body interface{}, authInfo *AuthInfo) (*mcp.CallToolResult, error) {
-	resp, err := mcputils.Put(path, body, authInfo.Method, authInfo.Value)
+	resp, err := mcputils.Put(authInfo.Context, path, body, authInfo.Method, authInfo.Value)
 	if err != nil {
 		return nil, err
 	}
@@ -62,7 +62,7 @@ func makePutRequest(path string, body interface{}, authInfo *AuthInfo) (*mcp.Cal
 }
 
 func makePatchRequest(path string, body interface{}, authInfo *AuthInfo) (*mcp.CallToolResult, error) {
-	resp, err := mcputils.Patch(path, body, authInfo.Method, authInfo.Value)
+	resp, err := mcputils.Patch(authInfo.Context, path, body, authInfo.Method, authInfo.Value)
 	if err != nil {
 		return nil, err
 	}
@@ -75,7 +75,7 @@ func makePatchRequest(path string, body interface{}, authInfo *AuthInfo) (*mcp.C
 }
 
 func makeDeleteRequest(path string, authInfo *AuthInfo) (*mcp.CallToolResult, error) {
-	resp, err := mcputils.Delete(path, authInfo.Method, authInfo.Value)
+	resp, err := mcputils.Delete(authInfo.Context, path, authInfo.Method, authInfo.Value)
 	if err != nil {
 		return nil, err
 	}
@@ -88,7 +88,7 @@ func makeDeleteRequest(path string, authInfo *AuthInfo) (*mcp.CallToolResult, er
 }
 
 func makeSandboxPostRequest(path string, body interface{}, authInfo *AuthInfo) (*mcp.CallToolResult, error) {
-	resp, err := mcputils.SandboxPost(path, body, authInfo.Method, authInfo.Value)
+	resp, err := mcputils.SandboxPost(authInfo.Context, path, body, authInfo.Method, authInfo.Value)
 	if err != nil {
 		return nil, err
 	}
@@ -101,7 +101,7 @@ func makeSandboxPostRequest(path string, body interface{}, authInfo *AuthInfo) (
 }
 
 func makeSandboxGetRequest(path string, queryParams map[string]string, authInfo *AuthInfo) (*mcp.CallToolResult, error) {
-	resp, err := mcputils.SandboxGet(path, queryParams, authInfo.Method, authInfo.Value)
+	resp, err := mcputils.SandboxGet(authInfo.Context, path, queryParams, authInfo.Method, authInfo.Value)
 	if err != nil {
 		return nil, err
 	}
@@ -114,7 +114,7 @@ func makeSandboxGetRequest(path string, queryParams map[string]string, authInfo 
 }
 
 func makeSandboxPatchRequest(path string, body interface{}, authInfo *AuthInfo) (*mcp.CallToolResult, error) {
-	resp, err := mcputils.SandboxPatch(path, body, authInfo.Method, authInfo.Value)
+	resp, err := mcputils.SandboxPatch(authInfo.Context, path, body, authInfo.Method, authInfo.Value)
 	if err != nil {
 		return nil, err
 	}
@@ -131,7 +131,7 @@ func makeSandboxDeleteRequest(path string, authInfo *AuthInfo) (*mcp.CallToolRes
 }
 
 func makeSandboxDeleteRequestWithQuery(path string, queryParams map[string]string, authInfo *AuthInfo) (*mcp.CallToolResult, error) {
-	resp, err := mcputils.SandboxDelete(path, queryParams, authInfo.Method, authInfo.Value)
+	resp, err := mcputils.SandboxDelete(authInfo.Context, path, queryParams, authInfo.Method, authInfo.Value)
 	if err != nil {
 		return nil, err
 	}

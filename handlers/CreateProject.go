@@ -32,7 +32,7 @@ func CreateProjectHandler(ctx context.Context, request mcp.CallToolRequest) (*mc
 	}
 
 	// Make POST request with body
-	resp, err := mcputils.Post("/v1/projects", params.Body, authInfo.Method, authInfo.Value)
+	resp, err := mcputils.Post(authInfo.Context, "/v1/projects", params.Body, authInfo.Method, authInfo.Value)
 	if err != nil {
 		return nil, err
 	}

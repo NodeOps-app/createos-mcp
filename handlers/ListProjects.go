@@ -58,7 +58,7 @@ func ListProjectsHandler(ctx context.Context, request mcp.CallToolRequest) (*mcp
 	}
 
 	// Make GET request using Resty
-	resp, err := mcputils.Get("/v1/projects", queryParams, authInfo.Method, authInfo.Value)
+	resp, err := mcputils.Get(authInfo.Context, "/v1/projects", queryParams, authInfo.Method, authInfo.Value)
 	if err != nil {
 		return nil, err
 	}

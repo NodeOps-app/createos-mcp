@@ -14,6 +14,7 @@ import (
 
 	"github.com/NodeOps-app/createos-mcp/config"
 	"github.com/NodeOps-app/createos-mcp/pkg/oauth"
+	"github.com/NodeOps-app/createos-mcp/pkg/requestid"
 	"github.com/mark3labs/mcp-go/server"
 	"golang.org/x/time/rate"
 )
@@ -126,7 +127,8 @@ func corsMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, PATCH, DELETE")
-		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Api-Key, mcp-session-id")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Api-Key, mcp-session-id, X-Request-ID")
+		w.Header().Set("Access-Control-Expose-Headers", "X-Request-ID, mcp-session-id")
 		w.Header().Set("Access-Control-Max-Age", "86400")
 
 		// Handle preflight requests
@@ -142,12 +144,13 @@ func corsMiddleware(next http.Handler) http.Handler {
 
 func loggingMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		log.Printf("=== Request ===")
-		log.Printf("Method: %s", r.Method)
-		log.Printf("Path: %s", r.URL.Path)
-		log.Printf("RemoteAddr: %s", r.RemoteAddr)
-		log.Printf("User-Agent: %s", r.UserAgent())
-		log.Printf("===============")
+		id := requestid.Resolve(r.Header.Get(requestid.Header))
+		r.Header.Set(requestid.Header, id)
+		w.Header().Set(requestid.Header, id)
+		r = r.WithContext(requestid.WithContext(r.Context(), id))
+		started := time.Now()
+		log.Printf("request_id=%s HTTP request received method=%s path=%q remote_addr=%q user_agent=%q", id, r.Method, r.URL.Path, r.RemoteAddr, r.UserAgent())
+		defer func() { log.Printf("request_id=%s HTTP request completed duration=%s", id, time.Since(started)) }()
 		next.ServeHTTP(w, r)
 	})
 }
@@ -186,7 +189,7 @@ type PRMMetadata struct {
 
 func prmMetadataHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		log.Printf("PRM endpoint accessed: %s %s", r.Method, r.URL.Path)
+		log.Printf("request_id=%s PRM endpoint accessed: %s %s", requestid.FromContext(r.Context()), r.Method, r.URL.Path)
 
 		if r.Method != http.MethodGet && r.Method != http.MethodOptions {
 			http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
@@ -204,7 +207,7 @@ func prmMetadataHandler() http.Handler {
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 		w.WriteHeader(http.StatusOK)
 		if err := json.NewEncoder(w).Encode(prm); err != nil {
-			log.Printf("Error encoding PRM metadata: %v", err)
+			log.Printf("request_id=%s Error encoding PRM metadata: %v", requestid.FromContext(r.Context()), err)
 			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 			return
 		}
@@ -228,7 +231,7 @@ type OAuthAuthorizationServerMetadata struct {
 // oauthAuthorizationServerHandler returns a handler for OAuth Authorization Server Metadata endpoint
 func oauthAuthorizationServerHandler() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		log.Printf("OAuth Authorization Server endpoint accessed: %s %s", r.Method, r.URL.Path)
+		log.Printf("request_id=%s OAuth Authorization Server endpoint accessed: %s %s", requestid.FromContext(r.Context()), r.Method, r.URL.Path)
 
 		// Only allow GET requests
 		if r.Method != http.MethodGet && r.Method != http.MethodOptions {
@@ -255,11 +258,11 @@ func oauthAuthorizationServerHandler() http.Handler {
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 		w.WriteHeader(http.StatusOK)
 		if err := json.NewEncoder(w).Encode(metadata); err != nil {
-			log.Printf("Error encoding OAuth Authorization Server metadata: %v", err)
+			log.Printf("request_id=%s Error encoding OAuth Authorization Server metadata: %v", requestid.FromContext(r.Context()), err)
 			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 			return
 		}
-		log.Printf("OAuth Authorization Server metadata served successfully")
+		log.Printf("request_id=%s OAuth Authorization Server metadata served successfully", requestid.FromContext(r.Context()))
 	})
 }
 
@@ -288,7 +291,7 @@ func registerHandler(cfg *config.Config) http.Handler {
 	oauthClient := oauth.NewOAuthClient(cfg.APIBaseUrl, cfg.MCPServerToken)
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		log.Printf("OAuth Authorization Server endpoint accessed: %s %s", r.Method, r.URL.Path)
+		log.Printf("request_id=%s OAuth Authorization Server endpoint accessed: %s %s", requestid.FromContext(r.Context()), r.Method, r.URL.Path)
 
 		// Only allow GET requests
 		if r.Method != http.MethodPost && r.Method != http.MethodOptions {
@@ -308,13 +311,13 @@ func registerHandler(cfg *config.Config) http.Handler {
 			http.Error(w, "Failed to unmarshal request body", http.StatusInternalServerError)
 			return
 		}
-		log.Printf("Registration request received for client: %s", registrationRequest.ClientName)
+		log.Printf("request_id=%s Registration request received for client: %s", requestid.FromContext(r.Context()), registrationRequest.ClientName)
 
 		if len(registrationRequest.Scope) == 0 {
 			registrationRequest.Scope = strings.Join(cfg.SupportedScopes, " ")
 		}
 
-		registrationResponse, err := oauthClient.CreateDCRClientRegistration(oauth.DCRClientRegistrationRequest{
+		registrationResponse, err := oauthClient.CreateDCRClientRegistration(r.Context(), oauth.DCRClientRegistrationRequest{
 			ClientName:    registrationRequest.ClientName,
 			RedirectURIs:  registrationRequest.RedirectURIs,
 			GrantTypes:    registrationRequest.GrantTypes,
@@ -322,7 +325,7 @@ func registerHandler(cfg *config.Config) http.Handler {
 			Scope:         registrationRequest.Scope,
 		})
 		if err != nil {
-			log.Printf("Error creating DCR client registration: %v", err)
+			log.Printf("request_id=%s Error creating DCR client registration: %v", requestid.FromContext(r.Context()), err)
 			http.Error(w, "Failed to create DCR client registration", http.StatusInternalServerError)
 			return
 		}
@@ -340,7 +343,7 @@ func registerHandler(cfg *config.Config) http.Handler {
 		encoder := json.NewEncoder(w)
 		encoder.SetIndent("", "") // No indentation to avoid extra formatting
 		if err := encoder.Encode(registrationResponse); err != nil {
-			log.Printf("Error encoding client registration response: %v", err)
+			log.Printf("request_id=%s Error encoding client registration response: %v", requestid.FromContext(r.Context()), err)
 			// Don't write error here as we already wrote status code
 			return
 		}

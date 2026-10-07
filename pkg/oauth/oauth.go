@@ -1,9 +1,11 @@
 package oauth
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 
+	"github.com/NodeOps-app/createos-mcp/pkg/requestid"
 	"github.com/go-resty/resty/v2"
 )
 
@@ -40,10 +42,12 @@ type ResponseDataWrapper[T any] struct {
 	Data T `json:"data"`
 }
 
-func (o OAuthClient) CreateDCRClientRegistration(request DCRClientRegistrationRequest) (DCRClientRegistrationResponse, error) {
+func (o OAuthClient) CreateDCRClientRegistration(ctx context.Context, request DCRClientRegistrationRequest) (DCRClientRegistrationResponse, error) {
 	var response ResponseDataWrapper[DCRClientRegistrationResponse]
 
 	resp, err := o.Client.R().
+		SetContext(ctx).
+		SetHeader(requestid.Header, requestid.FromContext(ctx)).
 		SetBody(request).
 		SetResult(&response).
 		Post("/v1/-/oauth2/dcr")
