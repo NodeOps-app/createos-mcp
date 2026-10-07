@@ -31,7 +31,7 @@ func GetProjectHandler(ctx context.Context, request mcp.CallToolRequest) (*mcp.C
 	}
 
 	// Make GET request
-	resp, err := mcputils.Get(fmt.Sprintf("/v1/projects/%s", params.ProjectID), nil, authInfo.Method, authInfo.Value)
+	resp, err := mcputils.Get(authInfo.Context, fmt.Sprintf("/v1/projects/%s", params.ProjectID), nil, authInfo.Method, authInfo.Value)
 	if err != nil {
 		return nil, err
 	}

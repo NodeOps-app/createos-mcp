@@ -1,9 +1,11 @@
 package mcputils
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/NodeOps-app/createos-mcp/config"
+	"github.com/NodeOps-app/createos-mcp/pkg/requestid"
 	"github.com/go-resty/resty/v2"
 )
 
@@ -45,8 +47,8 @@ func setAuth(req *resty.Request, authMethod string, authValue string) error {
 }
 
 // Get makes a GET request with authentication
-func Get(path string, queryParams map[string]string, authMethod string, authValue string) (*resty.Response, error) {
-	req := Client().R()
+func Get(ctx context.Context, path string, queryParams map[string]string, authMethod string, authValue string) (*resty.Response, error) {
+	req := Client().R().SetContext(ctx).SetHeader(requestid.Header, requestid.FromContext(ctx))
 
 	// Set the appropriate header based on auth method
 	switch authMethod {
@@ -75,8 +77,8 @@ func Get(path string, queryParams map[string]string, authMethod string, authValu
 }
 
 // Post makes a POST request with authentication
-func Post(path string, body interface{}, authMethod string, authValue string) (*resty.Response, error) {
-	req := Client().R().SetBody(body)
+func Post(ctx context.Context, path string, body interface{}, authMethod string, authValue string) (*resty.Response, error) {
+	req := Client().R().SetContext(ctx).SetHeader(requestid.Header, requestid.FromContext(ctx)).SetBody(body)
 
 	// Set the appropriate header based on auth method
 	switch authMethod {
@@ -101,8 +103,8 @@ func Post(path string, body interface{}, authMethod string, authValue string) (*
 }
 
 // Put makes a PUT request with authentication
-func Put(path string, body interface{}, authMethod string, authValue string) (*resty.Response, error) {
-	req := Client().R().SetBody(body)
+func Put(ctx context.Context, path string, body interface{}, authMethod string, authValue string) (*resty.Response, error) {
+	req := Client().R().SetContext(ctx).SetHeader(requestid.Header, requestid.FromContext(ctx)).SetBody(body)
 
 	// Set the appropriate header based on auth method
 	switch authMethod {
@@ -127,8 +129,8 @@ func Put(path string, body interface{}, authMethod string, authValue string) (*r
 }
 
 // Patch makes a PATCH request with authentication
-func Patch(path string, body interface{}, authMethod string, authValue string) (*resty.Response, error) {
-	req := Client().R().SetBody(body)
+func Patch(ctx context.Context, path string, body interface{}, authMethod string, authValue string) (*resty.Response, error) {
+	req := Client().R().SetContext(ctx).SetHeader(requestid.Header, requestid.FromContext(ctx)).SetBody(body)
 
 	// Set the appropriate header based on auth method
 	switch authMethod {
@@ -153,8 +155,8 @@ func Patch(path string, body interface{}, authMethod string, authValue string) (
 }
 
 // Delete makes a DELETE request with authentication
-func Delete(path string, authMethod string, authValue string) (*resty.Response, error) {
-	req := Client().R()
+func Delete(ctx context.Context, path string, authMethod string, authValue string) (*resty.Response, error) {
+	req := Client().R().SetContext(ctx).SetHeader(requestid.Header, requestid.FromContext(ctx))
 
 	// Set the appropriate header based on auth method
 	switch authMethod {
@@ -179,8 +181,8 @@ func Delete(path string, authMethod string, authValue string) (*resty.Response, 
 }
 
 // DeleteWithBody makes a DELETE request with a body and authentication
-func DeleteWithBody(path string, body interface{}, authMethod string, authValue string) (*resty.Response, error) {
-	req := Client().R().SetBody(body)
+func DeleteWithBody(ctx context.Context, path string, body interface{}, authMethod string, authValue string) (*resty.Response, error) {
+	req := Client().R().SetContext(ctx).SetHeader(requestid.Header, requestid.FromContext(ctx)).SetBody(body)
 
 	// Set the appropriate header based on auth method
 	switch authMethod {
@@ -205,12 +207,12 @@ func DeleteWithBody(path string, body interface{}, authMethod string, authValue 
 }
 
 // SandboxPost makes a POST request to the sandbox API with authentication.
-func SandboxPost(path string, body interface{}, authMethod string, authValue string) (*resty.Response, error) {
+func SandboxPost(ctx context.Context, path string, body interface{}, authMethod string, authValue string) (*resty.Response, error) {
 	client, err := SandboxClient()
 	if err != nil {
 		return nil, err
 	}
-	req := client.R().SetBody(body)
+	req := client.R().SetContext(ctx).SetHeader(requestid.Header, requestid.FromContext(ctx)).SetBody(body)
 	if err := setAuth(req, authMethod, authValue); err != nil {
 		return nil, err
 	}
@@ -227,12 +229,12 @@ func SandboxPost(path string, body interface{}, authMethod string, authValue str
 }
 
 // SandboxGet makes a GET request to the sandbox API with authentication.
-func SandboxGet(path string, queryParams map[string]string, authMethod string, authValue string) (*resty.Response, error) {
+func SandboxGet(ctx context.Context, path string, queryParams map[string]string, authMethod string, authValue string) (*resty.Response, error) {
 	client, err := SandboxClient()
 	if err != nil {
 		return nil, err
 	}
-	req := client.R()
+	req := client.R().SetContext(ctx).SetHeader(requestid.Header, requestid.FromContext(ctx))
 	if err := setAuth(req, authMethod, authValue); err != nil {
 		return nil, err
 	}
@@ -252,12 +254,12 @@ func SandboxGet(path string, queryParams map[string]string, authMethod string, a
 }
 
 // SandboxPatch makes a PATCH request to the sandbox API with authentication.
-func SandboxPatch(path string, body interface{}, authMethod string, authValue string) (*resty.Response, error) {
+func SandboxPatch(ctx context.Context, path string, body interface{}, authMethod string, authValue string) (*resty.Response, error) {
 	client, err := SandboxClient()
 	if err != nil {
 		return nil, err
 	}
-	req := client.R().SetBody(body)
+	req := client.R().SetContext(ctx).SetHeader(requestid.Header, requestid.FromContext(ctx)).SetBody(body)
 	if err := setAuth(req, authMethod, authValue); err != nil {
 		return nil, err
 	}
@@ -274,12 +276,12 @@ func SandboxPatch(path string, body interface{}, authMethod string, authValue st
 }
 
 // SandboxDelete makes a DELETE request to the sandbox API with authentication.
-func SandboxDelete(path string, queryParams map[string]string, authMethod string, authValue string) (*resty.Response, error) {
+func SandboxDelete(ctx context.Context, path string, queryParams map[string]string, authMethod string, authValue string) (*resty.Response, error) {
 	client, err := SandboxClient()
 	if err != nil {
 		return nil, err
 	}
-	req := client.R()
+	req := client.R().SetContext(ctx).SetHeader(requestid.Header, requestid.FromContext(ctx))
 	if err := setAuth(req, authMethod, authValue); err != nil {
 		return nil, err
 	}
